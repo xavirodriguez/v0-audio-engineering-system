@@ -1,5 +1,11 @@
 import { WASMPitchDetector } from "./wasm-loader"
 
+// Helper function for harmonic filtering
+const isHarmonic = (freq: number, targetFreq: number): boolean => {
+  const ratio = freq / targetFreq
+  return Math.abs(ratio - Math.round(ratio)) < 0.02
+}
+
 export class PitchDetector {
   private sampleRate: number
   private wasmDetector: WASMPitchDetector | null = null
@@ -36,7 +42,7 @@ export class PitchDetector {
       }
     }
 
-    // Fallback a implementación JavaScript
+    // Fallback to JavaScript implementation
     return this.detectPitchYINJS(buffer)
   }
 
@@ -58,7 +64,8 @@ export class PitchDetector {
     let runningSum = 0
     for (let tau = 1; tau < yinBuffer.length; tau++) {
       runningSum += yinBuffer[tau]
-      yinBuffer[tau] *= tau / runningSum
+      // Improved normalization to prevent division by zero
+      yinBuffer[tau] = yinBuffer[tau] === 0 ? 1 : (yinBuffer[tau] * tau) / runningSum
     }
 
     let tau = -1
@@ -100,7 +107,7 @@ export class PitchDetector {
     return { pitchHz, confidence }
   }
 
-  // Autocorrelación simple
+  // Autocorrelation simple
   detectPitchAutocorrelation(buffer: Float32Array): { pitchHz: number; confidence: number } {
     if (this.useWASM && this.wasmDetector?.isReady()) {
       const result = this.wasmDetector.detectPitchAutocorr(buffer)
@@ -112,7 +119,7 @@ export class PitchDetector {
       }
     }
 
-    // Fallback a JavaScript
+    // Fallback to JavaScript
     const SIZE = buffer.length
     const MAX_SAMPLES = Math.floor(SIZE / 2)
     const correlations = new Float32Array(MAX_SAMPLES)

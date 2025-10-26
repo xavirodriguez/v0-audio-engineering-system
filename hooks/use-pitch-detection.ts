@@ -6,6 +6,10 @@ import { PitchDetector } from "@/lib/audio/pitch-detector"
 import { LatencyCalibrator } from "@/lib/audio/latency-calibration"
 import { frequencyToCents, generatePracticeSequence } from "@/lib/audio/note-utils"
 
+// Constants for improved state machine synchronization
+const NOTE_TRANSITION_BUFFER_MS = 300 // Minimum time between notes
+const PITCH_CONFIDENCE_MIN = 0.6 // Increased from 0.5
+
 export function usePitchDetection() {
   const [state, setState] = useState<GlobalTunerState>({
     status: "IDLE",
@@ -15,7 +19,7 @@ export function usePitchDetection() {
     accompanimentStartTime: 0,
     toleranceCents: 50,
     minHoldMs: 1000,
-    rmsThreshold: 0.01,
+    rmsThreshold: 0.03, // Increased from 0.01 to 0.03 (3x)
     pitchHistory: [],
     consecutiveStableFrames: 0,
     holdStart: 0,
@@ -38,6 +42,21 @@ export function usePitchDetection() {
   const calibrationClickTimeRef = useRef<number>(0)
   const calibrationCountRef = useRef<number>(0)
 
+  const calibrateRMS = useCallback(() => {
+    if (!analyserRef.current || !pitchDetectorRef.current) return
+
+    const buffer = new Float32Array(analyserRef.current.fftSize)
+    analyserRef.current.getFloatTimeDomainData(buffer)
+    const noise = pitchDetectorRef.current.calculateRMS(buffer)
+
+    setState((prev) => ({
+      ...prev,
+      rmsThreshold: noise * 2.5, // 2.5x ambient noise
+    }))
+
+    console.log("[v0] RMS calibrated to:", noise * 2.5)
+  }, [])
+
   // Inicializar audio context y detector
   const initialize = useCallback(async () => {
     try {
@@ -45,6 +64,13 @@ export function usePitchDetection() {
       const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext
       const audioContext = new AudioContextClass()
       audioContextRef.current = audioContext
+
+      const actualSampleRate = audioContext.sampleRate
+      if (actualSampleRate !== 48000 && actualSampleRate !== 44100) {
+        console.warn(`[v0] Non-standard sample rate: ${actualSampleRate}Hz`)
+      } else {
+        console.log(`[v0] Sample rate: ${actualSampleRate}Hz`)
+      }
 
       // Solicitar acceso al micrófono
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -66,8 +92,7 @@ export function usePitchDetection() {
       const source = audioContext.createMediaStreamSource(stream)
       source.connect(analyser)
 
-      // Crear detector de pitch
-      pitchDetectorRef.current = new PitchDetector(audioContext.sampleRate)
+      pitchDetectorRef.current = new PitchDetector(actualSampleRate)
 
       // Crear calibrador
       calibratorRef.current = new LatencyCalibrator(audioContext)
@@ -82,12 +107,14 @@ export function usePitchDetection() {
         totalLatencyOffsetMs: baseLatency,
       }))
 
+      setTimeout(() => calibrateRMS(), 500)
+
       console.log("[v0] Audio system initialized")
     } catch (error) {
       console.error("[v0] Error initializing audio:", error)
       setState((prev) => ({ ...prev, status: "ERROR" }))
     }
-  }, [])
+  }, [calibrateRMS])
 
   // Iniciar calibración
   const startCalibration = useCallback(() => {
@@ -165,6 +192,8 @@ export function usePitchDetection() {
     setState((prev) => {
       const { pitchHz, confidence, rms, timestamp } = event
 
+      const adjustedTimestamp = timestamp - prev.totalLatencyOffsetMs / 1000
+
       // Actualizar métricas actuales
       const currentNote = prev.notes[prev.currentNoteIndex]
       const cents = frequencyToCents(pitchHz, currentNote.frequency)
@@ -178,7 +207,7 @@ export function usePitchDetection() {
           if (calibrationCountRef.current >= 5) {
             // Calibración completa
             const finalOffset = calibratorRef.current.calculateFinalOffset()
-            console.log("[v0] Calibration complete")
+            console.log("[v0] Calibration complete:", finalOffset, "ms")
             return {
               ...prev,
               status: "IDLE",
@@ -208,18 +237,16 @@ export function usePitchDetection() {
           }
         }
 
-        // Verificar si el pitch está dentro de tolerancia
-        const isInTune = Math.abs(cents) < prev.toleranceCents && confidence > 0.5
+        const isInTune = Math.abs(cents) < prev.toleranceCents && confidence > PITCH_CONFIDENCE_MIN
 
         if (isInTune) {
           const newConsecutiveFrames = prev.consecutiveStableFrames + 1
-          const newHoldStart = prev.holdStart || timestamp
+          const newHoldStart = prev.holdStart || adjustedTimestamp
 
-          // Calcular si se ha sostenido suficiente tiempo
-          const holdDuration = (timestamp - newHoldStart) * 1000
+          const holdDuration = (adjustedTimestamp - newHoldStart) * 1000
           const requiredHoldTime = prev.minHoldMs
 
-          if (holdDuration >= requiredHoldTime) {
+          if (holdDuration >= requiredHoldTime + NOTE_TRANSITION_BUFFER_MS) {
             // Nota completada, avanzar a la siguiente
             const nextIndex = prev.currentNoteIndex + 1
 
@@ -313,5 +340,6 @@ export function usePitchDetection() {
     startCalibration,
     startDetection,
     stopDetection,
+    calibrateRMS, // Export calibrateRMS function
   }
 }
