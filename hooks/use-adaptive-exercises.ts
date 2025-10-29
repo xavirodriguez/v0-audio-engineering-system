@@ -5,44 +5,29 @@ import type { StudentProfile, PracticeSession, Exercise, AdaptiveRecommendation 
 import { ExerciseGenerator } from "@/lib/ai/exercise-generator"
 import { PerformanceAnalyzer } from "@/lib/ai/performance-analyzer"
 
-const STORAGE_KEY = "violin-student-profile"
+const USER_ID = "default-user" // In production, this would come from auth
 
 export function useAdaptiveExercises() {
   const [profile, setProfile] = useState<StudentProfile | null>(null)
   const [currentExercise, setCurrentExercise] = useState<Exercise | null>(null)
   const [recommendations, setRecommendations] = useState<AdaptiveRecommendation[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [practiceContext, setPracticeContext] = useState<"warm-up" | "deep-study" | "review">("deep-study")
+  const [practiceGoal, setPracticeGoal] = useState<string>("")
 
   const generator = new ExerciseGenerator()
   const analyzer = new PerformanceAnalyzer()
 
-  // Cargar perfil desde localStorage
   useEffect(() => {
-    const loadProfile = () => {
+    const loadProfile = async () => {
       try {
-        const stored = localStorage.getItem(STORAGE_KEY)
-        if (stored) {
-          const loadedProfile = JSON.parse(stored) as StudentProfile
-          setProfile(loadedProfile)
+        const response = await fetch(`/api/profile?userId=${USER_ID}`)
+        const loadedProfile = await response.json()
 
-          // Generar recomendaciones
-          const recs = generator.generateRecommendations(loadedProfile)
-          setRecommendations(recs)
-        } else {
-          // Crear perfil nuevo
-          const newProfile: StudentProfile = {
-            id: `student-${Date.now()}`,
-            level: "beginner",
-            strengths: [],
-            weaknesses: [],
-            practiceHistory: [],
-            totalPracticeTime: 0,
-            averageAccuracy: 0,
-            improvementRate: 0,
-          }
-          setProfile(newProfile)
-          saveProfile(newProfile)
-        }
+        setProfile(loadedProfile)
+
+        const recs = generator.generateRecommendations(loadedProfile)
+        setRecommendations(recs)
       } catch (error) {
         console.error("[v0] Error loading profile:", error)
       } finally {
@@ -53,36 +38,48 @@ export function useAdaptiveExercises() {
     loadProfile()
   }, [])
 
-  // Guardar perfil en localStorage
-  const saveProfile = (updatedProfile: StudentProfile) => {
+  const saveProfile = async (updatedProfile: StudentProfile) => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedProfile))
-      setProfile(updatedProfile)
+      const response = await fetch("/api/profile", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedProfile),
+      })
+
+      const result = await response.json()
+      if (result.success) {
+        setProfile(updatedProfile)
+      }
     } catch (error) {
       console.error("[v0] Error saving profile:", error)
     }
   }
 
-  // Completar sesión de práctica
   const completeSession = (session: PracticeSession) => {
     if (!profile) return
 
-    const updatedProfile = analyzer.updateProfile(profile, session)
+    const enhancedSession: PracticeSession = {
+      ...session,
+      context: practiceContext,
+      goal: practiceGoal || "Práctica general",
+      selfRating: 3, // Default, should be set by user
+    }
+
+    const updatedProfile = analyzer.updateProfile(profile, enhancedSession)
     saveProfile(updatedProfile)
 
-    // Regenerar recomendaciones
     const newRecs = generator.generateRecommendations(updatedProfile)
     setRecommendations(newRecs)
 
     console.log("[v0] Session completed, profile updated")
   }
 
-  // Seleccionar ejercicio
   const selectExercise = (exercise: Exercise) => {
     setCurrentExercise(exercise)
   }
 
-  // Generar ejercicio personalizado
   const generateCustomExercise = (type: string, difficulty: string) => {
     let exercise: Exercise | null = null
 
@@ -113,6 +110,10 @@ export function useAdaptiveExercises() {
     currentExercise,
     recommendations,
     isLoading,
+    practiceContext,
+    practiceGoal,
+    setPracticeContext,
+    setPracticeGoal,
     completeSession,
     selectExercise,
     generateCustomExercise,

@@ -4,6 +4,9 @@ export interface PerformanceMetrics {
   responseTime: number // ms, tiempo para alcanzar la nota correcta
   consistency: number // 0-100, consistencia entre intentos
   intonationError: number // cents promedio de desviación
+  toneQuality: number // 0-100, calidad del sonido
+  spectralCentroid: number // Hz, brillo del tono
+  attackTime: number // ms, limpieza del inicio
   timestamp: number
 }
 
@@ -16,6 +19,7 @@ export interface StudentProfile {
   totalPracticeTime: number // minutos
   averageAccuracy: number
   improvementRate: number // % de mejora por semana
+  toneQualityScore: number // 0-100
 }
 
 export interface PracticeSession {
@@ -27,6 +31,9 @@ export interface PracticeSession {
   metrics: PerformanceMetrics
   notes: NotePerformance[]
   completed: boolean
+  context: "warm-up" | "deep-study" | "review"
+  goal: string // Ej. "Lograr 95% de precisión en la escala de Sol Mayor"
+  selfRating: 1 | 2 | 3 | 4 | 5
 }
 
 export interface NotePerformance {
@@ -48,6 +55,7 @@ export type ExerciseType =
   | "sight-reading"
   | "intonation-drill"
   | "rhythm-patterns"
+  | "bowing-drill"
 
 export type DifficultyLevel = "easy" | "medium" | "hard" | "expert"
 
@@ -62,6 +70,7 @@ export interface Exercise {
   timeSignature: string
   focusAreas: string[] // "intonation", "rhythm", "tone", etc.
   estimatedDuration: number // segundos
+  pedagogicalSource?: string // Ej. "Sevcik Op. 1, No. 5"
 }
 
 export interface ExerciseNote {
@@ -72,6 +81,16 @@ export interface ExerciseNote {
   startTime: number // ms desde el inicio
   dynamic?: "pp" | "p" | "mp" | "mf" | "f" | "ff"
   articulation?: "legato" | "staccato" | "marcato" | "tenuto"
+  bowing?: {
+    direction: "up" | "down" | "retake"
+    contactPoint: "sul-ponticello" | "ordinario" | "sul-tasto"
+    portion: "whole" | "half" | "quarter" // Distribución del arco
+    dynamic: "p" | "mf" | "f"
+  }
+  fingering?: 0 | 1 | 2 | 3 | 4 // 0 para cuerda abierta
+  position?: 1 | 2 | 3 | 4 | 5
+  isShift?: boolean // Indica si la nota requiere un cambio de posición
+  rhythmPattern?: string // Ej. "triplet", "dotted", "syncopated"
 }
 
 export interface AdaptiveRecommendation {

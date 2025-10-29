@@ -1,8 +1,7 @@
 import type { PerformanceMetrics, StudentProfile, PracticeSession } from "@/lib/types/exercise-system"
 
 export class PerformanceAnalyzer {
-  // Analizar una sesión de práctica y extraer métricas
-  analyzeSession(session: PracticeSession): PerformanceMetrics {
+  analyzeSession(session: PracticeSession, audioData?: Float32Array): PerformanceMetrics {
     const notes = session.notes
 
     // Calcular accuracy promedio
@@ -23,12 +22,39 @@ export class PerformanceAnalyzer {
     // Calcular error de entonación promedio
     const avgIntonationError = notes.reduce((sum, note) => sum + Math.abs(note.averageDeviation), 0) / notes.length
 
+    let toneQuality = 75 // Default value
+    let spectralCentroid = 2000 // Default Hz
+    let attackTime = 50 // Default ms
+
+    if (audioData && audioData.length > 0) {
+      // Simplified spectral analysis (in production, use proper FFT)
+      const rms = Math.sqrt(audioData.reduce((sum, val) => sum + val * val, 0) / audioData.length)
+      toneQuality = Math.min(100, rms * 1000) // Simplified calculation
+
+      // Estimate spectral centroid (brightness)
+      spectralCentroid = 1000 + rms * 3000
+
+      // Estimate attack time (cleanliness of note start)
+      let attackSamples = 0
+      const threshold = rms * 0.5
+      for (let i = 0; i < Math.min(audioData.length, 1000); i++) {
+        if (Math.abs(audioData[i]) > threshold) {
+          attackSamples = i
+          break
+        }
+      }
+      attackTime = (attackSamples / 44100) * 1000 // Convert to ms
+    }
+
     return {
       accuracy: Math.round(accuracy * 100) / 100,
       stability: Math.round(avgStability * 100) / 100,
       responseTime: Math.round(avgResponseTime),
       consistency: Math.round(consistency * 100) / 100,
       intonationError: Math.round(avgIntonationError * 100) / 100,
+      toneQuality: Math.round(toneQuality * 100) / 100,
+      spectralCentroid: Math.round(spectralCentroid),
+      attackTime: Math.round(attackTime * 100) / 100,
       timestamp: Date.now(),
     }
   }
@@ -73,7 +99,6 @@ export class PerformanceAnalyzer {
     return strengths
   }
 
-  // Identificar debilidades del estudiante
   identifyWeaknesses(profile: StudentProfile): string[] {
     const weaknesses: string[] = []
     const recentSessions = profile.practiceHistory.slice(-10)
@@ -81,14 +106,15 @@ export class PerformanceAnalyzer {
     if (recentSessions.length === 0) return weaknesses
 
     const avgAccuracy = recentSessions.reduce((sum, s) => sum + s.metrics.accuracy, 0) / recentSessions.length
-
     const avgStability = recentSessions.reduce((sum, s) => sum + s.metrics.stability, 0) / recentSessions.length
-
     const avgResponseTime = recentSessions.reduce((sum, s) => sum + s.metrics.responseTime, 0) / recentSessions.length
-
     const avgIntonation = recentSessions.reduce((sum, s) => sum + s.metrics.intonationError, 0) / recentSessions.length
-
     const avgConsistency = recentSessions.reduce((sum, s) => sum + s.metrics.consistency, 0) / recentSessions.length
+
+    const avgToneQuality =
+      recentSessions.reduce((sum, s) => sum + (s.metrics.toneQuality || 75), 0) / recentSessions.length
+    const avgAttackTime =
+      recentSessions.reduce((sum, s) => sum + (s.metrics.attackTime || 50), 0) / recentSessions.length
 
     // Identificar debilidades
     if (avgAccuracy < 70) weaknesses.push("low-accuracy")
@@ -96,6 +122,10 @@ export class PerformanceAnalyzer {
     if (avgResponseTime > 1000) weaknesses.push("slow-response")
     if (avgIntonation > 30) weaknesses.push("poor-intonation")
     if (avgConsistency < 60) weaknesses.push("inconsistent-performance")
+
+    if (avgToneQuality < 60) weaknesses.push("poor-tone-quality")
+    if (avgAttackTime > 100) weaknesses.push("poor-attack")
+    if (avgToneQuality < 50) weaknesses.push("scratchy-tone")
 
     // Analizar tipos de ejercicios problemáticos
     const exercisePerformance = new Map<string, number[]>()
@@ -134,7 +164,6 @@ export class PerformanceAnalyzer {
     return ((recentAvg - previousAvg) / previousAvg) * 100
   }
 
-  // Actualizar perfil del estudiante
   updateProfile(profile: StudentProfile, newSession: PracticeSession): StudentProfile {
     const updatedHistory = [...profile.practiceHistory, newSession]
 
@@ -143,11 +172,15 @@ export class PerformanceAnalyzer {
     const allAccuracies = updatedHistory.map((s) => s.metrics.accuracy)
     const avgAccuracy = allAccuracies.reduce((a, b) => a + b, 0) / allAccuracies.length
 
+    const allToneQualities = updatedHistory.map((s) => s.metrics.toneQuality || 75)
+    const avgToneQuality = allToneQualities.reduce((a, b) => a + b, 0) / allToneQualities.length
+
     const updatedProfile: StudentProfile = {
       ...profile,
       practiceHistory: updatedHistory,
       totalPracticeTime: totalTime,
       averageAccuracy: avgAccuracy,
+      toneQualityScore: avgToneQuality,
       improvementRate: 0, // Se calculará después
     }
 
