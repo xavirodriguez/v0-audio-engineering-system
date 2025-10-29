@@ -1,0 +1,78 @@
+{
+  "common": {
+    "appName": "Virtuoso",
+    "tagline": "Learn Violin Online"
+  },
+  "nav": {
+    "home": "Home",
+    "courses": "Courses",
+    "practice": "Practice",
+    "resources": "Resources",
+    "login": "Log In",
+    "getStarted": "Get Started Free"
+  },
+  "practice": {
+    "title": "Free Practice",
+    "status": {
+      "ready": "Ready to start",
+      "calibrating": "Calibrating system...",
+      "detecting": "Listening to your performance",
+      "stable": "Perfect! Hold the note",
+      "error": "System error"
+    },
+    "recording": "Recording",
+    "exercises": "Exercises",
+    "settings": "Settings",
+    "sensitivity": "Pitch Sensitivity",
+    "tempo": "Tempo",
+    "volume": "Volume",
+    "practiceMode": "Practice Mode",
+    "stepByStep": "Step by Step",
+    "continuous": "Continuous",
+    "level": "Level",
+    "start": "Start",
+    "pause": "Pause",
+    "initialize": "Initialize",
+    "latency": "Latency",
+    "viewRecording": "View Recording",
+    "close": "Close"
+  },
+  "pitch": {
+    "targetNote": "Target Note",
+    "detectedNote": "Detected Note",
+    "deviation": "Deviation",
+    "confidence": "Confidence",
+    "rms": "Audio Level",
+    "cents": "cents",
+    "perfect": "Perfect!",
+    "tooLow": "Too low",
+    "tooHigh": "Too high"
+  },
+  "exercises": {
+    "selectExercise": "Select Exercise",
+    "recommended": "Recommended",
+    "difficulty": {
+      "beginner": "Beginner",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced"
+    },
+    "type": {
+      "openStrings": "Open Strings",
+      "scales": "Scales",
+      "intervals": "Intervals",
+      "intonation": "Intonation"
+    }
+  },
+  "recording": {
+    "title": "Practice Recording",
+    "duration": "Duration",
+    "analysis": "Analysis",
+    "accuracy": "Accuracy",
+    "stability": "Stability",
+    "toneQuality": "Tone Quality",
+    "problemAreas": "Problem Areas",
+    "recommendations": "Recommendations",
+    "download": "Download",
+    "delete": "Delete"
+  }
+}

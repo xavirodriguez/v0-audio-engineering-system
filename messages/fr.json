@@ -1,0 +1,78 @@
+{
+  "common": {
+    "appName": "Virtuoso",
+    "tagline": "Apprendre le Violon en Ligne"
+  },
+  "nav": {
+    "home": "Accueil",
+    "courses": "Cours",
+    "practice": "Pratique",
+    "resources": "Ressources",
+    "login": "Se Connecter",
+    "getStarted": "Commencer Gratuitement"
+  },
+  "practice": {
+    "title": "Pratique Libre",
+    "status": {
+      "ready": "Prêt à commencer",
+      "calibrating": "Calibrage du système...",
+      "detecting": "Écoute de votre interprétation",
+      "stable": "Parfait ! Maintenez la note",
+      "error": "Erreur système"
+    },
+    "recording": "Enregistrement",
+    "exercises": "Exercices",
+    "settings": "Paramètres",
+    "sensitivity": "Sensibilité de Hauteur",
+    "tempo": "Tempo",
+    "volume": "Volume",
+    "practiceMode": "Mode de Pratique",
+    "stepByStep": "Étape par Étape",
+    "continuous": "Continu",
+    "level": "Niveau",
+    "start": "Commencer",
+    "pause": "Pause",
+    "initialize": "Initialiser",
+    "latency": "Latence",
+    "viewRecording": "Voir l'Enregistrement",
+    "close": "Fermer"
+  },
+  "pitch": {
+    "targetNote": "Note Cible",
+    "detectedNote": "Note Détectée",
+    "deviation": "Déviation",
+    "confidence": "Confiance",
+    "rms": "Niveau Audio",
+    "cents": "cents",
+    "perfect": "Parfait !",
+    "tooLow": "Trop bas",
+    "tooHigh": "Trop haut"
+  },
+  "exercises": {
+    "selectExercise": "Sélectionner un Exercice",
+    "recommended": "Recommandé",
+    "difficulty": {
+      "beginner": "Débutant",
+      "intermediate": "Intermédiaire",
+      "advanced": "Avancé"
+    },
+    "type": {
+      "openStrings": "Cordes à Vide",
+      "scales": "Gammes",
+      "intervals": "Intervalles",
+      "intonation": "Intonation"
+    }
+  },
+  "recording": {
+    "title": "Enregistrement de Pratique",
+    "duration": "Durée",
+    "analysis": "Analyse",
+    "accuracy": "Précision",
+    "stability": "Stabilité",
+    "toneQuality": "Qualité du Son",
+    "problemAreas": "Zones Problématiques",
+    "recommendations": "Recommandations",
+    "download": "Télécharger",
+    "delete": "Supprimer"
+  }
+}

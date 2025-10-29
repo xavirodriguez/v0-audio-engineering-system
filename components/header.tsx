@@ -3,9 +3,12 @@
 import { Button } from "@/components/ui/button"
 import { Menu } from "lucide-react"
 import { useState } from "react"
+import { useTranslations } from "next-intl"
+import { LanguageSwitcher } from "./language-switcher"
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const t = useTranslations("nav")
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
@@ -18,25 +21,26 @@ export function Header() {
 
           <nav className="hidden md:flex items-center gap-8">
             <a href="#inicio" className="text-sm font-medium text-foreground hover:text-accent transition-colors">
-              Inicio
+              {t("home")}
             </a>
             <a href="#cursos" className="text-sm font-medium text-foreground hover:text-accent transition-colors">
-              Cursos
+              {t("courses")}
             </a>
             <a href="#practica" className="text-sm font-medium text-foreground hover:text-accent transition-colors">
-              Práctica
+              {t("practice")}
             </a>
             <a href="#recursos" className="text-sm font-medium text-foreground hover:text-accent transition-colors">
-              Recursos
+              {t("resources")}
             </a>
           </nav>
 
           <div className="hidden md:flex items-center gap-4">
+            <LanguageSwitcher />
             <Button variant="ghost" size="sm">
-              Iniciar Sesión
+              {t("login")}
             </Button>
             <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
-              Comenzar Gratis
+              {t("getStarted")}
             </Button>
           </div>
 
@@ -49,23 +53,24 @@ export function Header() {
           <div className="md:hidden py-4 border-t border-border">
             <nav className="flex flex-col gap-4">
               <a href="#inicio" className="text-sm font-medium text-foreground hover:text-accent transition-colors">
-                Inicio
+                {t("home")}
               </a>
               <a href="#cursos" className="text-sm font-medium text-foreground hover:text-accent transition-colors">
-                Cursos
+                {t("courses")}
               </a>
               <a href="#practica" className="text-sm font-medium text-foreground hover:text-accent transition-colors">
-                Práctica
+                {t("practice")}
               </a>
               <a href="#recursos" className="text-sm font-medium text-foreground hover:text-accent transition-colors">
-                Recursos
+                {t("resources")}
               </a>
               <div className="flex flex-col gap-2 pt-2">
+                <LanguageSwitcher />
                 <Button variant="ghost" size="sm">
-                  Iniciar Sesión
+                  {t("login")}
                 </Button>
                 <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
-                  Comenzar Gratis
+                  {t("getStarted")}
                 </Button>
               </div>
             </nav>

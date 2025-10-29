@@ -1,6 +1,6 @@
-import { Header } from "@/components/header";
-import { Practice } from "@/components/practice";
-import { Footer } from "@/components/footer";
+import { Header } from "@/components/header"
+import { Practice } from "@/components/practice"
+import { Footer } from "@/components/footer"
 
 export default function Home() {
   return (
@@ -9,5 +9,5 @@ export default function Home() {
       <Practice />
       <Footer />
     </main>
-  );
+  )
 }

@@ -1,0 +1,78 @@
+{
+  "common": {
+    "appName": "Virtuoso",
+    "tagline": "Aprende Violín Online"
+  },
+  "nav": {
+    "home": "Inicio",
+    "courses": "Cursos",
+    "practice": "Práctica",
+    "resources": "Recursos",
+    "login": "Iniciar Sesión",
+    "getStarted": "Comenzar Gratis"
+  },
+  "practice": {
+    "title": "Práctica Libre",
+    "status": {
+      "ready": "Listo para comenzar",
+      "calibrating": "Calibrando sistema...",
+      "detecting": "Escuchando tu interpretación",
+      "stable": "¡Perfecto! Mantén la nota",
+      "error": "Error en el sistema"
+    },
+    "recording": "Grabando",
+    "exercises": "Ejercicios",
+    "settings": "Configuración",
+    "sensitivity": "Sensibilidad de Pitch",
+    "tempo": "Tempo",
+    "volume": "Volumen",
+    "practiceMode": "Modo de Práctica",
+    "stepByStep": "Paso a Paso",
+    "continuous": "Continuo",
+    "level": "Nivel",
+    "start": "Comenzar",
+    "pause": "Pausar",
+    "initialize": "Iniciar",
+    "latency": "Latencia",
+    "viewRecording": "Ver Grabación",
+    "close": "Cerrar"
+  },
+  "pitch": {
+    "targetNote": "Nota Objetivo",
+    "detectedNote": "Nota Detectada",
+    "deviation": "Desviación",
+    "confidence": "Confianza",
+    "rms": "Nivel de Audio",
+    "cents": "cents",
+    "perfect": "¡Perfecto!",
+    "tooLow": "Muy bajo",
+    "tooHigh": "Muy alto"
+  },
+  "exercises": {
+    "selectExercise": "Seleccionar Ejercicio",
+    "recommended": "Recomendado",
+    "difficulty": {
+      "beginner": "Principiante",
+      "intermediate": "Intermedio",
+      "advanced": "Avanzado"
+    },
+    "type": {
+      "openStrings": "Cuerdas Abiertas",
+      "scales": "Escalas",
+      "intervals": "Intervalos",
+      "intonation": "Entonación"
+    }
+  },
+  "recording": {
+    "title": "Grabación de Práctica",
+    "duration": "Duración",
+    "analysis": "Análisis",
+    "accuracy": "Precisión",
+    "stability": "Estabilidad",
+    "toneQuality": "Calidad de Tono",
+    "problemAreas": "Áreas Problemáticas",
+    "recommendations": "Recomendaciones",
+    "download": "Descargar",
+    "delete": "Eliminar"
+  }
+}
