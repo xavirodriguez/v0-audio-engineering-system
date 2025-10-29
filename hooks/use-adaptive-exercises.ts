@@ -5,7 +5,7 @@ import type { StudentProfile, PracticeSession, Exercise, AdaptiveRecommendation 
 import { ExerciseGenerator } from "@/lib/ai/exercise-generator"
 import { PerformanceAnalyzer } from "@/lib/ai/performance-analyzer"
 
-const USER_ID = "default-user" // In production, this would come from auth
+const STORAGE_KEY = "violin-student-profile"
 
 export function useAdaptiveExercises() {
   const [profile, setProfile] = useState<StudentProfile | null>(null)
@@ -19,17 +19,30 @@ export function useAdaptiveExercises() {
   const analyzer = new PerformanceAnalyzer()
 
   useEffect(() => {
-    const loadProfile = async () => {
+    const loadProfile = () => {
       try {
-        const response = await fetch(`/api/profile?userId=${USER_ID}`)
-        const loadedProfile = await response.json()
+        const stored = localStorage.getItem(STORAGE_KEY)
+        const loadedProfile: StudentProfile = stored
+          ? JSON.parse(stored)
+          : {
+              id: "default-user",
+              name: "Estudiante",
+              level: "beginner",
+              strengths: [],
+              weaknesses: [],
+              practiceHistory: [],
+              preferences: {
+                focusAreas: [],
+                sessionDuration: 30,
+              },
+            }
 
         setProfile(loadedProfile)
 
         const recs = generator.generateRecommendations(loadedProfile)
         setRecommendations(recs)
       } catch (error) {
-        console.error("[v0] Error loading profile:", error)
+        console.error("Error loading profile:", error)
       } finally {
         setIsLoading(false)
       }
@@ -38,22 +51,12 @@ export function useAdaptiveExercises() {
     loadProfile()
   }, [])
 
-  const saveProfile = async (updatedProfile: StudentProfile) => {
+  const saveProfile = (updatedProfile: StudentProfile) => {
     try {
-      const response = await fetch("/api/profile", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedProfile),
-      })
-
-      const result = await response.json()
-      if (result.success) {
-        setProfile(updatedProfile)
-      }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedProfile))
+      setProfile(updatedProfile)
     } catch (error) {
-      console.error("[v0] Error saving profile:", error)
+      console.error("Error saving profile:", error)
     }
   }
 
@@ -72,8 +75,6 @@ export function useAdaptiveExercises() {
 
     const newRecs = generator.generateRecommendations(updatedProfile)
     setRecommendations(newRecs)
-
-    console.log("[v0] Session completed, profile updated")
   }
 
   const selectExercise = (exercise: Exercise) => {
