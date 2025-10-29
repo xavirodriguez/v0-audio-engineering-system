@@ -19,7 +19,7 @@ export function InteractivePractice() {
   const { state, initialize, startCalibration, startDetection, stopDetection } = usePitchDetection()
   const { isRecording, currentRecording, startRecording, stopRecording, addPitchPoint, deleteRecording } =
     useRecording()
-  const { currentExercise, selectExercise } = useAdaptiveExercises()
+  const { currentExercise, recommendations, selectExercise } = useAdaptiveExercises()
 
   const [isInitialized, setIsInitialized] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
@@ -314,12 +314,18 @@ export function InteractivePractice() {
               className="w-full max-w-4xl"
             >
               <ExerciseSelector
-                onSelect={(exercise) => {
-                  selectExercise(exercise)
+                recommendations={recommendations}
+                onSelectExercise={(exerciseId) => {
+                  const exercise = recommendations.find((r) => r.exercise.id === exerciseId)?.exercise
+                  if (exercise) {
+                    selectExercise(exercise)
+                  }
                   setShowExercises(false)
                 }}
-                onClose={() => setShowExercises(false)}
               />
+              <Button variant="outline" className="mt-4 w-full bg-transparent" onClick={() => setShowExercises(false)}>
+                Cerrar
+              </Button>
             </motion.div>
           </motion.div>
         )}
