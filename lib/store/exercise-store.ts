@@ -1,8 +1,7 @@
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
 import type { StudentProfile, Exercise, AdaptiveRecommendation, PracticeSession } from "@/lib/types/exercise-system"
-import { ExerciseGenerator } from "@/lib/ai/exercise-generator"
-import { PerformanceAnalyzer } from "@/lib/ai/performance-analyzer"
+import { getExerciseGenerator, getPerformanceAnalyzer } from "@/lib/ai/exercise-factory"
 
 interface ExerciseStore {
   profile: StudentProfile | null
@@ -24,9 +23,6 @@ interface ExerciseStore {
   initializeProfile: () => void
 }
 
-const generator = new ExerciseGenerator()
-const analyzer = new PerformanceAnalyzer()
-
 const defaultProfile: StudentProfile = {
   id: "default-user",
   name: "Estudiante",
@@ -38,6 +34,10 @@ const defaultProfile: StudentProfile = {
     focusAreas: [],
     sessionDuration: 30,
   },
+  totalPracticeTime: 0,
+  averageAccuracy: 0,
+  improvementRate: 0,
+  toneQualityScore: 75,
 }
 
 export const useExerciseStore = create<ExerciseStore>()(
@@ -51,9 +51,9 @@ export const useExerciseStore = create<ExerciseStore>()(
       practiceGoal: "",
 
       setProfile: (profile) => {
-        set({ profile })
+        const generator = getExerciseGenerator()
         const recs = generator.generateRecommendations(profile)
-        set({ recommendations: recs })
+        set({ profile, recommendations: recs })
       },
 
       setCurrentExercise: (exercise) => set({ currentExercise: exercise }),
@@ -75,7 +75,10 @@ export const useExerciseStore = create<ExerciseStore>()(
           selfRating: session.selfRating || 3,
         }
 
+        const analyzer = getPerformanceAnalyzer()
         const updatedProfile = analyzer.updateProfile(profile, enhancedSession)
+
+        const generator = getExerciseGenerator()
         const newRecs = generator.generateRecommendations(updatedProfile)
 
         set({
@@ -87,6 +90,7 @@ export const useExerciseStore = create<ExerciseStore>()(
       selectExercise: (exercise) => set({ currentExercise: exercise }),
 
       generateCustomExercise: (type, difficulty) => {
+        const generator = getExerciseGenerator()
         let exercise: Exercise | null = null
 
         switch (type) {
@@ -115,6 +119,7 @@ export const useExerciseStore = create<ExerciseStore>()(
         const { profile } = get()
         if (!profile) {
           const newProfile = { ...defaultProfile }
+          const generator = getExerciseGenerator()
           const recs = generator.generateRecommendations(newProfile)
           set({
             profile: newProfile,
