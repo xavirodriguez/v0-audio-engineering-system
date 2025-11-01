@@ -1,4 +1,5 @@
 import { WASMPitchDetector } from "./wasm-loader"
+import FFT from "fft-js"
 
 // Helper function for harmonic filtering
 const isHarmonic = (freq: number, targetFreq: number): boolean => {
@@ -29,6 +30,58 @@ export class PitchDetector {
       console.log("[v0] WASM not available, using JavaScript fallback")
       this.useWASM = false
     }
+  }
+
+  detectPitchFFT(buffer: Float32Array): { pitchHz: number; confidence: number } {
+    const SIZE = buffer.length
+
+    // Convert Float32Array to regular array for fft-js
+    const signal = Array.from(buffer)
+
+    // Apply Hamming window to reduce spectral leakage
+    for (let i = 0; i < SIZE; i++) {
+      const windowValue = 0.54 - 0.46 * Math.cos((2 * Math.PI * i) / (SIZE - 1))
+      signal[i] *= windowValue
+    }
+
+    // Compute FFT using fft-js
+    const phasors = FFT.fft(signal)
+    const magnitudes = FFT.util.fftMag(phasors)
+
+    // Find peak frequency
+    let maxMag = 0
+    let maxIndex = 0
+    const minIndex = Math.floor((50 * SIZE) / this.sampleRate) // 50 Hz minimum
+    const maxIndexLimit = Math.floor((2000 * SIZE) / this.sampleRate) // 2000 Hz maximum
+
+    for (let i = minIndex; i < maxIndexLimit && i < magnitudes.length; i++) {
+      if (magnitudes[i] > maxMag) {
+        maxMag = magnitudes[i]
+        maxIndex = i
+      }
+    }
+
+    if (maxIndex === 0) {
+      return { pitchHz: 0, confidence: 0 }
+    }
+
+    // Parabolic interpolation for better frequency resolution
+    let betterIndex = maxIndex
+    if (maxIndex > 0 && maxIndex < magnitudes.length - 1) {
+      const alpha = magnitudes[maxIndex - 1]
+      const beta = magnitudes[maxIndex]
+      const gamma = magnitudes[maxIndex + 1]
+      const p = (0.5 * (alpha - gamma)) / (alpha - 2 * beta + gamma)
+      betterIndex = maxIndex + p
+    }
+
+    const pitchHz = (betterIndex * this.sampleRate) / SIZE
+
+    // Calculate confidence based on peak prominence
+    const avgMag = magnitudes.reduce((sum, mag) => sum + mag, 0) / magnitudes.length
+    const confidence = Math.min(maxMag / (avgMag * 10), 1.0)
+
+    return { pitchHz, confidence }
   }
 
   detectPitchYIN(buffer: Float32Array): { pitchHz: number; confidence: number } {
@@ -156,6 +209,23 @@ export class PitchDetector {
     const confidence = Math.min(bestCorrelation / correlations[0], 1.0)
 
     return { pitchHz, confidence }
+  }
+
+  calculateSpectralCentroid(buffer: Float32Array): number {
+    const signal = Array.from(buffer)
+    const phasors = FFT.fft(signal)
+    const magnitudes = FFT.util.fftMag(phasors)
+
+    let weightedSum = 0
+    let totalMagnitude = 0
+
+    for (let i = 0; i < magnitudes.length / 2; i++) {
+      const frequency = (i * this.sampleRate) / buffer.length
+      weightedSum += frequency * magnitudes[i]
+      totalMagnitude += magnitudes[i]
+    }
+
+    return totalMagnitude > 0 ? weightedSum / totalMagnitude : 0
   }
 
   calculateRMS(buffer: Float32Array): number {
