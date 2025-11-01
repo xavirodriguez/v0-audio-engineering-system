@@ -5,7 +5,8 @@ import type {
   StudentProfile,
   AdaptiveRecommendation,
 } from "@/lib/types/exercise-system"
-import { midiToFrequency, midiToNoteName } from "@/lib/audio/note-utils"
+import { midiToFrequency, midiToNoteName, generateScale, calculateJustIntonation } from "@/lib/audio/note-utils"
+import { Note, Interval } from "tonal"
 import { CurriculumManager } from "./curriculum-manager"
 
 export class ExerciseGenerator {
@@ -50,13 +51,14 @@ export class ExerciseGenerator {
   ): Exercise {
     const tempo = difficulty === "easy" ? 60 : difficulty === "medium" ? 80 : difficulty === "hard" ? 100 : 120
 
-    // Escala de La mayor (A major) - una octava
-    const majorScale = [69, 71, 73, 74, 76, 78, 80, 81] // A4 a A5
-    const minorScale = [69, 71, 72, 74, 76, 77, 79, 81] // A minor natural
+    const scaleNotes = generateScale("A4", key)
+    const scale = scaleNotes.map((note) => {
+      const midiNote = Note.midi(note)
+      return midiNote || 69
+    })
 
     const fingeringPattern = [0, 1, 2, 3, 0, 1, 2, 3] // Simplified pattern
 
-    const scale = key === "major" ? majorScale : minorScale
     const noteDuration = (60000 / tempo) * (difficulty === "easy" ? 2 : 1)
 
     const notes: ExerciseNote[] = []
@@ -64,10 +66,14 @@ export class ExerciseGenerator {
 
     // Ascendente
     scale.forEach((midi, index) => {
+      const noteName = midiToNoteName(midi)
+      const justFrequency = calculateJustIntonation("A4", Interval.distance("A4", noteName))
+
       notes.push({
         midi,
         frequency: midiToFrequency(midi),
-        name: midiToNoteName(midi),
+        targetFrequencyJust: justFrequency,
+        name: noteName,
         duration: noteDuration,
         startTime: currentTime,
         dynamic: "mf",
@@ -88,10 +94,14 @@ export class ExerciseGenerator {
     // Descendente
     for (let i = scale.length - 2; i >= 0; i--) {
       const midi = scale[i]
+      const noteName = midiToNoteName(midi)
+      const justFrequency = calculateJustIntonation("A4", Interval.distance("A4", noteName))
+
       notes.push({
         midi,
         frequency: midiToFrequency(midi),
-        name: midiToNoteName(midi),
+        targetFrequencyJust: justFrequency,
+        name: noteName,
         duration: noteDuration,
         startTime: currentTime,
         dynamic: "mf",
@@ -129,26 +139,25 @@ export class ExerciseGenerator {
     const tempo = difficulty === "easy" ? 60 : difficulty === "medium" ? 80 : 100
     const noteDuration = (60000 / tempo) * 2
 
-    // Intervalos desde A4
-    const intervals = [
-      [69, 71], // Segunda mayor
-      [69, 73], // Tercera mayor
-      [69, 74], // Cuarta justa
-      [69, 76], // Quinta justa
-      [69, 78], // Sexta mayor
-      [69, 80], // Séptima mayor
-      [69, 81], // Octava
-    ]
+    const rootNote = "A4"
+    const intervalNames = ["2M", "3M", "4P", "5P", "6M", "7M", "8P"]
 
     const notes: ExerciseNote[] = []
     let currentTime = 0
 
-    intervals.forEach(([note1, note2]) => {
+    intervalNames.forEach((intervalName) => {
+      const note1 = rootNote
+      const note2 = Note.transpose(rootNote, intervalName)
+
+      const midi1 = Note.midi(note1) || 69
+      const midi2 = Note.midi(note2) || 69
+
       // Primera nota
       notes.push({
-        midi: note1,
-        frequency: midiToFrequency(note1),
-        name: midiToNoteName(note1),
+        midi: midi1,
+        frequency: midiToFrequency(midi1),
+        targetFrequencyJust: calculateJustIntonation(rootNote, "1P"),
+        name: note1,
         duration: noteDuration,
         startTime: currentTime,
         dynamic: "mf",
@@ -158,9 +167,10 @@ export class ExerciseGenerator {
 
       // Segunda nota
       notes.push({
-        midi: note2,
-        frequency: midiToFrequency(note2),
-        name: midiToNoteName(note2),
+        midi: midi2,
+        frequency: midiToFrequency(midi2),
+        targetFrequencyJust: calculateJustIntonation(rootNote, intervalName),
+        name: note2,
         duration: noteDuration,
         startTime: currentTime,
         dynamic: "mf",

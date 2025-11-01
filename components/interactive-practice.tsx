@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
-import { Play, Pause, Settings, Volume2, SkipBack, SkipForward, Circle, RotateCcw, Download } from "lucide-react"
+import { Play, Pause, Settings, Volume2, SkipBack, SkipForward, Circle, RotateCcw, Download, Music } from "lucide-react"
 import { usePitchDetection } from "@/hooks/use-pitch-detection"
 import { useRecording } from "@/hooks/use-recording"
 import { useAdaptiveExercises } from "@/hooks/use-adaptive-exercises"
@@ -14,6 +14,7 @@ import { ExerciseSelector } from "./exercise-selector"
 import { DebugPanel } from "./debug-panel"
 import { ScoreView } from "./score-view"
 import { PitchIndicator } from "./pitch-indicator"
+import { SheetMusicRenderer } from "./sheet-music-renderer"
 
 export function InteractivePractice() {
   const { state, initialize, startCalibration, startDetection, stopDetection } = usePitchDetection()
@@ -25,6 +26,7 @@ export function InteractivePractice() {
   const [showSettings, setShowSettings] = useState(false)
   const [showRecording, setShowRecording] = useState(false)
   const [showExercises, setShowExercises] = useState(false)
+  const [viewMode, setViewMode] = useState<"animated" | "sheet-music">("animated")
   const [volume, setVolume] = useState([80])
   const [tempo, setTempo] = useState([100])
   const [sensitivity, setSensitivity] = useState([5])
@@ -111,6 +113,15 @@ export function InteractivePractice() {
                   <span className="text-sm font-medium">Grabando</span>
                 </motion.div>
               )}
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setViewMode(viewMode === "animated" ? "sheet-music" : "animated")}
+              >
+                <Music className="w-4 h-4 mr-2" />
+                {viewMode === "animated" ? "Partitura" : "Animado"}
+              </Button>
 
               <Button variant="outline" size="sm" onClick={() => setShowExercises(true)}>
                 Ejercicios
@@ -201,14 +212,24 @@ export function InteractivePractice() {
       {/* MAIN PRACTICE AREA */}
       <main className="flex-1 container mx-auto px-4 py-8">
         <Card className="border-border bg-card/80 backdrop-blur-sm shadow-2xl overflow-hidden">
-          <ScoreView
-            notes={state.notes}
-            currentNoteIndex={state.currentNoteIndex}
-            isPlaying={isPlaying}
-            practiceMode={practiceMode}
-            status={state.status}
-            accuracy={state.accuracy}
-          />
+          {viewMode === "animated" ? (
+            <ScoreView
+              notes={state.notes}
+              currentNoteIndex={state.currentNoteIndex}
+              isPlaying={isPlaying}
+              practiceMode={practiceMode}
+              status={state.status}
+              accuracy={state.accuracy}
+            />
+          ) : currentExercise ? (
+            <div className="p-6">
+              <SheetMusicRenderer exercise={currentExercise} currentNoteIndex={state.currentNoteIndex} />
+            </div>
+          ) : (
+            <div className="h-[400px] flex items-center justify-center text-muted-foreground">
+              <p>Selecciona un ejercicio para ver la partitura</p>
+            </div>
+          )}
 
           <PitchIndicator
             currentNote={currentNote}
