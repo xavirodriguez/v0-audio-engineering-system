@@ -6,6 +6,9 @@ import type { PitchEvent } from "@/lib/types/pitch-detection"
 import { PitchDetector } from "@/lib/audio/pitch-detector"
 import { LatencyCalibrator } from "@/lib/audio/latency-calibration"
 import { frequencyToCents } from "@/lib/audio/note-utils"
+import { PitchStateMachine } from "@/lib/audio/pitch-state-machine"
+import { createAudioContext } from "@/lib/audio/audio-context-types"
+import { errorHandler, AppError } from "@/lib/errors/error-handler"
 
 // Constants for improved state machine synchronization
 const NOTE_TRANSITION_BUFFER_MS = 300
@@ -23,6 +26,8 @@ export function usePitchDetection() {
   const calibrationClickTimeRef = useRef<number>(0)
   const calibrationCountRef = useRef<number>(0)
 
+  const stateMachineRef = useRef<PitchStateMachine | null>(null)
+
   const calibrateRMS = useCallback(() => {
     if (!analyserRef.current || !pitchDetectorRef.current) return
 
@@ -31,55 +36,73 @@ export function usePitchDetection() {
     const noise = pitchDetectorRef.current.calculateRMS(buffer)
 
     store.setState({ rmsThreshold: noise * 2.5 })
-    console.log("[v0] RMS calibrated to:", noise * 2.5)
+    errorHandler.info("RMS calibrated", "usePitchDetection", { threshold: noise * 2.5 })
   }, [store])
 
-  const initialize = useCallback(async () => {
-    try {
-      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext
-      const audioContext = new AudioContextClass()
-      audioContextRef.current = audioContext
+  const initialize = useCallback(
+    async (signal?: AbortSignal) => {
+      try {
+        const audioContext = createAudioContext()
+        audioContextRef.current = audioContext
 
-      const actualSampleRate = audioContext.sampleRate
-      if (actualSampleRate !== 48000 && actualSampleRate !== 44100) {
-        console.warn(`[v0] Non-standard sample rate: ${actualSampleRate}Hz`)
+        if (signal?.aborted) {
+          throw new AppError("INIT_ABORTED", "Initialization was aborted", "low")
+        }
+
+        const actualSampleRate = audioContext.sampleRate
+        if (actualSampleRate !== 48000 && actualSampleRate !== 44100) {
+          errorHandler.warn(`Non-standard sample rate: ${actualSampleRate}Hz`, "usePitchDetection")
+        }
+
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: {
+            echoCancellation: false,
+            noiseSuppression: false,
+            autoGainControl: false,
+          },
+        })
+
+        if (signal?.aborted) {
+          stream.getTracks().forEach((track) => track.stop())
+          throw new AppError("INIT_ABORTED", "Initialization was aborted", "low")
+        }
+
+        mediaStreamRef.current = stream
+
+        const analyser = audioContext.createAnalyser()
+        analyser.fftSize = 2048
+        analyser.smoothingTimeConstant = 0
+        analyserRef.current = analyser
+
+        const source = audioContext.createMediaStreamSource(stream)
+        source.connect(analyser)
+
+        pitchDetectorRef.current = new PitchDetector(actualSampleRate)
+        calibratorRef.current = new LatencyCalibrator(audioContext)
+
+        stateMachineRef.current = new PitchStateMachine(store.minHoldMs, store.toleranceCents, store.rmsThreshold)
+
+        const baseLatency = calibratorRef.current.calculateBaseLatency(stream)
+
+        store.setState({
+          status: "IDLE",
+          isWorkletSupported: false,
+          totalLatencyOffsetMs: baseLatency,
+        })
+
+        setTimeout(() => calibrateRMS(), 500)
+        errorHandler.info("Audio system initialized", "usePitchDetection")
+      } catch (error) {
+        if (error instanceof AppError && error.code === "INIT_ABORTED") {
+          // Silently handle abort
+          return
+        }
+        errorHandler.capture(error, "usePitchDetection.initialize")
+        store.setState({ status: "ERROR" })
       }
-
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          echoCancellation: false,
-          noiseSuppression: false,
-          autoGainControl: false,
-        },
-      })
-      mediaStreamRef.current = stream
-
-      const analyser = audioContext.createAnalyser()
-      analyser.fftSize = 2048
-      analyser.smoothingTimeConstant = 0
-      analyserRef.current = analyser
-
-      const source = audioContext.createMediaStreamSource(stream)
-      source.connect(analyser)
-
-      pitchDetectorRef.current = new PitchDetector(actualSampleRate)
-      calibratorRef.current = new LatencyCalibrator(audioContext)
-
-      const baseLatency = calibratorRef.current.calculateBaseLatency(stream)
-
-      store.setState({
-        status: "IDLE",
-        isWorkletSupported: false,
-        totalLatencyOffsetMs: baseLatency,
-      })
-
-      setTimeout(() => calibrateRMS(), 500)
-      console.log("[v0] Audio system initialized")
-    } catch (error) {
-      console.error("[v0] Error initializing audio:", error)
-      store.setState({ status: "ERROR" })
-    }
-  }, [store, calibrateRMS])
+    },
+    [store, calibrateRMS],
+  )
 
   const startCalibration = useCallback(() => {
     if (!calibratorRef.current || !audioContextRef.current) return
@@ -226,7 +249,17 @@ export function usePitchDetection() {
   )
 
   useEffect(() => {
+    const controller = new AbortController()
+
+    initialize(controller.signal).catch((err) => {
+      if (err.name !== "AbortError") {
+        errorHandler.capture(err, "usePitchDetection.useEffect")
+      }
+    })
+
     return () => {
+      controller.abort()
+
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current)
       }
@@ -236,12 +269,15 @@ export function usePitchDetection() {
       if (audioContextRef.current) {
         audioContextRef.current.close()
       }
+      if (pitchDetectorRef.current) {
+        pitchDetectorRef.current.destroy()
+      }
     }
-  }, [])
+  }, [initialize])
 
   return {
     state: store,
-    initialize,
+    initialize: (signal?: AbortSignal) => initialize(signal),
     startCalibration,
     startDetection,
     stopDetection,

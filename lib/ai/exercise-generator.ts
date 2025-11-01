@@ -8,6 +8,13 @@ import type {
 import { midiToFrequency, midiToNoteName, generateScale, calculateJustIntonation } from "@/lib/audio/note-utils"
 import { Note, Interval } from "tonal"
 import { CurriculumManager } from "./curriculum-manager"
+import { exerciseCache } from "@/lib/cache/exercise-cache" // Declare the exerciseCache variable
+
+const VALID_KEYS = ["major", "minor"] as const
+type ScaleKey = (typeof VALID_KEYS)[number]
+
+const VALID_POSITIONS = [1, 2, 3] as const
+type ValidPosition = (typeof VALID_POSITIONS)[number]
 
 export class ExerciseGenerator {
   private curriculumManager = new CurriculumManager()
@@ -44,11 +51,15 @@ export class ExerciseGenerator {
   }
 
   // Generar escala
-  generateScaleExercise(
-    difficulty: DifficultyLevel,
-    key: "major" | "minor" = "major",
-    position: 1 | 2 | 3 = 1,
-  ): Exercise {
+  generateScaleExercise(difficulty: DifficultyLevel, key: ScaleKey = "major", position: ValidPosition = 1): Exercise {
+    // Validate inputs
+    if (!VALID_KEYS.includes(key)) {
+      throw new Error(`Invalid key: ${key}. Must be one of: ${VALID_KEYS.join(", ")}`)
+    }
+    if (!VALID_POSITIONS.includes(position)) {
+      throw new Error(`Invalid position: ${position}. Must be one of: ${VALID_POSITIONS.join(", ")}`)
+    }
+
     const tempo = difficulty === "easy" ? 60 : difficulty === "medium" ? 80 : difficulty === "hard" ? 100 : 120
 
     const scaleNotes = generateScale("A4", key)
@@ -359,87 +370,91 @@ export class ExerciseGenerator {
 
   // Generar recomendaciones adaptativas basadas en el perfil del estudiante
   generateRecommendations(profile: StudentProfile): AdaptiveRecommendation[] {
-    const recommendations: AdaptiveRecommendation[] = []
-    const currentLevel = this.curriculumManager.getCurrentLevel(profile.level)
+    const cacheKey = `recommendations-${profile.id}-${profile.level}-${profile.weaknesses.join(",")}`
 
-    // Analizar debilidades y generar ejercicios específicos
-    if (profile.weaknesses.includes("poor-intonation")) {
-      const exercise = this.generateIntonationDrill(69, "medium")
-      recommendations.push({
-        exercise,
-        reason: "Tu entonación necesita mejorar. Este ejercicio te ayudará a desarrollar precisión.",
-        priority: 10,
-        estimatedImprovement: 15,
-        focusAreas: ["intonation"],
-      })
-    }
+    return exerciseCache.getCachedExercise(cacheKey, () => {
+      const recommendations: AdaptiveRecommendation[] = []
+      const currentLevel = this.curriculumManager.getCurrentLevel(profile.level)
 
-    if (profile.weaknesses.includes("poor-bowing") || profile.weaknesses.includes("poor-attack")) {
-      const exercise = this.generateBowingPatternDrill("medium")
-      recommendations.push({
-        exercise,
-        reason: "La técnica de arco es fundamental. Este ejercicio mejorará tu control del arco.",
-        priority: 9,
-        estimatedImprovement: 12,
-        focusAreas: ["bowing", "tone-control"],
-      })
-    }
+      // Analizar debilidades y generar ejercicios específicos
+      if (profile.weaknesses.includes("poor-intonation")) {
+        const exercise = this.generateIntonationDrill(69, "medium")
+        recommendations.push({
+          exercise,
+          reason: "Tu entonación necesita mejorar. Este ejercicio te ayudará a desarrollar precisión.",
+          priority: 10,
+          estimatedImprovement: 15,
+          focusAreas: ["intonation"],
+        })
+      }
 
-    if (profile.weaknesses.includes("weak-scales")) {
-      const exercise = this.generateScaleExercise("medium", "major", 1)
-      recommendations.push({
-        exercise,
-        reason: "Las escalas son fundamentales. Practica esta escala para mejorar tu técnica.",
-        priority: 9,
-        estimatedImprovement: 12,
-        focusAreas: ["scales", "finger-placement"],
-      })
-    }
+      if (profile.weaknesses.includes("poor-bowing") || profile.weaknesses.includes("poor-attack")) {
+        const exercise = this.generateBowingPatternDrill("medium")
+        recommendations.push({
+          exercise,
+          reason: "La técnica de arco es fundamental. Este ejercicio mejorará tu control del arco.",
+          priority: 9,
+          estimatedImprovement: 12,
+          focusAreas: ["bowing", "tone-control"],
+        })
+      }
 
-    if (profile.weaknesses.includes("weak-rhythm")) {
-      const exercise = this.generateRhythmicDrill(["quarter", "quarter", "eighth", "eighth", "quarter"], "medium")
-      recommendations.push({
-        exercise,
-        reason: "La precisión rítmica es esencial. Este ejercicio mejorará tu sentido del tiempo.",
-        priority: 8,
-        estimatedImprovement: 10,
-        focusAreas: ["rhythm", "timing"],
-      })
-    }
+      if (profile.weaknesses.includes("weak-scales")) {
+        const exercise = this.generateScaleExercise("medium", "major", 1)
+        recommendations.push({
+          exercise,
+          reason: "Las escalas son fundamentales. Practica esta escala para mejorar tu técnica.",
+          priority: 9,
+          estimatedImprovement: 12,
+          focusAreas: ["scales", "finger-placement"],
+        })
+      }
 
-    if (profile.weaknesses.includes("weak-intervals")) {
-      const exercise = this.generateIntervalsExercise("medium")
-      recommendations.push({
-        exercise,
-        reason: "Mejorar tu reconocimiento de intervalos te ayudará con la lectura a primera vista.",
-        priority: 8,
-        estimatedImprovement: 10,
-        focusAreas: ["intervals", "ear-training"],
-      })
-    }
+      if (profile.weaknesses.includes("weak-rhythm")) {
+        const exercise = this.generateRhythmicDrill(["quarter", "quarter", "eighth", "eighth", "quarter"], "medium")
+        recommendations.push({
+          exercise,
+          reason: "La precisión rítmica es esencial. Este ejercicio mejorará tu sentido del tiempo.",
+          priority: 8,
+          estimatedImprovement: 10,
+          focusAreas: ["rhythm", "timing"],
+        })
+      }
 
-    // Si no hay debilidades específicas, recomendar ejercicios de nivel apropiado
-    if (recommendations.length === 0) {
-      const difficulty = profile.level === "beginner" ? "easy" : profile.level === "intermediate" ? "medium" : "hard"
+      if (profile.weaknesses.includes("weak-intervals")) {
+        const exercise = this.generateIntervalsExercise("medium")
+        recommendations.push({
+          exercise,
+          reason: "Mejorar tu reconocimiento de intervalos te ayudará con la lectura a primera vista.",
+          priority: 8,
+          estimatedImprovement: 10,
+          focusAreas: ["intervals", "ear-training"],
+        })
+      }
 
-      recommendations.push({
-        exercise: this.generateScaleExercise(difficulty, "major", 1),
-        reason: "Continúa desarrollando tu técnica con escalas.",
-        priority: 7,
-        estimatedImprovement: 8,
-        focusAreas: ["technique", "intonation"],
-      })
+      // Si no hay debilidades específicas, recomendar ejercicios de nivel apropiado
+      if (recommendations.length === 0) {
+        const difficulty = profile.level === "beginner" ? "easy" : profile.level === "intermediate" ? "medium" : "hard"
 
-      recommendations.push({
-        exercise: this.generateIntervalsExercise(difficulty),
-        reason: "Fortalece tu oído musical con práctica de intervalos.",
-        priority: 6,
-        estimatedImprovement: 7,
-        focusAreas: ["ear-training"],
-      })
-    }
+        recommendations.push({
+          exercise: this.generateScaleExercise(difficulty, "major", 1),
+          reason: "Continúa desarrollando tu técnica con escalas.",
+          priority: 7,
+          estimatedImprovement: 8,
+          focusAreas: ["technique", "intonation"],
+        })
 
-    // Ordenar por prioridad
-    return recommendations.sort((a, b) => b.priority - a.priority)
+        recommendations.push({
+          exercise: this.generateIntervalsExercise(difficulty),
+          reason: "Fortalece tu oído musical con práctica de intervalos.",
+          priority: 6,
+          estimatedImprovement: 7,
+          focusAreas: ["ear-training"],
+        })
+      }
+
+      // Ordenar por prioridad
+      return recommendations.sort((a, b) => b.priority - a.priority)
+    }) as unknown as AdaptiveRecommendation[]
   }
 }
