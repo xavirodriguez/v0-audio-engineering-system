@@ -61,12 +61,15 @@ export function generatePracticeSequence(): Array<{
   startTime: number
 }> {
   const sequence = [
-    { midi: 69, duration: 2000 }, // A4 - 2 segundos
-    { midi: 71, duration: 2000 }, // B4
-    { midi: 73, duration: 2000 }, // C#5
-    { midi: 74, duration: 2000 }, // D5
-    { midi: 76, duration: 2000 }, // E5
-  ]
+    { midi: 55, duration: 1000 }, // G4 - Cuerda Sol al aire
+    { midi: 57, duration: 1000 }, // A4
+    { midi: 59, duration: 1000 }, // B4
+    { midi: 60, duration: 1000 }, // C5
+    { midi: 62, duration: 1000 }, // D5
+    { midi: 64, duration: 1000 }, // E5
+    { midi: 66, duration: 1000 }, // F#5
+  ];
+
 
   let cumulativeTime = 0
   return sequence.map((note) => {
