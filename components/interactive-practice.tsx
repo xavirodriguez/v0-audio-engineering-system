@@ -17,7 +17,7 @@ import { PracticeControls } from "./practice/practice-controls"
 import { ModalManager } from "./practice/modal-manager"
 
 export function InteractivePractice() {
-  const { state, initialize, startCalibration, startDetection, stopDetection } = usePitchDetection()
+  const { state, initialize, startCalibration, startDetection, stopDetection, mediaStream } = usePitchDetection()
   const { isRecording, currentRecording, startRecording, stopRecording, addPitchPoint, deleteRecording } =
     useRecording()
   const { currentExercise, recommendations, selectExercise } = useAdaptiveExercises()
@@ -40,7 +40,6 @@ export function InteractivePractice() {
     if (!isInitialized) {
       await initialize()
       setIsInitialized(true)
-      return
     }
 
     if (isPlaying) {
@@ -52,9 +51,10 @@ export function InteractivePractice() {
         }
       }
     } else {
-      startDetection()
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-      startRecording(stream, currentExercise?.id, currentExercise?.name)
+      if (mediaStream) {
+        startDetection()
+        startRecording(mediaStream, currentExercise?.id, currentExercise?.name)
+      }
     }
   }
 
