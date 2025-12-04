@@ -98,5 +98,6 @@ export function usePitchDetection() {
     startDetection,
     stopDetection,
     calibrateRMS,
+    mediaStream,
   }
 }
