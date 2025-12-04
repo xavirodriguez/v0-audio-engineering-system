@@ -61,7 +61,7 @@ export function generatePracticeSequence(): Array<{
   startTime: number
 }> {
   const sequence = [
-    { midi: 55, duration: 1000 }, // G4 - Cuerda Sol al aire
+    { midi: 67, duration: 1000 }, // G4 - Cuerda Sol al aire
     { midi: 57, duration: 1000 }, // A4
     { midi: 59, duration: 1000 }, // B4
     { midi: 60, duration: 1000 }, // C5
