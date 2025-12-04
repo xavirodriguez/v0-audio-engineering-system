@@ -145,29 +145,33 @@ export function RecordingPlayer({ recording, onDelete }: RecordingPlayerProps) {
         {/* Gráfico de entonación */}
         <div className="space-y-2">
           <h4 className="font-semibold text-sm">Gráfico de Entonación</h4>
-          <div className="h-32 bg-muted rounded-lg relative overflow-hidden">
-            <svg width="100%" height="100%" className="absolute inset-0">
-              {/* Línea central (0 cents) */}
-              <line x1="0" y1="50%" x2="100%" y2="50%" stroke="currentColor" strokeWidth="1" opacity="0.3" />
+          <div className="h-32 bg-muted rounded-lg relative overflow-hidden flex items-center justify-center">
+            {recording.analysis.intonationGraph.length > 0 ? (
+              <svg width="100%" height="100%" className="absolute inset-0">
+                {/* Línea central (0 cents) */}
+                <line x1="0" y1="50%" x2="100%" y2="50%" stroke="currentColor" strokeWidth="1" opacity="0.3" />
 
-              {/* Líneas de referencia */}
-              <line x1="0" y1="25%" x2="100%" y2="25%" stroke="currentColor" strokeWidth="1" opacity="0.1" />
-              <line x1="0" y1="75%" x2="100%" y2="75%" stroke="currentColor" strokeWidth="1" opacity="0.1" />
+                {/* Líneas de referencia */}
+                <line x1="0" y1="25%" x2="100%" y2="25%" stroke="currentColor" strokeWidth="1" opacity="0.1" />
+                <line x1="0" y1="75%" x2="100%" y2="75%" stroke="currentColor" strokeWidth="1" opacity="0.1" />
 
-              {/* Datos de entonación */}
-              <polyline
-                points={recording.analysis.intonationGraph
-                  .map((point, index) => {
-                    const x = (index / recording.analysis.intonationGraph.length) * 100
-                    const y = 50 - (point.deviation / 100) * 50 // Escalar cents a porcentaje
-                    return `${x},${y}`
-                  })
-                  .join(" ")}
-                fill="none"
-                stroke="hsl(var(--accent))"
-                strokeWidth="2"
-              />
-            </svg>
+                {/* Datos de entonación */}
+                <polyline
+                  points={recording.analysis.intonationGraph
+                    .map((point, index) => {
+                      const x = (index / (recording.analysis.intonationGraph.length - 1)) * 100
+                      const y = 50 - (point.deviation / 50) * 50 // Escalar cents a porcentaje
+                      return `${x},${y}`
+                    })
+                    .join(" ")}
+                  fill="none"
+                  stroke="hsl(var(--accent))"
+                  strokeWidth="2"
+                />
+              </svg>
+            ) : (
+              <p className="text-sm text-muted-foreground">No hay datos de entonación disponibles.</p>
+            )}
           </div>
           <div className="flex justify-between text-xs text-muted-foreground">
             <span>-50¢</span>
