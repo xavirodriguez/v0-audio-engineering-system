@@ -16,6 +16,11 @@ export interface SettingsPanelProps {
   onPracticeModeChange: (mode: "step-by-step" | "continuous") => void
 }
 
+/**
+ * A component that displays the settings panel for the practice session.
+ * @param {SettingsPanelProps} props - The props for the component.
+ * @returns {JSX.Element} - The rendered settings panel component.
+ */
 export function SettingsPanel({
   visible,
   sensitivity,

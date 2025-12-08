@@ -8,6 +8,10 @@ import type { PitchEvent } from "@/lib/types/pitch-detection"
 const NOTE_TRANSITION_BUFFER_MS = 300
 const PITCH_CONFIDENCE_MIN = 0.6
 
+/**
+ * A hook that provides a state machine for pitch detection.
+ * @returns {{handlePitchEvent: (event: PitchEvent) => void}} - The pitch state machine.
+ */
 export function usePitchStateMachine() {
   const store = usePitchDetectionStore()
 

@@ -18,6 +18,11 @@ export interface ModalManagerProps {
   onSelectExercise: (exerciseId: string) => void
 }
 
+/**
+ * A component that manages the modals for the practice session.
+ * @param {ModalManagerProps} props - The props for the component.
+ * @returns {JSX.Element} - The rendered modal manager component.
+ */
 export function ModalManager({
   showRecording,
   showExercises,

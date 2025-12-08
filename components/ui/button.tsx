@@ -36,6 +36,11 @@ const buttonVariants = cva(
   },
 )
 
+/**
+ * A component that allows users to take actions and make choices with a single tap.
+ * @param {React.ComponentProps<'button'> & VariantProps<typeof buttonVariants> & { asChild?: boolean }} props - The props for the component.
+ * @returns {JSX.Element} - The rendered button component.
+ */
 function Button({
   className,
   variant,

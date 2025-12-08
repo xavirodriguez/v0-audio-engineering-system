@@ -15,6 +15,9 @@ interface RecordingStore {
   clearRecordings: () => void
 }
 
+/**
+ * A store for managing recordings.
+ */
 export const useRecordingStore = create<RecordingStore>()(
   persist(
     (set) => ({
@@ -22,22 +25,41 @@ export const useRecordingStore = create<RecordingStore>()(
       isRecording: false,
       currentRecording: null,
 
+      /**
+       * Adds a recording.
+       * @param {Recording} recording - The recording to add.
+       */
       addRecording: (recording) =>
         set((state) => ({
           recordings: [recording, ...state.recordings],
           currentRecording: recording,
         })),
 
+      /**
+       * Deletes a recording.
+       * @param {string} id - The ID of the recording to delete.
+       */
       deleteRecording: (id) =>
         set((state) => ({
           recordings: state.recordings.filter((r) => r.id !== id),
           currentRecording: state.currentRecording?.id === id ? null : state.currentRecording,
         })),
 
+      /**
+       * Sets the current recording.
+       * @param {Recording | null} recording - The recording to set.
+       */
       setCurrentRecording: (recording) => set({ currentRecording: recording }),
 
+      /**
+       * Sets whether the user is recording.
+       * @param {boolean} isRecording - Whether the user is recording.
+       */
       setIsRecording: (isRecording) => set({ isRecording }),
 
+      /**
+       * Clears all recordings.
+       */
       clearRecordings: () => set({ recordings: [], currentRecording: null }),
     }),
     {

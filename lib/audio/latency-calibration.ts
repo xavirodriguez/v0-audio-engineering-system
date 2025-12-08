@@ -1,3 +1,6 @@
+/**
+ * Calibrates the audio latency.
+ */
 export class LatencyCalibrator {
   private audioContext: AudioContext
   private measurements: number[] = []
@@ -6,7 +9,11 @@ export class LatencyCalibrator {
     this.audioContext = audioContext
   }
 
-  // Calcular latencia base del sistema
+  /**
+   * Calculates the base latency of the system.
+   * @param {MediaStream} mediaStream - The media stream.
+   * @returns {number} - The base latency in milliseconds.
+   */
   calculateBaseLatency(mediaStream: MediaStream): number {
     const FRAME_SIZE = 2048
     const SAMPLE_RATE = this.audioContext.sampleRate
@@ -34,7 +41,10 @@ export class LatencyCalibrator {
     return baseLatencyMs
   }
 
-  // Reproducir un click para calibración
+  /**
+   * Plays a calibration click.
+   * @returns {number} - The time of the click.
+   */
   playCalibrationClick(): number {
     const oscillator = this.audioContext.createOscillator()
     const gainNode = this.audioContext.createGain()
@@ -58,14 +68,21 @@ export class LatencyCalibrator {
     return clickTime
   }
 
-  // Agregar una medición de round-trip
+  /**
+   * Adds a round-trip measurement.
+   * @param {number} clickTime - The time of the click.
+   * @param {number} detectionTime - The time of the detection.
+   */
   addMeasurement(clickTime: number, detectionTime: number) {
     const roundTripMs = (detectionTime - clickTime) * 1000
     this.measurements.push(roundTripMs)
     console.log("[v0] Calibration measurement:", roundTripMs, "ms")
   }
 
-  // Calcular el offset final promediando las mediciones
+  /**
+   * Calculates the final offset by averaging the measurements.
+   * @returns {number} - The final offset in milliseconds.
+   */
   calculateFinalOffset(): number {
     if (this.measurements.length === 0) return 0
 
@@ -82,6 +99,9 @@ export class LatencyCalibrator {
     return avgRoundTripMs
   }
 
+  /**
+   * Resets the measurements.
+   */
   reset() {
     this.measurements = []
   }

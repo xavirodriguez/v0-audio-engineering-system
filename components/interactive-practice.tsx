@@ -16,6 +16,10 @@ import { SettingsPanel } from "./practice/settings-panel"
 import { PracticeControls } from "./practice/practice-controls"
 import { ModalManager } from "./practice/modal-manager"
 
+/**
+ * A component that provides an interactive practice session for the user.
+ * @returns {JSX.Element} - The rendered interactive practice component.
+ */
 export function InteractivePractice() {
   const { state, initialize, startCalibration, startDetection, stopDetection, mediaStream } = usePitchDetection()
   const { isRecording, currentRecording, startRecording, stopRecording, addPitchPoint, deleteRecording } =

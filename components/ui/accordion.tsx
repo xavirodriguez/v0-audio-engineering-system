@@ -1,17 +1,27 @@
 'use client'
 
-import * as React from 'react'
-import * as AccordionPrimitive from '@radix-ui/react-accordion'
+import *s React from 'react'
+import *s AccordionPrimitive from '@radix-ui/react-accordion'
 import { ChevronDownIcon } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 
+/**
+ * A vertically stacked set of interactive headings that each reveal a section of content.
+ * @param {React.ComponentProps<typeof AccordionPrimitive.Root>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered accordion component.
+ */
 function Accordion({
   ...props
 }: React.ComponentProps<typeof AccordionPrimitive.Root>) {
   return <AccordionPrimitive.Root data-slot="accordion" {...props} />
 }
 
+/**
+ * An item within an accordion.
+ * @param {React.ComponentProps<typeof AccordionPrimitive.Item>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered accordion item component.
+ */
 function AccordionItem({
   className,
   ...props
@@ -25,6 +35,11 @@ function AccordionItem({
   )
 }
 
+/**
+ * A trigger that toggles the accordion item.
+ * @param {React.ComponentProps<typeof AccordionPrimitive.Trigger>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered accordion trigger component.
+ */
 function AccordionTrigger({
   className,
   children,
@@ -47,6 +62,11 @@ function AccordionTrigger({
   )
 }
 
+/**
+ * The content of an accordion item.
+ * @param {React.ComponentProps<typeof AccordionPrimitive.Content>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered accordion content component.
+ */
 function AccordionContent({
   className,
   children,

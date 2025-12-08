@@ -7,6 +7,11 @@ interface DebugPanelProps {
   state: GlobalTunerState
 }
 
+/**
+ * A debug panel that displays the state of the tuner.
+ * @param {DebugPanelProps} props - The props for the component.
+ * @returns {JSX.Element | null} - The rendered debug panel component.
+ */
 export function DebugPanel({ state }: DebugPanelProps) {
   if (process.env.NODE_ENV !== "development") return null
 

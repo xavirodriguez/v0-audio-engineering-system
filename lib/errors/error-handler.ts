@@ -1,3 +1,6 @@
+/**
+ * A custom error class for the application.
+ */
 export class AppError extends Error {
   constructor(
     public code: string,
@@ -10,7 +13,16 @@ export class AppError extends Error {
   }
 }
 
+/**
+ * An error handler.
+ */
 export const errorHandler = {
+  /**
+   * Captures an error.
+   * @param {unknown} error - The error to capture.
+   * @param {string} context - The context of the error.
+   * @param {Record<string, unknown>} [additionalData] - Additional data to log.
+   */
   capture: (error: unknown, context: string, additionalData?: Record<string, unknown>) => {
     const timestamp = new Date().toISOString()
 
@@ -40,10 +52,22 @@ export const errorHandler = {
     }
   },
 
+  /**
+   * Logs a warning.
+   * @param {string} message - The message to log.
+   * @param {string} context - The context of the message.
+   * @param {Record<string, unknown>} [data] - Additional data to log.
+   */
   warn: (message: string, context: string, data?: Record<string, unknown>) => {
     console.warn(`[${new Date().toISOString()}] [WARN] ${context}:`, message, data)
   },
 
+  /**
+   * Logs an info message.
+   * @param {string} message - The message to log.
+   * @param {string} context - The context of the message.
+   * @param {Record<string, unknown>} [data] - Additional data to log.
+   */
   info: (message: string, context: string, data?: Record<string, unknown>) => {
     console.log(`[${new Date().toISOString()}] [INFO] ${context}:`, message, data)
   },

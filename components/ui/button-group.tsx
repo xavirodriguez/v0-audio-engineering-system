@@ -21,6 +21,11 @@ const buttonGroupVariants = cva(
   },
 )
 
+/**
+ * A component that groups related buttons together.
+ * @param {React.ComponentProps<'div'> & VariantProps<typeof buttonGroupVariants>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered button group component.
+ */
 function ButtonGroup({
   className,
   orientation,
@@ -37,6 +42,11 @@ function ButtonGroup({
   )
 }
 
+/**
+ * A component that displays text within a button group.
+ * @param {React.ComponentProps<'div'> & { asChild?: boolean }} props - The props for the component.
+ * @returns {JSX.Element} - The rendered button group text component.
+ */
 function ButtonGroupText({
   className,
   asChild = false,
@@ -57,6 +67,11 @@ function ButtonGroupText({
   )
 }
 
+/**
+ * A separator for use within a button group.
+ * @param {React.ComponentProps<typeof Separator>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered button group separator component.
+ */
 function ButtonGroupSeparator({
   className,
   orientation = 'vertical',

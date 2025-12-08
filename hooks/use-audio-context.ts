@@ -13,6 +13,10 @@ interface UseAudioContextReturn {
   isReady: boolean
 }
 
+/**
+ * A hook that provides an audio context.
+ * @returns {UseAudioContextReturn} - The audio context.
+ */
 export function useAudioContext(): UseAudioContextReturn {
   const audioContextRef = useRef<AudioContext | null>(null)
   const analyserRef = useRef<AnalyserNode | null>(null)

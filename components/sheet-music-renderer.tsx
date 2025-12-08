@@ -10,6 +10,11 @@ interface SheetMusicRendererProps {
   className?: string
 }
 
+/**
+ * A component that renders sheet music.
+ * @param {SheetMusicRendererProps} props - The props for the component.
+ * @returns {JSX.Element} - The rendered sheet music renderer component.
+ */
 export function SheetMusicRenderer({ exercise, currentNoteIndex, className = "" }: SheetMusicRendererProps) {
   const containerRef = useRef<HTMLDivElement>(null)
 

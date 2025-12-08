@@ -1,6 +1,15 @@
 import type { PerformanceMetrics, StudentProfile, PracticeSession } from "@/lib/types/exercise-system"
 
+/**
+ * Analyzes the performance of a student.
+ */
 export class PerformanceAnalyzer {
+  /**
+   * Analyzes a practice session.
+   * @param {PracticeSession} session - The practice session to analyze.
+   * @param {Float32Array} [audioData] - The audio data of the session.
+   * @returns {PerformanceMetrics} - The performance metrics.
+   */
   analyzeSession(session: PracticeSession, audioData?: Float32Array): PerformanceMetrics {
     const notes = session.notes
 
@@ -59,7 +68,11 @@ export class PerformanceAnalyzer {
     }
   }
 
-  // Identificar fortalezas del estudiante
+  /**
+   * Identifies the strengths of a student.
+   * @param {StudentProfile} profile - The student's profile.
+   * @returns {string[]} - The student's strengths.
+   */
   identifyStrengths(profile: StudentProfile): string[] {
     const strengths: string[] = []
     const recentSessions = profile.practiceHistory.slice(-10)
@@ -99,6 +112,11 @@ export class PerformanceAnalyzer {
     return strengths
   }
 
+  /**
+   * Identifies the weaknesses of a student.
+   * @param {StudentProfile} profile - The student's profile.
+   * @returns {string[]} - The student's weaknesses.
+   */
   identifyWeaknesses(profile: StudentProfile): string[] {
     const weaknesses: string[] = []
     const recentSessions = profile.practiceHistory.slice(-10)
@@ -145,7 +163,11 @@ export class PerformanceAnalyzer {
     return weaknesses
   }
 
-  // Calcular tasa de mejora
+  /**
+   * Calculates the improvement rate of a student.
+   * @param {StudentProfile} profile - The student's profile.
+   * @returns {number} - The improvement rate.
+   */
   calculateImprovementRate(profile: StudentProfile): number {
     const sessions = profile.practiceHistory
     if (sessions.length < 5) return 0
@@ -164,6 +186,12 @@ export class PerformanceAnalyzer {
     return ((recentAvg - previousAvg) / previousAvg) * 100
   }
 
+  /**
+   * Updates the profile of a student.
+   * @param {StudentProfile} profile - The student's profile.
+   * @param {PracticeSession} newSession - The new practice session.
+   * @returns {StudentProfile} - The updated profile.
+   */
   updateProfile(profile: StudentProfile, newSession: PracticeSession): StudentProfile {
     const updatedHistory = [...profile.practiceHistory, newSession]
 

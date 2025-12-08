@@ -40,6 +40,9 @@ const defaultProfile: StudentProfile = {
   toneQualityScore: 75,
 }
 
+/**
+ * A store for managing exercises.
+ */
 export const useExerciseStore = create<ExerciseStore>()(
   persist(
     (set, get) => ({
@@ -50,20 +53,44 @@ export const useExerciseStore = create<ExerciseStore>()(
       practiceContext: "deep-study",
       practiceGoal: "",
 
+      /**
+       * Sets the student profile.
+       * @param {StudentProfile} profile - The student profile.
+       */
       setProfile: (profile) => {
         const generator = getExerciseGenerator()
         const recs = generator.generateRecommendations(profile)
         set({ profile, recommendations: recs })
       },
 
+      /**
+       * Sets the current exercise.
+       * @param {Exercise | null} exercise - The exercise to set.
+       */
       setCurrentExercise: (exercise) => set({ currentExercise: exercise }),
 
+      /**
+       * Sets the recommendations.
+       * @param {AdaptiveRecommendation[]} recommendations - The recommendations to set.
+       */
       setRecommendations: (recommendations) => set({ recommendations }),
 
+      /**
+       * Sets the practice context.
+       * @param {"warm-up" | "deep-study" | "review"} context - The practice context.
+       */
       setPracticeContext: (context) => set({ practiceContext: context }),
 
+      /**
+       * Sets the practice goal.
+       * @param {string} goal - The practice goal.
+       */
       setPracticeGoal: (goal) => set({ practiceGoal: goal }),
 
+      /**
+       * Completes a practice session.
+       * @param {PracticeSession} session - The practice session.
+       */
       completeSession: (session) => {
         const { profile, practiceContext, practiceGoal } = get()
         if (!profile) return
@@ -87,8 +114,18 @@ export const useExerciseStore = create<ExerciseStore>()(
         })
       },
 
+      /**
+       * Selects an exercise.
+       * @param {Exercise} exercise - The exercise to select.
+       */
       selectExercise: (exercise) => set({ currentExercise: exercise }),
 
+      /**
+       * Generates a custom exercise.
+       * @param {string} type - The type of the exercise.
+       * @param {string} difficulty - The difficulty of the exercise.
+       * @returns {Exercise | null} - The generated exercise.
+       */
       generateCustomExercise: (type, difficulty) => {
         const generator = getExerciseGenerator()
         let exercise: Exercise | null = null
@@ -115,6 +152,9 @@ export const useExerciseStore = create<ExerciseStore>()(
         return exercise
       },
 
+      /**
+       * Initializes the profile.
+       */
       initializeProfile: () => {
         const { profile } = get()
         if (!profile) {

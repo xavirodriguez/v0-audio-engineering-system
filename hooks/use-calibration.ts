@@ -17,6 +17,11 @@ interface UseCalibrationReturn {
   isCalibrating: boolean
 }
 
+/**
+ * A hook that provides calibration functionality.
+ * @param {UseCalibrationConfig} config - The configuration for the hook.
+ * @returns {UseCalibrationReturn} - The calibration functions and state.
+ */
 export function useCalibration({
   audioContext,
   mediaStream,

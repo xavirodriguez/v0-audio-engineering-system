@@ -4,6 +4,9 @@ export interface WASMPitchResult {
   clarity: number
 }
 
+/**
+ * A pitch detector that uses WebAssembly.
+ */
 export class WASMPitchDetector {
   private module: WebAssembly.Instance | null = null
   private memory: WebAssembly.Memory | null = null
@@ -11,6 +14,10 @@ export class WASMPitchDetector {
   private resultPtr = 0
   private isLoaded = false
 
+  /**
+   * Initializes the WASM module.
+   * @returns {Promise<boolean>} - Whether the module was initialized successfully.
+   */
   async initialize(): Promise<boolean> {
     try {
       // Cargar el módulo WASM
@@ -67,6 +74,12 @@ export class WASMPitchDetector {
     return 1024 // Offset por defecto
   }
 
+  /**
+   * Detects the pitch of an audio buffer using YIN.
+   * @param {Float32Array} buffer - The audio buffer.
+   * @param {number} [threshold=0.1] - The threshold for the YIN algorithm.
+   * @returns {WASMPitchResult | null} - The detected pitch and confidence.
+   */
   detectPitchYIN(buffer: Float32Array, threshold = 0.1): WASMPitchResult | null {
     if (!this.isLoaded || !this.module || !this.memory) {
       return null
@@ -95,6 +108,11 @@ export class WASMPitchDetector {
     }
   }
 
+  /**
+   * Detects the pitch of an audio buffer using autocorrelation.
+   * @param {Float32Array} buffer - The audio buffer.
+   * @returns {WASMPitchResult | null} - The detected pitch and confidence.
+   */
   detectPitchAutocorr(buffer: Float32Array): WASMPitchResult | null {
     if (!this.isLoaded || !this.module || !this.memory) {
       return null
@@ -120,6 +138,11 @@ export class WASMPitchDetector {
     }
   }
 
+  /**
+   * Gets the RMS of an audio buffer.
+   * @param {Float32Array} buffer - The audio buffer.
+   * @returns {number} - The RMS.
+   */
   getRMS(buffer: Float32Array): number {
     if (!this.isLoaded || !this.module || !this.memory) {
       return 0
@@ -137,10 +160,17 @@ export class WASMPitchDetector {
     }
   }
 
+  /**
+   * Whether the WASM module is ready.
+   * @returns {boolean} - Whether the WASM module is ready.
+   */
   isReady(): boolean {
     return this.isLoaded
   }
 
+  /**
+   * Destroys the WASM module.
+   */
   destroy() {
     this.module = null
     this.memory = null

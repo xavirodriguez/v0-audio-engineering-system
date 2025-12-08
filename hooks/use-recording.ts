@@ -6,6 +6,10 @@ import type { Recording, PitchDataPoint } from "@/lib/types/recording"
 import { AudioRecorder } from "@/lib/audio/audio-recorder"
 import { AudioAnalyzer } from "@/lib/audio/audio-analyzer"
 
+/**
+ * A hook that provides recording functionality.
+ * @returns {object} - The recording functions and state.
+ */
 export function useRecording() {
   const store = useRecordingStore()
 

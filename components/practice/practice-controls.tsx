@@ -12,6 +12,11 @@ export interface PracticeControlsProps {
   onViewRecording: () => void
 }
 
+/**
+ * A component that displays the controls for the practice session.
+ * @param {PracticeControlsProps} props - The props for the component.
+ * @returns {JSX.Element} - The rendered practice controls component.
+ */
 export function PracticeControls({
   isPlaying,
   isInitialized,

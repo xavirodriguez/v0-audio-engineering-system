@@ -5,6 +5,11 @@ import * as AvatarPrimitive from '@radix-ui/react-avatar'
 
 import { cn } from '@/lib/utils'
 
+/**
+ * A component that displays an image representing a user or entity.
+ * @param {React.ComponentProps<typeof AvatarPrimitive.Root>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered avatar component.
+ */
 function Avatar({
   className,
   ...props
@@ -21,6 +26,11 @@ function Avatar({
   )
 }
 
+/**
+ * The image of the avatar.
+ * @param {React.ComponentProps<typeof AvatarPrimitive.Image>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered avatar image component.
+ */
 function AvatarImage({
   className,
   ...props
@@ -34,6 +44,11 @@ function AvatarImage({
   )
 }
 
+/**
+ * A fallback that is rendered when the image is not available.
+ * @param {React.ComponentProps<typeof AvatarPrimitive.Fallback>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered avatar fallback component.
+ */
 function AvatarFallback({
   className,
   ...props

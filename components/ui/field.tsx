@@ -7,6 +7,11 @@ import { cn } from '@/lib/utils'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 
+/**
+ * A set of fields.
+ * @param {React.ComponentProps<'fieldset'>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered field set component.
+ */
 function FieldSet({ className, ...props }: React.ComponentProps<'fieldset'>) {
   return (
     <fieldset
@@ -21,6 +26,11 @@ function FieldSet({ className, ...props }: React.ComponentProps<'fieldset'>) {
   )
 }
 
+/**
+ * The legend for a field set.
+ * @param {React.ComponentProps<'legend'> & { variant?: 'legend' | 'label' }} props - The props for the component.
+ * @returns {JSX.Element} - The rendered field legend component.
+ */
 function FieldLegend({
   className,
   variant = 'legend',
@@ -41,6 +51,11 @@ function FieldLegend({
   )
 }
 
+/**
+ * A group of fields.
+ * @param {React.ComponentProps<'div'>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered field group component.
+ */
 function FieldGroup({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -78,6 +93,11 @@ const fieldVariants = cva(
   },
 )
 
+/**
+ * A single field.
+ * @param {React.ComponentProps<'div'> & VariantProps<typeof fieldVariants>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered field component.
+ */
 function Field({
   className,
   orientation = 'vertical',
@@ -94,6 +114,11 @@ function Field({
   )
 }
 
+/**
+ * The content of a field.
+ * @param {React.ComponentProps<'div'>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered field content component.
+ */
 function FieldContent({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -107,6 +132,11 @@ function FieldContent({ className, ...props }: React.ComponentProps<'div'>) {
   )
 }
 
+/**
+ * The label for a field.
+ * @param {React.ComponentProps<typeof Label>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered field label component.
+ */
 function FieldLabel({
   className,
   ...props
@@ -125,6 +155,11 @@ function FieldLabel({
   )
 }
 
+/**
+ * The title of a field.
+ * @param {React.ComponentProps<'div'>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered field title component.
+ */
 function FieldTitle({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -138,6 +173,11 @@ function FieldTitle({ className, ...props }: React.ComponentProps<'div'>) {
   )
 }
 
+/**
+ * The description of a field.
+ * @param {React.ComponentProps<'p'>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered field description component.
+ */
 function FieldDescription({ className, ...props }: React.ComponentProps<'p'>) {
   return (
     <p
@@ -153,6 +193,11 @@ function FieldDescription({ className, ...props }: React.ComponentProps<'p'>) {
   )
 }
 
+/**
+ * A separator for fields.
+ * @param {React.ComponentProps<'div'> & { children?: React.ReactNode }} props - The props for the component.
+ * @returns {JSX.Element} - The rendered field separator component.
+ */
 function FieldSeparator({
   children,
   className,
@@ -183,6 +228,11 @@ function FieldSeparator({
   )
 }
 
+/**
+ * An error message for a field.
+ * @param {React.ComponentProps<'div'> & { errors?: Array<{ message?: string } | undefined> }} props - The props for the component.
+ * @returns {JSX.Element | null} - The rendered field error component.
+ */
 function FieldError({
   className,
   children,

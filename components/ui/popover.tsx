@@ -5,18 +5,33 @@ import * as PopoverPrimitive from '@radix-ui/react-popover'
 
 import { cn } from '@/lib/utils'
 
+/**
+ * A popover is a floating element that appears over other content.
+ * @param {React.ComponentProps<typeof PopoverPrimitive.Root>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered popover component.
+ */
 function Popover({
   ...props
 }: React.ComponentProps<typeof PopoverPrimitive.Root>) {
   return <PopoverPrimitive.Root data-slot="popover" {...props} />
 }
 
+/**
+ * A trigger for the popover.
+ * @param {React.ComponentProps<typeof PopoverPrimitive.Trigger>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered popover trigger component.
+ */
 function PopoverTrigger({
   ...props
 }: React.ComponentProps<typeof PopoverPrimitive.Trigger>) {
   return <PopoverPrimitive.Trigger data-slot="popover-trigger" {...props} />
 }
 
+/**
+ * The content of the popover.
+ * @param {React.ComponentProps<typeof PopoverPrimitive.Content>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered popover content component.
+ */
 function PopoverContent({
   className,
   align = 'center',
@@ -39,6 +54,11 @@ function PopoverContent({
   )
 }
 
+/**
+ * An anchor for the popover.
+ * @param {React.ComponentProps<typeof PopoverPrimitive.Anchor>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered popover anchor component.
+ */
 function PopoverAnchor({
   ...props
 }: React.ComponentProps<typeof PopoverPrimitive.Anchor>) {

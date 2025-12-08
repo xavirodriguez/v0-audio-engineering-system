@@ -34,6 +34,11 @@ function useChart() {
   return context
 }
 
+/**
+ * A container for a chart.
+ * @param {React.ComponentProps<'div'> & { config: ChartConfig; children: React.ComponentProps<typeof RechartsPrimitive.ResponsiveContainer>['children'] }} props - The props for the component.
+ * @returns {JSX.Element} - The rendered chart container component.
+ */
 function ChartContainer({
   id,
   className,
@@ -104,6 +109,11 @@ ${colorConfig
 
 const ChartTooltip = RechartsPrimitive.Tooltip
 
+/**
+ * The content of a chart tooltip.
+ * @param {React.ComponentProps<typeof RechartsPrimitive.Tooltip> & React.ComponentProps<'div'> & { hideLabel?: boolean; hideIndicator?: boolean; indicator?: 'line' | 'dot' | 'dashed'; nameKey?: string; labelKey?: string }} props - The props for the component.
+ * @returns {JSX.Element | null} - The rendered chart tooltip content component.
+ */
 function ChartTooltipContent({
   active,
   payload,
@@ -250,6 +260,11 @@ function ChartTooltipContent({
 
 const ChartLegend = RechartsPrimitive.Legend
 
+/**
+ * The content of a chart legend.
+ * @param {React.ComponentProps<'div'> & Pick<RechartsPrimitive.LegendProps, 'payload' | 'verticalAlign'> & { hideIcon?: boolean; nameKey?: string }} props - The props for the component.
+ * @returns {JSX.Element | null} - The rendered chart legend content component.
+ */
 function ChartLegendContent({
   className,
   hideIcon = false,

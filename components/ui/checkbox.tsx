@@ -6,6 +6,11 @@ import { CheckIcon } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 
+/**
+ * A control that allows the user to toggle between checked and not checked.
+ * @param {React.ComponentProps<typeof CheckboxPrimitive.Root>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered checkbox component.
+ */
 function Checkbox({
   className,
   ...props

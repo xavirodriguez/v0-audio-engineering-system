@@ -1,4 +1,4 @@
-import * as React from 'react'
+import *s React from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
 
 import { cn } from '@/lib/utils'
@@ -19,6 +19,11 @@ const alertVariants = cva(
   },
 )
 
+/**
+ * A component that displays a short, important message in a way that attracts the user's attention without interrupting their task.
+ * @param {React.ComponentProps<'div'> & VariantProps<typeof alertVariants>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered alert component.
+ */
 function Alert({
   className,
   variant,
@@ -34,6 +39,11 @@ function Alert({
   )
 }
 
+/**
+ * The title of the alert.
+ * @param {React.ComponentProps<'div'>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered alert title component.
+ */
 function AlertTitle({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -47,6 +57,11 @@ function AlertTitle({ className, ...props }: React.ComponentProps<'div'>) {
   )
 }
 
+/**
+ * The description of the alert.
+ * @param {React.ComponentProps<'div'>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered alert description component.
+ */
 function AlertDescription({
   className,
   ...props

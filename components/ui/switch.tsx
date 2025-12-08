@@ -5,6 +5,11 @@ import * as SwitchPrimitive from '@radix-ui/react-switch'
 
 import { cn } from '@/lib/utils'
 
+/**
+ * A switch component.
+ * @param {React.ComponentProps<typeof SwitchPrimitive.Root>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered switch component.
+ */
 function Switch({
   className,
   ...props

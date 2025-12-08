@@ -29,6 +29,11 @@ const FormFieldContext = React.createContext<FormFieldContextValue>(
   {} as FormFieldContextValue,
 )
 
+/**
+ * A form field.
+ * @param {ControllerProps<TFieldValues, TName>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered form field component.
+ */
 const FormField = <
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
@@ -73,6 +78,11 @@ const FormItemContext = React.createContext<FormItemContextValue>(
   {} as FormItemContextValue,
 )
 
+/**
+ * An item in a form.
+ * @param {React.ComponentProps<'div'>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered form item component.
+ */
 function FormItem({ className, ...props }: React.ComponentProps<'div'>) {
   const id = React.useId()
 
@@ -87,6 +97,11 @@ function FormItem({ className, ...props }: React.ComponentProps<'div'>) {
   )
 }
 
+/**
+ * The label for a form item.
+ * @param {React.ComponentProps<typeof LabelPrimitive.Root>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered form label component.
+ */
 function FormLabel({
   className,
   ...props
@@ -104,6 +119,11 @@ function FormLabel({
   )
 }
 
+/**
+ * The control for a form item.
+ * @param {React.ComponentProps<typeof Slot>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered form control component.
+ */
 function FormControl({ ...props }: React.ComponentProps<typeof Slot>) {
   const { error, formItemId, formDescriptionId, formMessageId } = useFormField()
 
@@ -122,6 +142,11 @@ function FormControl({ ...props }: React.ComponentProps<typeof Slot>) {
   )
 }
 
+/**
+ * The description for a form item.
+ * @param {React.ComponentProps<'p'>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered form description component.
+ */
 function FormDescription({ className, ...props }: React.ComponentProps<'p'>) {
   const { formDescriptionId } = useFormField()
 
@@ -135,6 +160,11 @@ function FormDescription({ className, ...props }: React.ComponentProps<'p'>) {
   )
 }
 
+/**
+ * The message for a form item.
+ * @param {React.ComponentProps<'p'>} props - The props for the component.
+ * @returns {JSX.Element | null} - The rendered form message component.
+ */
 function FormMessage({ className, ...props }: React.ComponentProps<'p'>) {
   const { error, formMessageId } = useFormField()
   const body = error ? String(error?.message ?? '') : props.children

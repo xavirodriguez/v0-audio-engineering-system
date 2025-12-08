@@ -6,12 +6,22 @@ import { CheckIcon, ChevronRightIcon, CircleIcon } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 
+/**
+ * A context menu.
+ * @param {React.ComponentProps<typeof ContextMenuPrimitive.Root>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered context menu component.
+ */
 function ContextMenu({
   ...props
 }: React.ComponentProps<typeof ContextMenuPrimitive.Root>) {
   return <ContextMenuPrimitive.Root data-slot="context-menu" {...props} />
 }
 
+/**
+ * The trigger for the context menu.
+ * @param {React.ComponentProps<typeof ContextMenuPrimitive.Trigger>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered context menu trigger component.
+ */
 function ContextMenuTrigger({
   ...props
 }: React.ComponentProps<typeof ContextMenuPrimitive.Trigger>) {
@@ -20,6 +30,11 @@ function ContextMenuTrigger({
   )
 }
 
+/**
+ * A group of items in a context menu.
+ * @param {React.ComponentProps<typeof ContextMenuPrimitive.Group>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered context menu group component.
+ */
 function ContextMenuGroup({
   ...props
 }: React.ComponentProps<typeof ContextMenuPrimitive.Group>) {
@@ -28,6 +43,11 @@ function ContextMenuGroup({
   )
 }
 
+/**
+ * A portal for the context menu.
+ * @param {React.ComponentProps<typeof ContextMenuPrimitive.Portal>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered context menu portal component.
+ */
 function ContextMenuPortal({
   ...props
 }: React.ComponentProps<typeof ContextMenuPrimitive.Portal>) {
@@ -36,12 +56,22 @@ function ContextMenuPortal({
   )
 }
 
+/**
+ * A submenu for the context menu.
+ * @param {React.ComponentProps<typeof ContextMenuPrimitive.Sub>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered context menu sub component.
+ */
 function ContextMenuSub({
   ...props
 }: React.ComponentProps<typeof ContextMenuPrimitive.Sub>) {
   return <ContextMenuPrimitive.Sub data-slot="context-menu-sub" {...props} />
 }
 
+/**
+ * A radio group for the context menu.
+ * @param {React.ComponentProps<typeof ContextMenuPrimitive.RadioGroup>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered context menu radio group component.
+ */
 function ContextMenuRadioGroup({
   ...props
 }: React.ComponentProps<typeof ContextMenuPrimitive.RadioGroup>) {
@@ -53,6 +83,11 @@ function ContextMenuRadioGroup({
   )
 }
 
+/**
+ * A trigger for a submenu.
+ * @param {React.ComponentProps<typeof ContextMenuPrimitive.SubTrigger> & { inset?: boolean }} props - The props for the component.
+ * @returns {JSX.Element} - The rendered context menu sub trigger component.
+ */
 function ContextMenuSubTrigger({
   className,
   inset,
@@ -77,6 +112,11 @@ function ContextMenuSubTrigger({
   )
 }
 
+/**
+ * The content of a submenu.
+ * @param {React.ComponentProps<typeof ContextMenuPrimitive.SubContent>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered context menu sub content component.
+ */
 function ContextMenuSubContent({
   className,
   ...props
@@ -93,6 +133,11 @@ function ContextMenuSubContent({
   )
 }
 
+/**
+ * The content of the context menu.
+ * @param {React.ComponentProps<typeof ContextMenuPrimitive.Content>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered context menu content component.
+ */
 function ContextMenuContent({
   className,
   ...props
@@ -111,6 +156,11 @@ function ContextMenuContent({
   )
 }
 
+/**
+ * An item in the context menu.
+ * @param {React.ComponentProps<typeof ContextMenuPrimitive.Item> & { inset?: boolean; variant?: 'default' | 'destructive' }} props - The props for the component.
+ * @returns {JSX.Element} - The rendered context menu item component.
+ */
 function ContextMenuItem({
   className,
   inset,
@@ -134,6 +184,11 @@ function ContextMenuItem({
   )
 }
 
+/**
+ * A checkbox item in the context menu.
+ * @param {React.ComponentProps<typeof ContextMenuPrimitive.CheckboxItem>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered context menu checkbox item component.
+ */
 function ContextMenuCheckboxItem({
   className,
   children,
@@ -160,6 +215,11 @@ function ContextMenuCheckboxItem({
   )
 }
 
+/**
+ * A radio item in the context menu.
+ * @param {React.ComponentProps<typeof ContextMenuPrimitive.RadioItem>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered context menu radio item component.
+ */
 function ContextMenuRadioItem({
   className,
   children,
@@ -184,6 +244,11 @@ function ContextMenuRadioItem({
   )
 }
 
+/**
+ * A label in the context menu.
+ * @param {React.ComponentProps<typeof ContextMenuPrimitive.Label> & { inset?: boolean }} props - The props for the component.
+ * @returns {JSX.Element} - The rendered context menu label component.
+ */
 function ContextMenuLabel({
   className,
   inset,
@@ -204,6 +269,11 @@ function ContextMenuLabel({
   )
 }
 
+/**
+ * A separator in the context menu.
+ * @param {React.ComponentProps<typeof ContextMenuPrimitive.Separator>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered context menu separator component.
+ */
 function ContextMenuSeparator({
   className,
   ...props
@@ -217,6 +287,11 @@ function ContextMenuSeparator({
   )
 }
 
+/**
+ * A shortcut in the context menu.
+ * @param {React.ComponentProps<'span'>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered context menu shortcut component.
+ */
 function ContextMenuShortcut({
   className,
   ...props

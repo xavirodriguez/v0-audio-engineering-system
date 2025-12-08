@@ -5,12 +5,22 @@ import * as HoverCardPrimitive from '@radix-ui/react-hover-card'
 
 import { cn } from '@/lib/utils'
 
+/**
+ * A hover card is a pop-up that appears when a user hovers over a trigger element.
+ * @param {React.ComponentProps<typeof HoverCardPrimitive.Root>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered hover card component.
+ */
 function HoverCard({
   ...props
 }: React.ComponentProps<typeof HoverCardPrimitive.Root>) {
   return <HoverCardPrimitive.Root data-slot="hover-card" {...props} />
 }
 
+/**
+ * The trigger for the hover card.
+ * @param {React.ComponentProps<typeof HoverCardPrimitive.Trigger>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered hover card trigger component.
+ */
 function HoverCardTrigger({
   ...props
 }: React.ComponentProps<typeof HoverCardPrimitive.Trigger>) {
@@ -19,6 +29,11 @@ function HoverCardTrigger({
   )
 }
 
+/**
+ * The content of the hover card.
+ * @param {React.ComponentProps<typeof HoverCardPrimitive.Content>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered hover card content component.
+ */
 function HoverCardContent({
   className,
   align = 'center',

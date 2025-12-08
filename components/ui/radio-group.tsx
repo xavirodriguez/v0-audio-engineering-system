@@ -6,6 +6,11 @@ import { CircleIcon } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 
+/**
+ * A group of radio buttons.
+ * @param {React.ComponentProps<typeof RadioGroupPrimitive.Root>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered radio group component.
+ */
 function RadioGroup({
   className,
   ...props
@@ -19,6 +24,11 @@ function RadioGroup({
   )
 }
 
+/**
+ * An item in a radio group.
+ * @param {React.ComponentProps<typeof RadioGroupPrimitive.Item>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered radio group item component.
+ */
 function RadioGroupItem({
   className,
   ...props

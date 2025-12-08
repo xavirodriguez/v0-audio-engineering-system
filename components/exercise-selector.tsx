@@ -11,6 +11,11 @@ interface ExerciseSelectorProps {
   onSelectExercise: (exerciseId: string) => void
 }
 
+/**
+ * A component that displays a list of recommended exercises.
+ * @param {ExerciseSelectorProps} props - The props for the component.
+ * @returns {JSX.Element} - The rendered exercise selector component.
+ */
 export function ExerciseSelector({ recommendations, onSelectExercise }: ExerciseSelectorProps) {
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {

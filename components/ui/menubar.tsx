@@ -6,6 +6,11 @@ import { CheckIcon, ChevronRightIcon, CircleIcon } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 
+/**
+ * A menu bar.
+ * @param {React.ComponentProps<typeof MenubarPrimitive.Root>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered menubar component.
+ */
 function Menubar({
   className,
   ...props
@@ -22,24 +27,44 @@ function Menubar({
   )
 }
 
+/**
+ * A menu in the menubar.
+ * @param {React.ComponentProps<typeof MenubarPrimitive.Menu>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered menubar menu component.
+ */
 function MenubarMenu({
   ...props
 }: React.ComponentProps<typeof MenubarPrimitive.Menu>) {
   return <MenubarPrimitive.Menu data-slot="menubar-menu" {...props} />
 }
 
+/**
+ * A group of items in the menubar.
+ * @param {React.ComponentProps<typeof MenubarPrimitive.Group>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered menubar group component.
+ */
 function MenubarGroup({
   ...props
 }: React.ComponentProps<typeof MenubarPrimitive.Group>) {
   return <MenubarPrimitive.Group data-slot="menubar-group" {...props} />
 }
 
+/**
+ * A portal for the menubar.
+ * @param {React.ComponentProps<typeof MenubarPrimitive.Portal>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered menubar portal component.
+ */
 function MenubarPortal({
   ...props
 }: React.ComponentProps<typeof MenubarPrimitive.Portal>) {
   return <MenubarPrimitive.Portal data-slot="menubar-portal" {...props} />
 }
 
+/**
+ * A radio group in the menubar.
+ * @param {React.ComponentProps<typeof MenubarPrimitive.RadioGroup>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered menubar radio group component.
+ */
 function MenubarRadioGroup({
   ...props
 }: React.ComponentProps<typeof MenubarPrimitive.RadioGroup>) {
@@ -48,6 +73,11 @@ function MenubarRadioGroup({
   )
 }
 
+/**
+ * A trigger for a menubar menu.
+ * @param {React.ComponentProps<typeof MenubarPrimitive.Trigger>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered menubar trigger component.
+ */
 function MenubarTrigger({
   className,
   ...props
@@ -64,6 +94,11 @@ function MenubarTrigger({
   )
 }
 
+/**
+ * The content of a menubar menu.
+ * @param {React.ComponentProps<typeof MenubarPrimitive.Content>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered menubar content component.
+ */
 function MenubarContent({
   className,
   align = 'start',
@@ -88,6 +123,11 @@ function MenubarContent({
   )
 }
 
+/**
+ * An item in a menubar menu.
+ * @param {React.ComponentProps<typeof MenubarPrimitive.Item> & { inset?: boolean; variant?: 'default' | 'destructive' }} props - The props for the component.
+ * @returns {JSX.Element} - The rendered menubar item component.
+ */
 function MenubarItem({
   className,
   inset,
@@ -111,6 +151,11 @@ function MenubarItem({
   )
 }
 
+/**
+ * A checkbox item in a menubar menu.
+ * @param {React.ComponentProps<typeof MenubarPrimitive.CheckboxItem>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered menubar checkbox item component.
+ */
 function MenubarCheckboxItem({
   className,
   children,
@@ -137,6 +182,11 @@ function MenubarCheckboxItem({
   )
 }
 
+/**
+ * A radio item in a menubar menu.
+ * @param {React.ComponentProps<typeof MenubarPrimitive.RadioItem>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered menubar radio item component.
+ */
 function MenubarRadioItem({
   className,
   children,
@@ -161,6 +211,11 @@ function MenubarRadioItem({
   )
 }
 
+/**
+ * A label in a menubar menu.
+ * @param {React.ComponentProps<typeof MenubarPrimitive.Label> & { inset?: boolean }} props - The props for the component.
+ * @returns {JSX.Element} - The rendered menubar label component.
+ */
 function MenubarLabel({
   className,
   inset,
@@ -181,6 +236,11 @@ function MenubarLabel({
   )
 }
 
+/**
+ * A separator in a menubar menu.
+ * @param {React.ComponentProps<typeof MenubarPrimitive.Separator>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered menubar separator component.
+ */
 function MenubarSeparator({
   className,
   ...props
@@ -194,6 +254,11 @@ function MenubarSeparator({
   )
 }
 
+/**
+ * A shortcut in a menubar menu.
+ * @param {React.ComponentProps<'span'>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered menubar shortcut component.
+ */
 function MenubarShortcut({
   className,
   ...props
@@ -210,12 +275,22 @@ function MenubarShortcut({
   )
 }
 
+/**
+ * A submenu in a menubar menu.
+ * @param {React.ComponentProps<typeof MenubarPrimitive.Sub>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered menubar sub component.
+ */
 function MenubarSub({
   ...props
 }: React.ComponentProps<typeof MenubarPrimitive.Sub>) {
   return <MenubarPrimitive.Sub data-slot="menubar-sub" {...props} />
 }
 
+/**
+ * A trigger for a submenu in a menubar menu.
+ * @param {React.ComponentProps<typeof MenubarPrimitive.SubTrigger> & { inset?: boolean }} props - The props for the component.
+ * @returns {JSX.Element} - The rendered menubar sub trigger component.
+ */
 function MenubarSubTrigger({
   className,
   inset,
@@ -240,6 +315,11 @@ function MenubarSubTrigger({
   )
 }
 
+/**
+ * The content of a submenu in a menubar menu.
+ * @param {React.ComponentProps<typeof MenubarPrimitive.SubContent>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered menubar sub content component.
+ */
 function MenubarSubContent({
   className,
   ...props

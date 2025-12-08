@@ -32,6 +32,10 @@ const courses = [
   },
 ]
 
+/**
+ * A component that displays a list of courses.
+ * @returns {JSX.Element} - The rendered courses component.
+ */
 export function Courses() {
   return (
     <section id="cursos" className="py-20 md:py-32 px-4 sm:px-6 lg:px-8">

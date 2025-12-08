@@ -14,6 +14,11 @@ interface PitchIndicatorProps {
   rmsThreshold: number
 }
 
+/**
+ * A component that displays a pitch indicator.
+ * @param {PitchIndicatorProps} props - The props for the component.
+ * @returns {JSX.Element} - The rendered pitch indicator component.
+ */
 export function PitchIndicator({
   currentNote,
   currentPitch,

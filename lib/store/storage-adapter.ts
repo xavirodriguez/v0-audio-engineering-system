@@ -5,7 +5,15 @@ export interface StorageAdapter {
   clear(): Promise<void>
 }
 
+/**
+ * An adapter for the local storage.
+ */
 export class LocalStorageAdapter implements StorageAdapter {
+  /**
+   * Gets an item from the local storage.
+   * @param {string} key - The key of the item.
+   * @returns {Promise<T | null>} - The item.
+   */
   async get<T>(key: string): Promise<T | null> {
     try {
       const item = localStorage.getItem(key)
@@ -16,6 +24,11 @@ export class LocalStorageAdapter implements StorageAdapter {
     }
   }
 
+  /**
+   * Sets an item in the local storage.
+   * @param {string} key - The key of the item.
+   * @param {T} value - The value of the item.
+   */
   async set<T>(key: string, value: T): Promise<void> {
     try {
       localStorage.setItem(key, JSON.stringify(value))
@@ -24,6 +37,10 @@ export class LocalStorageAdapter implements StorageAdapter {
     }
   }
 
+  /**
+   * Removes an item from the local storage.
+   * @param {string} key - The key of the item.
+   */
   async remove(key: string): Promise<void> {
     try {
       localStorage.removeItem(key)
@@ -32,6 +49,9 @@ export class LocalStorageAdapter implements StorageAdapter {
     }
   }
 
+  /**
+   * Clears the local storage.
+   */
   async clear(): Promise<void> {
     try {
       localStorage.clear()
@@ -41,6 +61,9 @@ export class LocalStorageAdapter implements StorageAdapter {
   }
 }
 
+/**
+ * An adapter for the IndexedDB.
+ */
 export class IndexedDBAdapter implements StorageAdapter {
   private dbName = "violin-trainer-db"
   private storeName = "app-data"
@@ -67,6 +90,11 @@ export class IndexedDBAdapter implements StorageAdapter {
     })
   }
 
+  /**
+   * Gets an item from the IndexedDB.
+   * @param {string} key - The key of the item.
+   * @returns {Promise<T | null>} - The item.
+   */
   async get<T>(key: string): Promise<T | null> {
     try {
       const db = await this.getDB()
@@ -84,6 +112,11 @@ export class IndexedDBAdapter implements StorageAdapter {
     }
   }
 
+  /**
+   * Sets an item in the IndexedDB.
+   * @param {string} key - The key of the item.
+   * @param {T} value - The value of the item.
+   */
   async set<T>(key: string, value: T): Promise<void> {
     try {
       const db = await this.getDB()
@@ -100,6 +133,10 @@ export class IndexedDBAdapter implements StorageAdapter {
     }
   }
 
+  /**
+   * Removes an item from the IndexedDB.
+   * @param {string} key - The key of the item.
+   */
   async remove(key: string): Promise<void> {
     try {
       const db = await this.getDB()
@@ -116,6 +153,9 @@ export class IndexedDBAdapter implements StorageAdapter {
     }
   }
 
+  /**
+   * Clears the IndexedDB.
+   */
   async clear(): Promise<void> {
     try {
       const db = await this.getDB()
@@ -133,7 +173,10 @@ export class IndexedDBAdapter implements StorageAdapter {
   }
 }
 
-// Factory function to get the appropriate storage adapter
+/**
+ * Gets the appropriate storage adapter.
+ * @returns {StorageAdapter} - The storage adapter.
+ */
 export const getStorageAdapter = (): StorageAdapter => {
   // Use IndexedDB for better support of Blobs and large data
   if (typeof window !== "undefined" && "indexedDB" in window) {

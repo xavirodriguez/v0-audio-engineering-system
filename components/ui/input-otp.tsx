@@ -6,6 +6,11 @@ import { MinusIcon } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 
+/**
+ * An input for one-time passwords.
+ * @param {React.ComponentProps<typeof OTPInput> & { containerClassName?: string }} props - The props for the component.
+ * @returns {JSX.Element} - The rendered input OTP component.
+ */
 function InputOTP({
   className,
   containerClassName,
@@ -26,6 +31,11 @@ function InputOTP({
   )
 }
 
+/**
+ * A group of input OTP slots.
+ * @param {React.ComponentProps<'div'>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered input OTP group component.
+ */
 function InputOTPGroup({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -36,6 +46,11 @@ function InputOTPGroup({ className, ...props }: React.ComponentProps<'div'>) {
   )
 }
 
+/**
+ * A single slot in an input OTP.
+ * @param {React.ComponentProps<'div'> & { index: number }} props - The props for the component.
+ * @returns {JSX.Element} - The rendered input OTP slot component.
+ */
 function InputOTPSlot({
   index,
   className,
@@ -66,6 +81,11 @@ function InputOTPSlot({
   )
 }
 
+/**
+ * A separator for an input OTP.
+ * @param {React.ComponentProps<'div'>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered input OTP separator component.
+ */
 function InputOTPSeparator({ ...props }: React.ComponentProps<'div'>) {
   return (
     <div data-slot="input-otp-separator" role="separator" {...props}>
