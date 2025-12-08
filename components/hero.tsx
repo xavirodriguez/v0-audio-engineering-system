@@ -1,6 +1,10 @@
 import { Button } from "@/components/ui/button"
 import { ArrowRight } from "lucide-react"
 
+/**
+ * A hero component.
+ * @returns {JSX.Element} - The rendered hero component.
+ */
 export function Hero() {
   return (
     <section id="inicio" className="pt-32 pb-20 md:pt-40 md:pb-32 px-4 sm:px-6 lg:px-8">

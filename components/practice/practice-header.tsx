@@ -16,6 +16,11 @@ export interface PracticeHeaderProps {
   onSettingsToggle: () => void
 }
 
+/**
+ * A component that displays the header for the practice session.
+ * @param {PracticeHeaderProps} props - The props for the component.
+ * @returns {JSX.Element} - The rendered practice header component.
+ */
 export function PracticeHeader({
   exerciseName,
   status,

@@ -16,10 +16,17 @@ type ScaleKey = (typeof VALID_KEYS)[number]
 const VALID_POSITIONS = [1, 2, 3] as const
 type ValidPosition = (typeof VALID_POSITIONS)[number]
 
+/**
+ * Generates exercises for the student.
+ */
 export class ExerciseGenerator {
   private curriculumManager = new CurriculumManager()
 
-  // Generar ejercicio de cuerdas abiertas
+  /**
+   * Generates an open strings exercise.
+   * @param {DifficultyLevel} difficulty - The difficulty of the exercise.
+   * @returns {Exercise} - The generated exercise.
+   */
   generateOpenStringsExercise(difficulty: DifficultyLevel): Exercise {
     const openStrings = [55, 62, 69, 76] // G3, D4, A4, E5
     const tempo = difficulty === "easy" ? 60 : difficulty === "medium" ? 80 : 100
@@ -50,7 +57,13 @@ export class ExerciseGenerator {
     }
   }
 
-  // Generar escala
+  /**
+   * Generates a scale exercise.
+   * @param {DifficultyLevel} difficulty - The difficulty of the exercise.
+   * @param {ScaleKey} key - The key of the scale.
+   * @param {ValidPosition} position - The position of the scale.
+   * @returns {Exercise} - The generated exercise.
+   */
   generateScaleExercise(difficulty: DifficultyLevel, key: ScaleKey = "major", position: ValidPosition = 1): Exercise {
     // Validate inputs
     if (!VALID_KEYS.includes(key)) {
@@ -145,7 +158,11 @@ export class ExerciseGenerator {
     }
   }
 
-  // Generar ejercicio de intervalos
+  /**
+   * Generates an intervals exercise.
+   * @param {DifficultyLevel} difficulty - The difficulty of the exercise.
+   * @returns {Exercise} - The generated exercise.
+   */
   generateIntervalsExercise(difficulty: DifficultyLevel): Exercise {
     const tempo = difficulty === "easy" ? 60 : difficulty === "medium" ? 80 : 100
     const noteDuration = (60000 / tempo) * 2
@@ -204,7 +221,12 @@ export class ExerciseGenerator {
     }
   }
 
-  // Generar ejercicio de entonación (drill)
+  /**
+   * Generates an intonation drill.
+   * @param {number} targetNote - The target note.
+   * @param {DifficultyLevel} difficulty - The difficulty of the exercise.
+   * @returns {Exercise} - The generated exercise.
+   */
   generateIntonationDrill(targetNote: number, difficulty: DifficultyLevel): Exercise {
     const tempo = 60
     const noteDuration = (60000 / tempo) * 4 // Redondas
@@ -240,6 +262,11 @@ export class ExerciseGenerator {
     }
   }
 
+  /**
+   * Generates a bowing pattern drill.
+   * @param {DifficultyLevel} difficulty - The difficulty of the exercise.
+   * @returns {Exercise} - The generated exercise.
+   */
   generateBowingPatternDrill(difficulty: DifficultyLevel): Exercise {
     const tempo = difficulty === "easy" ? 60 : difficulty === "medium" ? 80 : 100
     const noteDuration = (60000 / tempo) * 4 // Whole notes
@@ -301,6 +328,12 @@ export class ExerciseGenerator {
     }
   }
 
+  /**
+   * Generates a rhythmic drill.
+   * @param {string[]} rhythmPattern - The rhythm pattern.
+   * @param {DifficultyLevel} difficulty - The difficulty of the exercise.
+   * @returns {Exercise} - The generated exercise.
+   */
   generateRhythmicDrill(rhythmPattern: string[], difficulty: DifficultyLevel): Exercise {
     const tempo = difficulty === "easy" ? 60 : difficulty === "medium" ? 80 : 100
     const baseDuration = 60000 / tempo // Quarter note
@@ -368,7 +401,11 @@ export class ExerciseGenerator {
     }
   }
 
-  // Generar recomendaciones adaptativas basadas en el perfil del estudiante
+  /**
+   * Generates adaptive recommendations based on the student's profile.
+   * @param {StudentProfile} profile - The student's profile.
+   * @returns {AdaptiveRecommendation[]} - The generated recommendations.
+   */
   generateRecommendations(profile: StudentProfile): AdaptiveRecommendation[] {
     const cacheKey = `recommendations-${profile.id}-${profile.level}-${profile.weaknesses.join(",")}`
 

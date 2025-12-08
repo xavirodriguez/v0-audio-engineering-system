@@ -6,6 +6,10 @@ import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { LanguageSwitcher } from "./language-switcher"
 
+/**
+ * A header component.
+ * @returns {JSX.Element} - The rendered header component.
+ */
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const t = useTranslations("nav")

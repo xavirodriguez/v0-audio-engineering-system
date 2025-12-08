@@ -5,6 +5,11 @@ import * as SliderPrimitive from '@radix-ui/react-slider'
 
 import { cn } from '@/lib/utils'
 
+/**
+ * A slider component.
+ * @param {React.ComponentProps<typeof SliderPrimitive.Root>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered slider component.
+ */
 function Slider({
   className,
   defaultValue,

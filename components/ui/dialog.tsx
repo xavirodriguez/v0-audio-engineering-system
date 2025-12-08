@@ -6,30 +6,55 @@ import { XIcon } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 
+/**
+ * A dialog is a window overlaid on either the primary window or another dialog window.
+ * @param {React.ComponentProps<typeof DialogPrimitive.Root>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered dialog component.
+ */
 function Dialog({
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Root>) {
   return <DialogPrimitive.Root data-slot="dialog" {...props} />
 }
 
+/**
+ * A trigger that opens the dialog.
+ * @param {React.ComponentProps<typeof DialogPrimitive.Trigger>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered dialog trigger component.
+ */
 function DialogTrigger({
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Trigger>) {
   return <DialogPrimitive.Trigger data-slot="dialog-trigger" {...props} />
 }
 
+/**
+ * A portal that renders the dialog outside of the DOM hierarchy.
+ * @param {React.ComponentProps<typeof DialogPrimitive.Portal>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered dialog portal component.
+ */
 function DialogPortal({
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Portal>) {
   return <DialogPrimitive.Portal data-slot="dialog-portal" {...props} />
 }
 
+/**
+ * A button that closes the dialog.
+ * @param {React.ComponentProps<typeof DialogPrimitive.Close>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered dialog close component.
+ */
 function DialogClose({
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Close>) {
   return <DialogPrimitive.Close data-slot="dialog-close" {...props} />
 }
 
+/**
+ * A semi-transparent overlay that obscures the main content when the dialog is open.
+ * @param {React.ComponentProps<typeof DialogPrimitive.Overlay>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered dialog overlay component.
+ */
 function DialogOverlay({
   className,
   ...props
@@ -46,6 +71,11 @@ function DialogOverlay({
   )
 }
 
+/**
+ * The content of the dialog.
+ * @param {React.ComponentProps<typeof DialogPrimitive.Content> & { showCloseButton?: boolean }} props - The props for the component.
+ * @returns {JSX.Element} - The rendered dialog content component.
+ */
 function DialogContent({
   className,
   children,
@@ -80,6 +110,11 @@ function DialogContent({
   )
 }
 
+/**
+ * The header of the dialog.
+ * @param {React.ComponentProps<'div'>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered dialog header component.
+ */
 function DialogHeader({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -90,6 +125,11 @@ function DialogHeader({ className, ...props }: React.ComponentProps<'div'>) {
   )
 }
 
+/**
+ * The footer of the dialog.
+ * @param {React.ComponentProps<'div'>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered dialog footer component.
+ */
 function DialogFooter({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -103,6 +143,11 @@ function DialogFooter({ className, ...props }: React.ComponentProps<'div'>) {
   )
 }
 
+/**
+ * The title of the dialog.
+ * @param {React.ComponentProps<typeof DialogPrimitive.Title>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered dialog title component.
+ */
 function DialogTitle({
   className,
   ...props
@@ -116,6 +161,11 @@ function DialogTitle({
   )
 }
 
+/**
+ * The description of the dialog.
+ * @param {React.ComponentProps<typeof DialogPrimitive.Description>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered dialog description component.
+ */
 function DialogDescription({
   className,
   ...props

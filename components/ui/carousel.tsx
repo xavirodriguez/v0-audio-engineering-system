@@ -42,6 +42,11 @@ function useCarousel() {
   return context
 }
 
+/**
+ * A carousel component.
+ * @param {React.ComponentProps<'div'> & CarouselProps} props - The props for the component.
+ * @returns {JSX.Element} - The rendered carousel component.
+ */
 function Carousel({
   orientation = 'horizontal',
   opts,
@@ -132,6 +137,11 @@ function Carousel({
   )
 }
 
+/**
+ * The content of the carousel.
+ * @param {React.ComponentProps<'div'>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered carousel content component.
+ */
 function CarouselContent({ className, ...props }: React.ComponentProps<'div'>) {
   const { carouselRef, orientation } = useCarousel()
 
@@ -153,6 +163,11 @@ function CarouselContent({ className, ...props }: React.ComponentProps<'div'>) {
   )
 }
 
+/**
+ * An item in the carousel.
+ * @param {React.ComponentProps<'div'>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered carousel item component.
+ */
 function CarouselItem({ className, ...props }: React.ComponentProps<'div'>) {
   const { orientation } = useCarousel()
 
@@ -171,6 +186,11 @@ function CarouselItem({ className, ...props }: React.ComponentProps<'div'>) {
   )
 }
 
+/**
+ * The previous button for the carousel.
+ * @param {React.ComponentProps<typeof Button>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered carousel previous button component.
+ */
 function CarouselPrevious({
   className,
   variant = 'outline',
@@ -201,6 +221,11 @@ function CarouselPrevious({
   )
 }
 
+/**
+ * The next button for the carousel.
+ * @param {React.ComponentProps<typeof Button>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered carousel next button component.
+ */
 function CarouselNext({
   className,
   variant = 'outline',

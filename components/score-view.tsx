@@ -12,6 +12,11 @@ interface ScoreViewProps {
   accuracy: number
 }
 
+/**
+ * A component that displays a score view.
+ * @param {ScoreViewProps} props - The props for the component.
+ * @returns {JSX.Element} - The rendered score view component.
+ */
 export function ScoreView({ notes, currentNoteIndex, isPlaying, practiceMode, status, accuracy }: ScoreViewProps) {
   return (
     <div className="relative h-[400px] bg-gradient-to-b from-muted/30 to-muted/10 overflow-hidden">

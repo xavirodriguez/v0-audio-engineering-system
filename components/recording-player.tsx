@@ -12,6 +12,11 @@ interface RecordingPlayerProps {
   onDelete: (id: string) => void
 }
 
+/**
+ * A component that displays a recording player.
+ * @param {RecordingPlayerProps} props - The props for the component.
+ * @returns {JSX.Element} - The rendered recording player component.
+ */
 export function RecordingPlayer({ recording, onDelete }: RecordingPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)

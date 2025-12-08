@@ -1,3 +1,6 @@
+/**
+ * The performance metrics of a practice session.
+ */
 export interface PerformanceMetrics {
   accuracy: number // 0-100
   stability: number // 0-100, qué tan estable mantiene el pitch
@@ -10,6 +13,9 @@ export interface PerformanceMetrics {
   timestamp: number
 }
 
+/**
+ * The profile of a student.
+ */
 export interface StudentProfile {
   id: string
   level: "beginner" | "intermediate" | "advanced"
@@ -22,6 +28,9 @@ export interface StudentProfile {
   toneQualityScore: number // 0-100
 }
 
+/**
+ * A practice session.
+ */
 export interface PracticeSession {
   id: string
   timestamp: number
@@ -36,6 +45,9 @@ export interface PracticeSession {
   selfRating: 1 | 2 | 3 | 4 | 5
 }
 
+/**
+ * The performance of a note.
+ */
 export interface NotePerformance {
   noteMidi: number
   noteName: string
@@ -59,6 +71,9 @@ export type ExerciseType =
 
 export type DifficultyLevel = "easy" | "medium" | "hard" | "expert"
 
+/**
+ * An exercise.
+ */
 export interface Exercise {
   id: string
   type: ExerciseType
@@ -73,6 +88,9 @@ export interface Exercise {
   pedagogicalSource?: string // Ej. "Sevcik Op. 1, No. 5"
 }
 
+/**
+ * A note in an exercise.
+ */
 export interface ExerciseNote {
   midi: number
   frequency: number
@@ -93,6 +111,9 @@ export interface ExerciseNote {
   rhythmPattern?: string // Ej. "triplet", "dotted", "syncopated"
 }
 
+/**
+ * An adaptive recommendation.
+ */
 export interface AdaptiveRecommendation {
   exercise: Exercise
   reason: string

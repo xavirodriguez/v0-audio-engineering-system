@@ -1,7 +1,14 @@
 import type { Recording, RecordingAnalysis, IntonationPoint, ProblemArea, SpectrogramData } from "@/lib/types/recording"
 
+/**
+ * Analyzes audio recordings.
+ */
 export class AudioAnalyzer {
-  // Analizar grabación completa
+  /**
+   * Analyzes a recording.
+   * @param {Recording} recording - The recording to analyze.
+   * @returns {Promise<RecordingAnalysis>} - The analysis of the recording.
+   */
   async analyzeRecording(recording: Recording): Promise<RecordingAnalysis> {
     const pitchData = recording.pitchData
 
@@ -152,7 +159,11 @@ export class AudioAnalyzer {
     return recommendations
   }
 
-  // Generar espectrograma desde audio
+  /**
+   * Generates a spectrogram from an audio buffer.
+   * @param {AudioBuffer} audioBuffer - The audio buffer.
+   * @returns {Promise<SpectrogramData>} - The spectrogram data.
+   */
   async generateSpectrogram(audioBuffer: AudioBuffer): Promise<SpectrogramData> {
     const sampleRate = audioBuffer.sampleRate
     const channelData = audioBuffer.getChannelData(0)

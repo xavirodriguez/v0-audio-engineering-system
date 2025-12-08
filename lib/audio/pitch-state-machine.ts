@@ -9,6 +9,9 @@ export interface PitchTransitionEvent {
   holdDuration: number
 }
 
+/**
+ * A state machine for pitch detection.
+ */
 export class PitchStateMachine {
   private currentStatus: TunerStatus = "IDLE"
   private consecutiveStableFrames = 0
@@ -20,6 +23,11 @@ export class PitchStateMachine {
     private rmsThreshold: number,
   ) {}
 
+  /**
+   * Transitions the state machine.
+   * @param {PitchTransitionEvent} event - The event to transition on.
+   * @returns {TunerStatus} - The new status.
+   */
   transition(event: PitchTransitionEvent): TunerStatus {
     switch (event.type) {
       case "PITCH_LOST":
@@ -67,16 +75,27 @@ export class PitchStateMachine {
     }
   }
 
+  /**
+   * Resets the state machine.
+   */
   reset() {
     this.currentStatus = "IDLE"
     this.consecutiveStableFrames = 0
     this.holdStart = 0
   }
 
+  /**
+   * Gets the number of consecutive stable frames.
+   * @returns {number} - The number of consecutive stable frames.
+   */
   getConsecutiveStableFrames(): number {
     return this.consecutiveStableFrames
   }
 
+  /**
+   * Gets the start time of the hold.
+   * @returns {number} - The start time of the hold.
+   */
   getHoldStart(): number {
     return this.holdStart
   }

@@ -5,30 +5,55 @@ import { Drawer as DrawerPrimitive } from 'vaul'
 
 import { cn } from '@/lib/utils'
 
+/**
+ * A drawer is a panel that slides in from the edge of the screen.
+ * @param {React.ComponentProps<typeof DrawerPrimitive.Root>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered drawer component.
+ */
 function Drawer({
   ...props
 }: React.ComponentProps<typeof DrawerPrimitive.Root>) {
   return <DrawerPrimitive.Root data-slot="drawer" {...props} />
 }
 
+/**
+ * A trigger that opens the drawer.
+ * @param {React.ComponentProps<typeof DrawerPrimitive.Trigger>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered drawer trigger component.
+ */
 function DrawerTrigger({
   ...props
 }: React.ComponentProps<typeof DrawerPrimitive.Trigger>) {
   return <DrawerPrimitive.Trigger data-slot="drawer-trigger" {...props} />
 }
 
+/**
+ * A portal that renders the drawer outside of the DOM hierarchy.
+ * @param {React.ComponentProps<typeof DrawerPrimitive.Portal>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered drawer portal component.
+ */
 function DrawerPortal({
   ...props
 }: React.ComponentProps<typeof DrawerPrimitive.Portal>) {
   return <DrawerPrimitive.Portal data-slot="drawer-portal" {...props} />
 }
 
+/**
+ * A button that closes the drawer.
+ * @param {React.ComponentProps<typeof DrawerPrimitive.Close>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered drawer close component.
+ */
 function DrawerClose({
   ...props
 }: React.ComponentProps<typeof DrawerPrimitive.Close>) {
   return <DrawerPrimitive.Close data-slot="drawer-close" {...props} />
 }
 
+/**
+ * A semi-transparent overlay that obscures the main content when the drawer is open.
+ * @param {React.ComponentProps<typeof DrawerPrimitive.Overlay>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered drawer overlay component.
+ */
 function DrawerOverlay({
   className,
   ...props
@@ -45,6 +70,11 @@ function DrawerOverlay({
   )
 }
 
+/**
+ * The content of the drawer.
+ * @param {React.ComponentProps<typeof DrawerPrimitive.Content>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered drawer content component.
+ */
 function DrawerContent({
   className,
   children,
@@ -72,6 +102,11 @@ function DrawerContent({
   )
 }
 
+/**
+ * The header of the drawer.
+ * @param {React.ComponentProps<'div'>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered drawer header component.
+ */
 function DrawerHeader({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -85,6 +120,11 @@ function DrawerHeader({ className, ...props }: React.ComponentProps<'div'>) {
   )
 }
 
+/**
+ * The footer of the drawer.
+ * @param {React.ComponentProps<'div'>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered drawer footer component.
+ */
 function DrawerFooter({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -95,6 +135,11 @@ function DrawerFooter({ className, ...props }: React.ComponentProps<'div'>) {
   )
 }
 
+/**
+ * The title of the drawer.
+ * @param {React.ComponentProps<typeof DrawerPrimitive.Title>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered drawer title component.
+ */
 function DrawerTitle({
   className,
   ...props
@@ -108,6 +153,11 @@ function DrawerTitle({
   )
 }
 
+/**
+ * The description of the drawer.
+ * @param {React.ComponentProps<typeof DrawerPrimitive.Description>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered drawer description component.
+ */
 function DrawerDescription({
   className,
   ...props

@@ -5,6 +5,11 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/utils'
 import { Separator } from '@/components/ui/separator'
 
+/**
+ * A group of items.
+ * @param {React.ComponentProps<'div'>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered item group component.
+ */
 function ItemGroup({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -16,6 +21,11 @@ function ItemGroup({ className, ...props }: React.ComponentProps<'div'>) {
   )
 }
 
+/**
+ * A separator for items.
+ * @param {React.ComponentProps<typeof Separator>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered item separator component.
+ */
 function ItemSeparator({
   className,
   ...props
@@ -51,6 +61,11 @@ const itemVariants = cva(
   },
 )
 
+/**
+ * An item.
+ * @param {React.ComponentProps<'div'> & VariantProps<typeof itemVariants> & { asChild?: boolean }} props - The props for the component.
+ * @returns {JSX.Element} - The rendered item component.
+ */
 function Item({
   className,
   variant = 'default',
@@ -88,6 +103,11 @@ const itemMediaVariants = cva(
   },
 )
 
+/**
+ * The media for an item.
+ * @param {React.ComponentProps<'div'> & VariantProps<typeof itemMediaVariants>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered item media component.
+ */
 function ItemMedia({
   className,
   variant = 'default',
@@ -103,6 +123,11 @@ function ItemMedia({
   )
 }
 
+/**
+ * The content of an item.
+ * @param {React.ComponentProps<'div'>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered item content component.
+ */
 function ItemContent({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -116,6 +141,11 @@ function ItemContent({ className, ...props }: React.ComponentProps<'div'>) {
   )
 }
 
+/**
+ * The title of an item.
+ * @param {React.ComponentProps<'div'>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered item title component.
+ */
 function ItemTitle({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -129,6 +159,11 @@ function ItemTitle({ className, ...props }: React.ComponentProps<'div'>) {
   )
 }
 
+/**
+ * The description of an item.
+ * @param {React.ComponentProps<'p'>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered item description component.
+ */
 function ItemDescription({ className, ...props }: React.ComponentProps<'p'>) {
   return (
     <p
@@ -143,6 +178,11 @@ function ItemDescription({ className, ...props }: React.ComponentProps<'p'>) {
   )
 }
 
+/**
+ * The actions for an item.
+ * @param {React.ComponentProps<'div'>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered item actions component.
+ */
 function ItemActions({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -153,6 +193,11 @@ function ItemActions({ className, ...props }: React.ComponentProps<'div'>) {
   )
 }
 
+/**
+ * The header of an item.
+ * @param {React.ComponentProps<'div'>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered item header component.
+ */
 function ItemHeader({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -166,6 +211,11 @@ function ItemHeader({ className, ...props }: React.ComponentProps<'div'>) {
   )
 }
 
+/**
+ * The footer of an item.
+ * @param {React.ComponentProps<'div'>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered item footer component.
+ */
 function ItemFooter({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div

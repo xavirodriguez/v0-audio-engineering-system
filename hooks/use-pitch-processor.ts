@@ -17,6 +17,11 @@ interface UsePitchProcessorReturn {
   isProcessing: boolean
 }
 
+/**
+ * A hook that provides pitch processing functionality.
+ * @param {UsePitchProcessorConfig} config - The configuration for the hook.
+ * @returns {UsePitchProcessorReturn} - The pitch processing functions and state.
+ */
 export function usePitchProcessor({
   analyser,
   sampleRate,

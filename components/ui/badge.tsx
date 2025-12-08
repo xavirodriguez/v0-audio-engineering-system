@@ -25,6 +25,11 @@ const badgeVariants = cva(
   },
 )
 
+/**
+ * A component that displays a short piece of information.
+ * @param {React.ComponentProps<'span'> & VariantProps<typeof badgeVariants> & { asChild?: boolean }} props - The props for the component.
+ * @returns {JSX.Element} - The rendered badge component.
+ */
 function Badge({
   className,
   variant,

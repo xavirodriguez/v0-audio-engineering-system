@@ -7,6 +7,9 @@ const isHarmonic = (freq: number, targetFreq: number): boolean => {
   return Math.abs(ratio - Math.round(ratio)) < 0.02
 }
 
+/**
+ * Detects the pitch of an audio buffer.
+ */
 export class PitchDetector {
   private sampleRate: number
   private wasmDetector: WASMPitchDetector | null = null
@@ -32,6 +35,11 @@ export class PitchDetector {
     }
   }
 
+  /**
+   * Detects the pitch of an audio buffer using FFT.
+   * @param {Float32Array} buffer - The audio buffer.
+   * @returns {{pitchHz: number, confidence: number}} - The detected pitch and confidence.
+   */
   detectPitchFFT(buffer: Float32Array): { pitchHz: number; confidence: number } {
     const SIZE = buffer.length
 
@@ -84,6 +92,11 @@ export class PitchDetector {
     return { pitchHz, confidence }
   }
 
+  /**
+   * Detects the pitch of an audio buffer using YIN.
+   * @param {Float32Array} buffer - The audio buffer.
+   * @returns {{pitchHz: number, confidence: number}} - The detected pitch and confidence.
+   */
   detectPitchYIN(buffer: Float32Array): { pitchHz: number; confidence: number } {
     if (this.useWASM && this.wasmDetector?.isReady()) {
       const result = this.wasmDetector.detectPitchYIN(buffer, 0.1)
@@ -160,7 +173,11 @@ export class PitchDetector {
     return { pitchHz, confidence }
   }
 
-  // Autocorrelation simple
+  /**
+   * Detects the pitch of an audio buffer using autocorrelation.
+   * @param {Float32Array} buffer - The audio buffer.
+   * @returns {{pitchHz: number, confidence: number}} - The detected pitch and confidence.
+   */
   detectPitchAutocorrelation(buffer: Float32Array): { pitchHz: number; confidence: number } {
     if (this.useWASM && this.wasmDetector?.isReady()) {
       const result = this.wasmDetector.detectPitchAutocorr(buffer)
@@ -211,6 +228,11 @@ export class PitchDetector {
     return { pitchHz, confidence }
   }
 
+  /**
+   * Calculates the spectral centroid of an audio buffer.
+   * @param {Float32Array} buffer - The audio buffer.
+   * @returns {number} - The spectral centroid.
+   */
   calculateSpectralCentroid(buffer: Float32Array): number {
     const signal = Array.from(buffer)
     const phasors = FFT.fft(signal)
@@ -228,6 +250,11 @@ export class PitchDetector {
     return totalMagnitude > 0 ? weightedSum / totalMagnitude : 0
   }
 
+  /**
+   * Calculates the RMS of an audio buffer.
+   * @param {Float32Array} buffer - The audio buffer.
+   * @returns {number} - The RMS.
+   */
   calculateRMS(buffer: Float32Array): number {
     if (this.useWASM && this.wasmDetector?.isReady()) {
       return this.wasmDetector.getRMS(buffer)
@@ -240,6 +267,11 @@ export class PitchDetector {
     return Math.sqrt(sum / buffer.length)
   }
 
+  /**
+   * Calculates the clarity of an audio buffer.
+   * @param {Float32Array} buffer - The audio buffer.
+   * @returns {number} - The clarity.
+   */
   calculateClarity(buffer: Float32Array): number {
     const rms = this.calculateRMS(buffer)
     if (rms < 0.001) return 0
@@ -255,6 +287,9 @@ export class PitchDetector {
     return Math.max(0, 1 - zcr * 10)
   }
 
+  /**
+   * Destroys the pitch detector.
+   */
   destroy() {
     if (this.wasmDetector) {
       this.wasmDetector.destroy()

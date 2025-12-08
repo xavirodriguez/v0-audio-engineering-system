@@ -34,13 +34,24 @@ const initialState: GlobalTunerState = {
   notes: generatePracticeSequence(),
 }
 
+/**
+ * A store for managing pitch detection.
+ */
 export const usePitchDetectionStore = create<PitchDetectionStore>()(
   persist(
     (set, get) => ({
       ...initialState,
 
+      /**
+       * Sets the state of the store.
+       * @param {Partial<GlobalTunerState>} newState - The new state.
+       */
       setState: (newState) => set((state) => ({ ...state, ...newState })),
 
+      /**
+       * Updates the pitch event.
+       * @param {PitchEvent} event - The pitch event.
+       */
       updatePitchEvent: (event) =>
         set((state) => ({
           currentPitch: event.pitchHz,
@@ -49,6 +60,9 @@ export const usePitchDetectionStore = create<PitchDetectionStore>()(
           pitchHistory: [...state.pitchHistory.slice(-99), event],
         })),
 
+      /**
+       * Advances to the next note.
+       */
       advanceToNextNote: () =>
         set((state) => {
           const nextIndex = state.currentNoteIndex + 1
@@ -70,6 +84,10 @@ export const usePitchDetectionStore = create<PitchDetectionStore>()(
           }
         }),
 
+      /**
+       * Sets the notes.
+       * @param {Array<{ name: string; midi: number; frequency: number; duration: number }>} notes - The notes to set.
+       */
       setNotes: (notes) =>
         set({
           notes,
@@ -78,6 +96,9 @@ export const usePitchDetectionStore = create<PitchDetectionStore>()(
           targetFreqHz: notes[0]?.frequency || 440,
         }),
 
+      /**
+       * Resets the state.
+       */
       resetState: () => set(initialState),
     }),
     {

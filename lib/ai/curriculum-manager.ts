@@ -6,6 +6,9 @@ export interface CurriculumLevel {
   exercises: string[] // Exercise IDs from pedagogical sources
 }
 
+/**
+ * Manages the curriculum.
+ */
 export class CurriculumManager {
   private curriculum: CurriculumLevel[] = [
     {
@@ -38,6 +41,11 @@ export class CurriculumManager {
     },
   ]
 
+  /**
+   * Gets the current level of the student.
+   * @param {string} studentLevel - The student's level.
+   * @returns {CurriculumLevel} - The current curriculum level.
+   */
   getCurrentLevel(studentLevel: string): CurriculumLevel {
     const levelMap = {
       beginner: 1,
@@ -48,11 +56,22 @@ export class CurriculumManager {
     return this.curriculum[level - 1]
   }
 
+  /**
+   * Gets the next exercises for the current level.
+   * @param {number} currentLevel - The current level.
+   * @returns {string[]} - The next exercises.
+   */
   getNextExercises(currentLevel: number): string[] {
     const level = this.curriculum[currentLevel - 1]
     return level ? level.exercises : []
   }
 
+  /**
+   * Validates the progression of the student.
+   * @param {string} studentLevel - The student's level.
+   * @param {string} exerciseSource - The source of the exercise.
+   * @returns {boolean} - Whether the progression is valid.
+   */
   validateProgression(studentLevel: string, exerciseSource: string): boolean {
     // Validate that the exercise is appropriate for the student's level
     const level = this.getCurrentLevel(studentLevel)

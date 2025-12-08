@@ -6,24 +6,44 @@ import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 
+/**
+ * A select component.
+ * @param {React.ComponentProps<typeof SelectPrimitive.Root>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered select component.
+ */
 function Select({
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Root>) {
   return <SelectPrimitive.Root data-slot="select" {...props} />
 }
 
+/**
+ * A group of items in a select component.
+ * @param {React.ComponentProps<typeof SelectPrimitive.Group>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered select group component.
+ */
 function SelectGroup({
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Group>) {
   return <SelectPrimitive.Group data-slot="select-group" {...props} />
 }
 
+/**
+ * The value of a select component.
+ * @param {React.ComponentProps<typeof SelectPrimitive.Value>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered select value component.
+ */
 function SelectValue({
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Value>) {
   return <SelectPrimitive.Value data-slot="select-value" {...props} />
 }
 
+/**
+ * A trigger for a select component.
+ * @param {React.ComponentProps<typeof SelectPrimitive.Trigger> & { size?: 'sm' | 'default' }} props - The props for the component.
+ * @returns {JSX.Element} - The rendered select trigger component.
+ */
 function SelectTrigger({
   className,
   size = 'default',
@@ -50,6 +70,11 @@ function SelectTrigger({
   )
 }
 
+/**
+ * The content of a select component.
+ * @param {React.ComponentProps<typeof SelectPrimitive.Content>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered select content component.
+ */
 function SelectContent({
   className,
   children,
@@ -85,6 +110,11 @@ function SelectContent({
   )
 }
 
+/**
+ * The label for a select component.
+ * @param {React.ComponentProps<typeof SelectPrimitive.Label>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered select label component.
+ */
 function SelectLabel({
   className,
   ...props
@@ -98,6 +128,11 @@ function SelectLabel({
   )
 }
 
+/**
+ * An item in a select component.
+ * @param {React.ComponentProps<typeof SelectPrimitive.Item>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered select item component.
+ */
 function SelectItem({
   className,
   children,
@@ -122,6 +157,11 @@ function SelectItem({
   )
 }
 
+/**
+ * A separator in a select component.
+ * @param {React.ComponentProps<typeof SelectPrimitive.Separator>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered select separator component.
+ */
 function SelectSeparator({
   className,
   ...props
@@ -135,6 +175,11 @@ function SelectSeparator({
   )
 }
 
+/**
+ * The scroll up button in a select component.
+ * @param {React.ComponentProps<typeof SelectPrimitive.ScrollUpButton>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered select scroll up button component.
+ */
 function SelectScrollUpButton({
   className,
   ...props
@@ -153,6 +198,11 @@ function SelectScrollUpButton({
   )
 }
 
+/**
+ * The scroll down button in a select component.
+ * @param {React.ComponentProps<typeof SelectPrimitive.ScrollDownButton>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered select scroll down button component.
+ */
 function SelectScrollDownButton({
   className,
   ...props

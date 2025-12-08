@@ -25,6 +25,10 @@ const features = [
   },
 ]
 
+/**
+ * A component that displays a list of features.
+ * @returns {JSX.Element} - The rendered features component.
+ */
 export function Features() {
   return (
     <section className="py-20 md:py-32 px-4 sm:px-6 lg:px-8 bg-muted/30">

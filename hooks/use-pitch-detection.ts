@@ -9,6 +9,10 @@ import { usePitchStateMachine } from "./use-pitch-state-machine"
 import type { PitchEvent } from "@/lib/types/pitch-detection"
 import { PitchDetector } from "@/lib/audio/pitch-detector"
 
+/**
+ * A hook that provides pitch detection functionality.
+ * @returns {object} - The pitch detection functions and state.
+ */
 export function usePitchDetection() {
   const store = usePitchDetectionStore()
 

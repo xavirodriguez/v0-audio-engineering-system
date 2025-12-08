@@ -1,30 +1,67 @@
-# Audio engineering system
+# Virtuoso - Aprende Violín Online
 
-*Automatically synced with your [v0.app](https://v0.app) deployments*
-
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/xavirodriguezs-projects/v0-audio-engineering-system-w3)
-[![Built with v0](https://img.shields.io/badge/Built%20with-v0.app-black?style=for-the-badge)](https://v0.app/chat/projects/2WHRRIS9y3t)
+Virtuoso is a web-based platform for learning to play the violin. It provides interactive lessons, real-time pitch detection, and a library of sheet music.
 
 ## Overview
 
-This repository will stay in sync with your deployed chats on [v0.app](https://v0.app).
-Any changes you make to your deployed app will be automatically pushed to this repository from [v0.app](https://v0.app).
+This repository contains the source code for the Virtuoso web application. It is a [Next.js](https://nextjs.org/) application written in [TypeScript](https://www.typescriptlang.org/).
 
-## Deployment
+## Features
 
-Your project is live at:
+- **Interactive Lessons:** A complete curriculum for all levels, from beginner to advanced.
+- **Real-time Pitch Detection:** Advanced pitch detection that analyzes your performance and provides instant feedback.
+- **Sheet Music Library:** Access to hundreds of interactive sheet music with accompaniment and visual guides.
+- **Progress Tracking:** Monitor your evolution with detailed metrics and celebrate your musical achievements.
 
-**[https://vercel.com/xavirodriguezs-projects/v0-audio-engineering-system-w3](https://vercel.com/xavirodriguezs-projects/v0-audio-engineering-system-w3)**
+## Getting Started
 
-## Build your app
+### Prerequisites
 
-Continue building your app on:
+- [Node.js](https://nodejs.org/) (version 18 or later)
+- [npm](https://www.npmjs.com/)
 
-**[https://v0.app/chat/projects/2WHRRIS9y3t](https://v0.app/chat/projects/2WHRRIS9y3t)**
+### Installation
 
-## How It Works
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-username/virtuoso.git
+   ```
+2. Install the dependencies:
+   ```bash
+   npm install
+   ```
 
-1. Create and modify your project using [v0.app](https://v0.app)
-2. Deploy your chats from the v0 interface
-3. Changes are automatically pushed to this repository
-4. Vercel deploys the latest version from this repository
+### Running the Development Server
+
+To run the development server, run the following command:
+
+```bash
+npm run dev
+```
+
+This will start the development server on `http://localhost:3000`.
+
+### Building for Production
+
+To build the application for production, run the following command:
+
+```bash
+npm run build
+```
+
+This will create a `build` directory with the production-ready application.
+
+## Technologies Used
+
+- [Next.js](https://nextjs.org/)
+- [React](https://reactjs.org/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [VexFlow](https://www.vexflow.com/)
+- [Web Audio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API)
+- [Zustand](https://zustand.surge.sh/)
+- [Next-Intl](https://next-intl-docs.vercel.app/)
+
+## Contributing
+
+Contributions are welcome! Please open an issue or submit a pull request.

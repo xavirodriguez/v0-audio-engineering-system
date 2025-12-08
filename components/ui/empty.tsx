@@ -2,6 +2,11 @@ import { cva, type VariantProps } from 'class-variance-authority'
 
 import { cn } from '@/lib/utils'
 
+/**
+ * A component to display when there is no content.
+ * @param {React.ComponentProps<'div'>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered empty component.
+ */
 function Empty({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -15,6 +20,11 @@ function Empty({ className, ...props }: React.ComponentProps<'div'>) {
   )
 }
 
+/**
+ * The header of the empty component.
+ * @param {React.ComponentProps<'div'>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered empty header component.
+ */
 function EmptyHeader({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -43,6 +53,11 @@ const emptyMediaVariants = cva(
   },
 )
 
+/**
+ * The media of the empty component.
+ * @param {React.ComponentProps<'div'> & VariantProps<typeof emptyMediaVariants>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered empty media component.
+ */
 function EmptyMedia({
   className,
   variant = 'default',
@@ -58,6 +73,11 @@ function EmptyMedia({
   )
 }
 
+/**
+ * The title of the empty component.
+ * @param {React.ComponentProps<'div'>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered empty title component.
+ */
 function EmptyTitle({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -68,6 +88,11 @@ function EmptyTitle({ className, ...props }: React.ComponentProps<'div'>) {
   )
 }
 
+/**
+ * The description of the empty component.
+ * @param {React.ComponentProps<'p'>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered empty description component.
+ */
 function EmptyDescription({ className, ...props }: React.ComponentProps<'p'>) {
   return (
     <div
@@ -81,6 +106,11 @@ function EmptyDescription({ className, ...props }: React.ComponentProps<'p'>) {
   )
 }
 
+/**
+ * The content of the empty component.
+ * @param {React.ComponentProps<'div'>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered empty content component.
+ */
 function EmptyContent({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div

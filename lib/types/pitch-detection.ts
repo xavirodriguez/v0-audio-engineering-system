@@ -1,4 +1,6 @@
-// Mensajes de Control: Main Thread -> Worklet
+/**
+ * A command to be sent to the worklet.
+ */
 export interface WorkletCommand {
   cmd: "config" | "start" | "stop" | "calibrate" | "setTolerance" | "setTargetFreq"
   protocolVersion: "1.0.0"
@@ -12,7 +14,9 @@ export interface WorkletCommand {
   }
 }
 
-// Mensajes de Estado: Worklet -> Main Thread
+/**
+ * An event that is sent from the worklet to the main thread.
+ */
 export interface PitchEvent {
   pitchHz: number
   confidence: number
@@ -22,14 +26,18 @@ export interface PitchEvent {
   frameIndex: number
 }
 
-// Mensajes de Error: Worklet -> Main Thread
+/**
+ * An error that is sent from the worklet to the main thread.
+ */
 export interface WorkletError {
   errorCode: "ERR_WASM_LOAD" | "ERR_WASM_PROCESS" | "ERR_NO_MIC" | "ERR_PERMISSION_DENIED"
   message: string
   timestamp: number
 }
 
-// Estado de la Máquina de Estados
+/**
+ * The status of the tuner.
+ */
 export type TunerStatus =
   | "IDLE"
   | "CALIBRATING"
@@ -40,7 +48,9 @@ export type TunerStatus =
   | "ERROR"
   | "FALLBACK_MODE"
 
-// Nota musical en la partitura
+/**
+ * A musical note in the score.
+ */
 export interface MusicalNote {
   midi: number
   frequency: number
@@ -49,7 +59,9 @@ export interface MusicalNote {
   startTime: number // tiempo acumulado desde el inicio
 }
 
-// Estado Global de la Aplicación
+/**
+ * The global state of the tuner.
+ */
 export interface GlobalTunerState {
   status: TunerStatus
   currentNoteIndex: number

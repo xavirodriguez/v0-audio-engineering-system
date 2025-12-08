@@ -7,6 +7,11 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 
+/**
+ * A group of inputs.
+ * @param {React.ComponentProps<'div'>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered input group component.
+ */
 function InputGroup({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -56,6 +61,11 @@ const inputGroupAddonVariants = cva(
   },
 )
 
+/**
+ * An addon for an input group.
+ * @param {React.ComponentProps<'div'> & VariantProps<typeof inputGroupAddonVariants>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered input group addon component.
+ */
 function InputGroupAddon({
   className,
   align = 'inline-start',
@@ -96,6 +106,11 @@ const inputGroupButtonVariants = cva(
   },
 )
 
+/**
+ * A button for an input group.
+ * @param {Omit<React.ComponentProps<typeof Button>, 'size'> & VariantProps<typeof inputGroupButtonVariants>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered input group button component.
+ */
 function InputGroupButton({
   className,
   type = 'button',
@@ -115,6 +130,11 @@ function InputGroupButton({
   )
 }
 
+/**
+ * A text for an input group.
+ * @param {React.ComponentProps<'span'>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered input group text component.
+ */
 function InputGroupText({ className, ...props }: React.ComponentProps<'span'>) {
   return (
     <span
@@ -127,6 +147,11 @@ function InputGroupText({ className, ...props }: React.ComponentProps<'span'>) {
   )
 }
 
+/**
+ * An input for an input group.
+ * @param {React.ComponentProps<'input'>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered input group input component.
+ */
 function InputGroupInput({
   className,
   ...props
@@ -143,6 +168,11 @@ function InputGroupInput({
   )
 }
 
+/**
+ * A textarea for an input group.
+ * @param {React.ComponentProps<'textarea'>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered input group textarea component.
+ */
 function InputGroupTextarea({
   className,
   ...props

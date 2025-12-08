@@ -1,5 +1,10 @@
 import { cn } from '@/lib/utils'
 
+/**
+ * A keyboard input component.
+ * @param {React.ComponentProps<'kbd'>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered kbd component.
+ */
 function Kbd({ className, ...props }: React.ComponentProps<'kbd'>) {
   return (
     <kbd
@@ -15,6 +20,11 @@ function Kbd({ className, ...props }: React.ComponentProps<'kbd'>) {
   )
 }
 
+/**
+ * A group of keyboard inputs.
+ * @param {React.ComponentProps<'div'>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered kbd group component.
+ */
 function KbdGroup({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <kbd

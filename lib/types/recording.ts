@@ -1,3 +1,6 @@
+/**
+ * A recording.
+ */
 export interface Recording {
   id: string
   timestamp: number
@@ -12,6 +15,9 @@ export interface Recording {
   analysis: RecordingAnalysis
 }
 
+/**
+ * A pitch data point.
+ */
 export interface PitchDataPoint {
   timestamp: number // ms desde el inicio
   frequency: number // Hz
@@ -22,6 +28,9 @@ export interface PitchDataPoint {
   targetNote?: string
 }
 
+/**
+ * The data for a spectrogram.
+ */
 export interface SpectrogramData {
   frequencies: number[] // Array de frecuencias (Hz)
   times: number[] // Array de tiempos (segundos)
@@ -30,6 +39,9 @@ export interface SpectrogramData {
   sampleRate: number
 }
 
+/**
+ * The analysis of a recording.
+ */
 export interface RecordingAnalysis {
   overallAccuracy: number // 0-100
   averageDeviation: number // cents
@@ -41,12 +53,18 @@ export interface RecordingAnalysis {
   recommendations: string[]
 }
 
+/**
+ * A point in an intonation graph.
+ */
 export interface IntonationPoint {
   time: number // segundos
   deviation: number // cents
   note?: string
 }
 
+/**
+ * A problem area in a recording.
+ */
 export interface ProblemArea {
   startTime: number
   endTime: number

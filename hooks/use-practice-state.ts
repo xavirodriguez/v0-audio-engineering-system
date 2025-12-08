@@ -21,6 +21,10 @@ export interface UsePracticeStateReturn {
   setPracticeMode: (m: "step-by-step" | "continuous") => void
 }
 
+/**
+ * A hook that manages the state of the practice session.
+ * @returns {UsePracticeStateReturn} - The practice state and functions to update it.
+ */
 export function usePracticeState(): UsePracticeStateReturn {
   const [viewMode, setViewMode] = useState<"animated" | "sheet-music">("animated")
   const [showSettings, setShowSettings] = useState(false)

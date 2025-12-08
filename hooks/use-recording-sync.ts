@@ -11,6 +11,10 @@ export interface UseRecordingSyncParams {
   addPitchPoint: (pitch: number, cents: number, conf: number, rms: number) => void
 }
 
+/**
+ * A hook that syncs the recording with the current pitch.
+ * @param {UseRecordingSyncParams} params - The parameters for the hook.
+ */
 export function useRecordingSync(params: UseRecordingSyncParams): void {
   const { isRecording, currentPitch, currentCents, currentConfidence, currentRms, addPitchPoint } = params
 

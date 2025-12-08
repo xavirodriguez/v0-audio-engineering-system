@@ -6,28 +6,53 @@ import { XIcon } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 
+/**
+ * A sheet is a panel that slides in from the edge of the screen.
+ * @param {React.ComponentProps<typeof SheetPrimitive.Root>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered sheet component.
+ */
 function Sheet({ ...props }: React.ComponentProps<typeof SheetPrimitive.Root>) {
   return <SheetPrimitive.Root data-slot="sheet" {...props} />
 }
 
+/**
+ * A trigger that opens the sheet.
+ * @param {React.ComponentProps<typeof SheetPrimitive.Trigger>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered sheet trigger component.
+ */
 function SheetTrigger({
   ...props
 }: React.ComponentProps<typeof SheetPrimitive.Trigger>) {
   return <SheetPrimitive.Trigger data-slot="sheet-trigger" {...props} />
 }
 
+/**
+ * A button that closes the sheet.
+ * @param {React.ComponentProps<typeof SheetPrimitive.Close>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered sheet close component.
+ */
 function SheetClose({
   ...props
 }: React.ComponentProps<typeof SheetPrimitive.Close>) {
   return <SheetPrimitive.Close data-slot="sheet-close" {...props} />
 }
 
+/**
+ * A portal that renders the sheet outside of the DOM hierarchy.
+ * @param {React.ComponentProps<typeof SheetPrimitive.Portal>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered sheet portal component.
+ */
 function SheetPortal({
   ...props
 }: React.ComponentProps<typeof SheetPrimitive.Portal>) {
   return <SheetPrimitive.Portal data-slot="sheet-portal" {...props} />
 }
 
+/**
+ * A semi-transparent overlay that obscures the main content when the sheet is open.
+ * @param {React.ComponentProps<typeof SheetPrimitive.Overlay>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered sheet overlay component.
+ */
 function SheetOverlay({
   className,
   ...props
@@ -44,6 +69,11 @@ function SheetOverlay({
   )
 }
 
+/**
+ * The content of the sheet.
+ * @param {React.ComponentProps<typeof SheetPrimitive.Content> & { side?: 'top' | 'right' | 'bottom' | 'left' }} props - The props for the component.
+ * @returns {JSX.Element} - The rendered sheet content component.
+ */
 function SheetContent({
   className,
   children,
@@ -81,6 +111,11 @@ function SheetContent({
   )
 }
 
+/**
+ * The header of the sheet.
+ * @param {React.ComponentProps<'div'>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered sheet header component.
+ */
 function SheetHeader({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -91,6 +126,11 @@ function SheetHeader({ className, ...props }: React.ComponentProps<'div'>) {
   )
 }
 
+/**
+ * The footer of the sheet.
+ * @param {React.ComponentProps<'div'>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered sheet footer component.
+ */
 function SheetFooter({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
@@ -101,6 +141,11 @@ function SheetFooter({ className, ...props }: React.ComponentProps<'div'>) {
   )
 }
 
+/**
+ * The title of the sheet.
+ * @param {React.ComponentProps<typeof SheetPrimitive.Title>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered sheet title component.
+ */
 function SheetTitle({
   className,
   ...props
@@ -114,6 +159,11 @@ function SheetTitle({
   )
 }
 
+/**
+ * The description of the sheet.
+ * @param {React.ComponentProps<typeof SheetPrimitive.Description>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered sheet description component.
+ */
 function SheetDescription({
   className,
   ...props

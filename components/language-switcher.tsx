@@ -13,6 +13,10 @@ const languages = [
   { code: "gl", name: "Galego", flag: "🏴" },
 ]
 
+/**
+ * A language switcher component.
+ * @returns {JSX.Element} - The rendered language switcher component.
+ */
 export function LanguageSwitcher() {
   const locale = useLocale()
   const router = useRouter()

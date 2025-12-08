@@ -27,10 +27,19 @@ export const metadata: Metadata = {
   generator: "v0.app",
 }
 
+/**
+ * Generates the static parameters for the layout.
+ * @returns {Array<{locale: string}>} - The static parameters.
+ */
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }))
 }
 
+/**
+ * The root layout for the application.
+ * @param {Readonly<{children: React.ReactNode, params: Promise<{ locale: string }>}>} props - The props for the component.
+ * @returns {Promise<JSX.Element>} - The rendered root layout component.
+ */
 export default async function RootLayout({
   children,
   params,

@@ -5,6 +5,11 @@ import * as SeparatorPrimitive from '@radix-ui/react-separator'
 
 import { cn } from '@/lib/utils'
 
+/**
+ * A separator.
+ * @param {React.ComponentProps<typeof SeparatorPrimitive.Root>} props - The props for the component.
+ * @returns {JSX.Element} - The rendered separator component.
+ */
 function Separator({
   className,
   orientation = 'horizontal',

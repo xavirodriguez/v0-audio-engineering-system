@@ -28,6 +28,10 @@ const testimonials = [
   },
 ]
 
+/**
+ * A component that displays a list of testimonials.
+ * @returns {JSX.Element} - The rendered testimonials component.
+ */
 export function Testimonials() {
   return (
     <section className="py-20 md:py-32 px-4 sm:px-6 lg:px-8">
