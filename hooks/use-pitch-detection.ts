@@ -1,107 +1,91 @@
-"use client"
-
 import { useCallback } from "react"
-import { usePitchDetectionStore } from "@/lib/store/pitch-detection-store"
+import { usePitchDetectionState } from "./use-pitch-detection-state"
 import { useAudioContext } from "./use-audio-context"
 import { usePitchProcessor } from "./use-pitch-processor"
-import { useCalibration } from "./use-calibration"
-import { usePitchStateMachine } from "./use-pitch-state-machine"
-import type { PitchEvent } from "@/lib/types/pitch-detection"
-import { PitchDetector } from "@/lib/audio/pitch-detector"
+import { PitchDetectionEvent, PitchDetectionState } from "@/lib/state-machines/pitch-detection.machine"
 
-/**
- * A hook that provides pitch detection functionality.
- * @returns {object} - The pitch detection functions and state.
- */
 export function usePitchDetection() {
-  const store = usePitchDetectionStore()
+  // ✅ Estado centralizado con máquina de estados
+  const state = usePitchDetectionState()
 
-  const { audioContext, analyser, mediaStream, initialize: initAudio, isReady } = useAudioContext()
+  // ✅ Audio context
+  const { audioContext, analyser, initialize: initAudio, cleanup } = useAudioContext()
 
-  const { handlePitchEvent } = usePitchStateMachine()
-
-  const { startCalibration, processCalibrationFrame, isCalibrating } = useCalibration({
-    audioContext,
-    mediaStream,
-    rmsThreshold: store.rmsThreshold,
-    onCalibrationComplete: (latencyMs) => {
-      console.log("[v0] Calibration complete:", latencyMs)
-    },
-  })
-
-  const onPitchDetected = useCallback(
-    (event: PitchEvent) => {
-      // Si estamos calibrando, procesar calibración
-      if (isCalibrating) {
-        processCalibrationFrame(event.rms, event.timestamp)
-        return
-      }
-
-      // Sino, procesar pitch normal
-      handlePitchEvent(event)
-    },
-    [isCalibrating, processCalibrationFrame, handlePitchEvent],
-  )
-
-  const { startProcessing, stopProcessing } = usePitchProcessor({
+  // ✅ Procesador
+  usePitchProcessor({
     analyser,
     sampleRate: audioContext?.sampleRate || 48000,
-    onPitchDetected,
-    isActive: store.status === "PITCH_DETECTING" || store.status === "PITCH_STABLE" || isCalibrating,
+    isActive: state.isDetecting,
+    onPitchDetected: (event) => {
+      // ✅ Actualizar métricas de forma inmutable
+      state.updateMetrics(event.pitchHz, event.confidence)
+
+      // Lógica de transiciones basada en el evento
+      if (event.confidence > 0.6) {
+        if (state.currentState === PitchDetectionState.PITCH_DETECTING) {
+          state.transition(PitchDetectionEvent.PITCH_STABLE)
+        }
+      } else {
+        if (state.currentState === PitchDetectionState.PITCH_STABLE) {
+          state.transition(PitchDetectionEvent.PITCH_LOST)
+        }
+      }
+    },
+    onError: (error) => {
+      state.setError(error)
+    },
   })
 
-  // Calibración RMS
-  const calibrateRMS = useCallback(() => {
-    if (!analyser) return
+  // ✅ API pública con validación de estados
+  const initialize = useCallback(async () => {
+    if (state.currentState !== PitchDetectionState.UNINITIALIZED) {
+      console.warn("Already initialized")
+      return
+    }
 
-    const buffer = new Float32Array(analyser.fftSize)
-    analyser.getFloatTimeDomainData(buffer)
+    state.transition(PitchDetectionEvent.INITIALIZE)
 
-    const detector = new PitchDetector(audioContext?.sampleRate || 48000)
-    const rms = detector.calculateRMS(buffer)
-    detector.destroy()
-
-    store.setState({ rmsThreshold: rms * 2.5 })
-  }, [analyser, audioContext, store])
-
-  // API Pública
-  const initialize = useCallback(
-    async (signal?: AbortSignal) => {
-      await initAudio(signal)
-
-      // Calibrar RMS después de 500ms
-      setTimeout(() => {
-        if (isReady) calibrateRMS()
-      }, 500)
-
-      store.setState({ status: "IDLE" })
-    },
-    [initAudio, calibrateRMS, store, isReady],
-  )
+    try {
+      await initAudio()
+      state.transition(PitchDetectionEvent.INITIALIZATION_SUCCESS)
+    } catch (error) {
+      state.setError(error instanceof Error ? error : new Error(String(error)))
+      state.transition(PitchDetectionEvent.INITIALIZATION_FAILED)
+    }
+  }, [state, initAudio])
 
   const startDetection = useCallback(() => {
-    store.setState({
-      status: "PITCH_DETECTING",
-      currentNoteIndex: 0,
-      accompanimentStartTime: audioContext?.currentTime || 0,
-      consecutiveStableFrames: 0,
-      holdStart: 0,
-      accuracy: 0,
-    })
-  }, [store, audioContext])
+    if (!state.canStartDetection) {
+      console.warn(`Cannot start detection in state ${state.currentState}`)
+      return
+    }
+
+    state.transition(PitchDetectionEvent.START_DETECTION)
+  }, [state])
 
   const stopDetection = useCallback(() => {
-    stopProcessing()
-    store.setState({ status: "IDLE" })
-  }, [stopProcessing, store])
+    if (!state.isDetecting) {
+      return
+    }
+
+    state.transition(PitchDetectionEvent.STOP_DETECTION)
+  }, [state])
 
   return {
-    state: store,
+    // Estado
+    currentState: state.currentState,
+    currentPitch: state.currentPitch,
+    currentCents: state.currentCents,
+    error: state.error,
+
+    // Capacidades
+    canStartCalibration: state.canStartCalibration,
+    canStartDetection: state.canStartDetection,
+    isDetecting: state.isDetecting,
+
+    // Acciones
     initialize,
-    startCalibration,
     startDetection,
     stopDetection,
-    calibrateRMS,
-    mediaStream,
   }
 }
