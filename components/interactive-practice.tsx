@@ -1,7 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card } from "@/components/ui/card"
+import { audioManager } from "@/lib/audio/audio-resource-manager"
 import { usePitchDetection } from "@/hooks/use-pitch-detection"
 import { useRecording } from "@/hooks/use-recording"
 import { useAdaptiveExercises } from "@/hooks/use-adaptive-exercises"
@@ -29,6 +30,12 @@ export function InteractivePractice() {
   const practiceState = usePracticeState()
 
   const [isInitialized, setIsInitialized] = useState(false)
+
+  useEffect(() => {
+    return () => {
+      audioManager.dispose()
+    }
+  }, [])
 
   useRecordingSync({
     isRecording,
