@@ -1,2 +1,25 @@
 
-dev.log
+> my-v0-project@0.1.0 dev
+> next dev
+
+ ⚠ `eslint` configuration in next.config.mjs is no longer supported. See more info here: https://nextjs.org/docs/app/api-reference/cli/next#next-lint-options
+ ⚠ Invalid next.config.mjs options detected:
+ ⚠     Unrecognized key(s) in object: 'eslint'
+ ⚠ See more info here: https://nextjs.org/docs/messages/invalid-next-config
+   ▲ Next.js 16.0.0 (Turbopack)
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.0.2:3000
+
+ ✓ Starting...
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+ ✓ Ready in 2s
+ ○ Compiling /[locale]/practica ...
+ GET /en/practica 200 in 11.2s (compile: 9.7s, proxy.ts: 434ms, render: 1042ms)
+ ✓ Compiled in 99ms
+ GET /en/practica 200 in 517ms (compile: 145ms, proxy.ts: 10ms, render: 361ms)
+ GET /wasm/pitch-detector.wasm 404 in 59ms (compile: 9ms, render: 50ms)

@@ -15,6 +15,7 @@ import { PracticeHeader } from "./practice/practice-header"
 import { SettingsPanel } from "./practice/settings-panel"
 import { PracticeControls } from "./practice/practice-controls"
 import { ModalManager } from "./practice/modal-manager"
+import { Fretboard } from "./practice/fretboard"
 
 /**
  * A component that provides an interactive practice session for the user.
@@ -133,6 +134,9 @@ export function InteractivePractice() {
             currentRms={state.currentRms}
             rmsThreshold={state.rmsThreshold}
           />
+          <div className="p-4 sm:p-6">
+            <Fretboard currentPitch={state.currentPitch} />
+          </div>
         </Card>
       </main>
 
