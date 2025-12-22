@@ -95,10 +95,10 @@ export class PerformanceAnalyzer {
     if (avgIntonation < 15) strengths.push("excellent-intonation")
 
     // Analizar tipos de ejercicios donde destaca
-    const exercisePerformance = new Map<string, number>()
+    const exercisePerformance = new Map<string, number[]>()
     recentSessions.forEach((session) => {
       const type = session.exerciseType
-      const current = exercisePerformance.get(type) || []
+      const current = exercisePerformance.get(type) ?? []
       exercisePerformance.set(type, [...current, session.metrics.accuracy])
     })
 
