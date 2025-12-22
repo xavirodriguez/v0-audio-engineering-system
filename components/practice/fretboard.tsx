@@ -18,9 +18,19 @@ interface NoteProps {
   isActive: boolean
   position: number
   noteName: string
+  feedback: FeedbackState
 }
 
-const Note = memo<NoteProps>(function Note({ isActive, position, noteName }) {
+const Note = memo<NoteProps>(function Note({ isActive, position, noteName, feedback }) {
+  const feedbackColor = {
+    PERFECTO: "bg-green-500",
+    LIGERAMENTE_AGUDO: "bg-yellow-400",
+    LIGERAMENTE_GRAVE: "bg-yellow-400",
+    AGUDO: "bg-red-500",
+    GRAVE: "bg-red-500",
+    NO_DETECTADO: "bg-transparent",
+  }[feedback]
+
   return (
     <div
       className="absolute top-1/2 -translate-y-1/2 w-6 h-6 rounded-full flex items-center justify-center transition-all duration-75"
@@ -28,7 +38,7 @@ const Note = memo<NoteProps>(function Note({ isActive, position, noteName }) {
     >
       <div
         className={`w-full h-full rounded-full transition-all duration-75 ${
-          isActive ? "bg-blue-500 scale-110" : "bg-transparent"
+          isActive ? `${feedbackColor} scale-110` : "bg-transparent"
         }`}
       />
       {isActive && (
@@ -43,9 +53,10 @@ const Note = memo<NoteProps>(function Note({ isActive, position, noteName }) {
 interface StringProps {
   stringName: (typeof VIOLIN_STRING_NAMES)[number]
   activeNote: ActiveNote | null
+  feedback: FeedbackState
 }
 
-const String = memo<StringProps>(function String({ stringName, activeNote }) {
+const String = memo<StringProps>(function String({ stringName, activeNote, feedback }) {
   return (
     <div className="relative h-8">
       <div className="absolute top-1/2 -translate-y-1/2 w-full h-0.5 bg-gray-400" />
@@ -57,6 +68,7 @@ const String = memo<StringProps>(function String({ stringName, activeNote }) {
             isActive={isActive}
             position={calculateFretPosition(fret)}
             noteName={isActive ? activeNote.noteName : ""}
+            feedback={feedback}
           />
         )
       })}
@@ -64,11 +76,16 @@ const String = memo<StringProps>(function String({ stringName, activeNote }) {
   )
 })
 
+import type { FeedbackState } from "@/lib/types/pitch-detection"
+
+// ... (resto de las importaciones)
+
 interface FretboardProps {
   currentPitch: number
+  feedback: FeedbackState
 }
 
-export function Fretboard({ currentPitch }: FretboardProps) {
+export function Fretboard({ currentPitch, feedback }: FretboardProps) {
   const activeNote = useViolinLogic(currentPitch)
 
   return (

@@ -24,12 +24,27 @@ export function usePitchStateMachine() {
       const currentNote = state.notes[state.currentNoteIndex]
       const cents = frequencyToCents(pitchHz, currentNote.frequency)
 
-      // Actualizar métricas actuales
+      // Determinar el estado de feedback basado en cents
+      let feedback: FeedbackState
+      const absCents = Math.abs(cents)
+
+      if (rms < state.rmsThreshold || pitchHz === 0) {
+        feedback = "NO_DETECTADO"
+      } else if (absCents <= 10) {
+        feedback = "PERFECTO"
+      } else if (absCents <= 25) {
+        feedback = cents > 0 ? "LIGERAMENTE_AGUDO" : "LIGERAMENTE_GRAVE"
+      } else {
+        feedback = cents > 0 ? "AGUDO" : "GRAVE"
+      }
+
+      // Actualizar métricas actuales, incluyendo el nuevo feedback
       store.setState({
         currentPitch: pitchHz,
         currentCents: cents,
         currentConfidence: confidence,
         currentRms: rms,
+        feedback: feedback,
       })
 
       // Estado: IDLE - no hacer nada

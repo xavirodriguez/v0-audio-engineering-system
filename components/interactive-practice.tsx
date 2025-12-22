@@ -128,14 +128,15 @@ export function InteractivePractice() {
 
           <PitchIndicator
             currentNote={state.notes[state.currentNoteIndex]}
-            currentPitch={state.currentPitch}
+            currentPitch={450}
             currentCents={state.currentCents}
             currentConfidence={state.currentConfidence}
             currentRms={state.currentRms}
             rmsThreshold={state.rmsThreshold}
+            feedback={state.feedback}
           />
           <div className="p-4 sm:p-6">
-            <Fretboard currentPitch={state.currentPitch} />
+            <Fretboard currentPitch={450} feedback={state.feedback} />
           </div>
         </Card>
       </main>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback } from "react"
+import { useCallback, useRef, useState } from "react"
 import { usePitchDetectionStore } from "@/lib/store/pitch-detection-store"
 import { useAudioContext } from "./use-audio-context"
 import { usePitchProcessor } from "./use-pitch-processor"
@@ -15,6 +15,12 @@ import { PitchDetector } from "@/lib/audio/pitch-detector"
  */
 export function usePitchDetection() {
   const store = usePitchDetectionStore()
+
+  // --- State and Refs for Pitch Smoothing ---
+  const pitchHistoryRef = useRef<number[]>([])
+  const [smoothedPitch, setSmoothedPitch] = useState(0)
+  const PITCH_SMOOTHING_WINDOW = 5 // Number of frames to average over
+  const CONFIDENCE_THRESHOLD = 0.8 // Minimum confidence to consider a pitch
 
   const { audioContext, analyser, mediaStream, initialize: initAudio, isReady } = useAudioContext()
 
@@ -31,16 +37,40 @@ export function usePitchDetection() {
 
   const onPitchDetected = useCallback(
     (event: PitchEvent) => {
-      // Si estamos calibrando, procesar calibración
       if (isCalibrating) {
         processCalibrationFrame(event.rms, event.timestamp)
         return
       }
 
-      // Sino, procesar pitch normal
-      handlePitchEvent(event)
+      // 1. Filtrar por confianza
+      if (event.confidence < CONFIDENCE_THRESHOLD) {
+        // Si la confianza es baja, reseteamos el historial y no procesamos.
+        pitchHistoryRef.current = []
+        setSmoothedPitch(0)
+        // Opcional: podrías enviar un evento "no detectado" a la FSM aquí.
+        // handlePitchEvent({ ...event, pitchHz: 0 });
+        return
+      }
+
+      // 2. Añadir pitch al historial
+      pitchHistoryRef.current.push(event.pitchHz)
+      if (pitchHistoryRef.current.length > PITCH_SMOOTHING_WINDOW) {
+        pitchHistoryRef.current.shift() // Mantener el tamaño de la ventana
+      }
+
+      // 3. Calcular media móvil si el historial está lleno
+      if (pitchHistoryRef.current.length === PITCH_SMOOTHING_WINDOW) {
+        const averagePitch = pitchHistoryRef.current.reduce((a, b) => a + b, 0) / PITCH_SMOOTHING_WINDOW
+        setSmoothedPitch(averagePitch)
+
+        // 4. Crear un nuevo evento con el pitch suavizado
+        const smoothedEvent: PitchEvent = { ...event, pitchHz: averagePitch }
+
+        // 5. Procesar el evento suavizado
+        handlePitchEvent(smoothedEvent)
+      }
     },
-    [isCalibrating, processCalibrationFrame, handlePitchEvent],
+    [isCalibrating, processCalibrationFrame, handlePitchEvent, CONFIDENCE_THRESHOLD, PITCH_SMOOTHING_WINDOW],
   )
 
   const { startProcessing, stopProcessing } = usePitchProcessor({

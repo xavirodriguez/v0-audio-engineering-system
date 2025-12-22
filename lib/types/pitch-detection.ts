@@ -62,6 +62,17 @@ export interface MusicalNote {
 /**
  * The global state of the tuner.
  */
+/**
+ * Represents the detailed feedback on tuning accuracy.
+ */
+export type FeedbackState =
+  | "PERFECTO"
+  | "LIGERAMENTE_AGUDO"
+  | "LIGERAMENTE_GRAVE"
+  | "AGUDO"
+  | "GRAVE"
+  | "NO_DETECTADO"
+
 export interface GlobalTunerState {
   status: TunerStatus
   currentNoteIndex: number
@@ -81,5 +92,6 @@ export interface GlobalTunerState {
   currentConfidence: number
   currentRms: number
   accuracy: number
+  feedback: FeedbackState
   notes: MusicalNote[]
 }

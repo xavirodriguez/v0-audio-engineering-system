@@ -3,7 +3,7 @@
 import { motion } from "framer-motion"
 import { Card } from "@/components/ui/card"
 import { midiToNoteName } from "@/lib/audio/note-utils"
-import type { PracticeNote } from "@/lib/types/pitch-detection"
+import type { MusicalNote, FeedbackState } from "@/lib/types/pitch-detection"
 
 interface PitchIndicatorProps {
   currentNote: PracticeNote
@@ -12,6 +12,7 @@ interface PitchIndicatorProps {
   currentConfidence: number
   currentRms: number
   rmsThreshold: number
+  feedback: FeedbackState
 }
 
 /**
@@ -26,16 +27,17 @@ export function PitchIndicator({
   currentConfidence,
   currentRms,
   rmsThreshold,
+  feedback,
 }: PitchIndicatorProps) {
-  const getPitchIndicatorColor = () => {
-    if (currentRms < rmsThreshold) return "bg-muted"
-
-    const absCents = Math.abs(currentCents)
-    if (absCents < 10) return "bg-emerald-500"
-    if (absCents < 25) return "bg-yellow-500"
-    if (absCents < 50) return "bg-orange-500"
-    return "bg-red-500"
+  const feedbackColorMap = {
+    PERFECTO: "bg-emerald-500",
+    LIGERAMENTE_AGUDO: "bg-yellow-500",
+    LIGERAMENTE_GRAVE: "bg-yellow-500",
+    AGUDO: "bg-red-500",
+    GRAVE: "bg-red-500",
+    NO_DETECTADO: "bg-muted",
   }
+  const getPitchIndicatorColor = () => feedbackColorMap[feedback]
 
   const getPitchIndicatorPosition = () => {
     const clampedCents = Math.max(-50, Math.min(50, currentCents))

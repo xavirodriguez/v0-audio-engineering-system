@@ -31,6 +31,7 @@ const initialState: GlobalTunerState = {
   currentConfidence: 0,
   currentRms: 0,
   accuracy: 0,
+  feedback: "NO_DETECTADO",
   notes: generatePracticeSequence(),
 }
 
