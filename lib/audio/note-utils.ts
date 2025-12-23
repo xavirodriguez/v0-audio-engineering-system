@@ -98,6 +98,8 @@ export const VIOLIN_NOTES = [
   { midi: 76, name: "E5", frequency: midiToFrequency(76) }, // Cuerda E
 ]
 
+import { ViolinExerciseSchema } from "@/lib/validation/schemas";
+
 /**
  * Generates a simple practice sequence.
  * @returns {Array<{midi: number, frequency: number, name: string, duration: number, startTime: number}>} - The practice sequence.
@@ -109,27 +111,45 @@ export function generatePracticeSequence(): Array<{
   duration: number
   startTime: number
 }> {
+  // A G Major scale, which is a common and valid exercise for violin
   const sequence = [
-    { midi: 67, duration: 1000 }, // G4 - Cuerda Sol al aire
-    { midi: 57, duration: 1000 }, // A4
-    { midi: 59, duration: 1000 }, // B4
-    { midi: 60, duration: 1000 }, // C5
-    { midi: 62, duration: 1000 }, // D5
-    { midi: 64, duration: 1000 }, // E5
-    { midi: 66, duration: 1000 }, // F#5
+    { midi: 55, duration: 1000 }, // G3
+    { midi: 57, duration: 1000 }, // A3
+    { midi: 59, duration: 1000 }, // B3
+    { midi: 60, duration: 1000 }, // C4
+    { midi: 62, duration: 1000 }, // D4
+    { midi: 64, duration: 1000 }, // E4
+    { midi: 66, duration: 1000 }, // F#4
+    { midi: 67, duration: 1000 }, // G4
   ];
 
 
-  let cumulativeTime = 0
-  return sequence.map((note) => {
+  let cumulativeTime = 0;
+  const unvalidatedSequence = sequence.map((note) => {
     const result = {
       midi: note.midi,
       frequency: midiToFrequency(note.midi),
       name: midiToNoteName(note.midi),
       duration: note.duration,
       startTime: cumulativeTime,
-    }
-    cumulativeTime += note.duration
-    return result
-  })
+    };
+    cumulativeTime += note.duration;
+    return result;
+  });
+
+  try {
+    return ViolinExerciseSchema.parse(unvalidatedSequence);
+  } catch (error) {
+    console.error("Generated practice sequence is invalid:", error);
+    // Return a default, valid sequence as a fallback
+    return [
+      {
+        midi: 69,
+        frequency: 440,
+        name: "A4",
+        duration: 1000,
+        startTime: 0,
+      }
+    ];
+  }
 }

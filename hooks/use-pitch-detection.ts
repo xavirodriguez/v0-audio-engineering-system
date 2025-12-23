@@ -1,91 +1,64 @@
-import { useCallback } from "react"
-import { usePitchDetectionState } from "./use-pitch-detection-state"
-import { useAudioContext } from "./use-audio-context"
-import { usePitchProcessor } from "./use-pitch-processor"
-import { PitchDetectionEvent, PitchDetectionState } from "@/lib/state-machines/pitch-detection.machine"
+
+import { useCallback } from "react";
+import { usePitchDetectionStore } from "@/lib/store/pitch-detection-store";
+import { useAudioContext } from "./use-audio-context";
+import { usePitchProcessor } from "./use-pitch-processor";
+import { frequencyToCents } from "@/lib/audio/note-utils";
 
 export function usePitchDetection() {
-  // ✅ Estado centralizado con máquina de estados
-  const state = usePitchDetectionState()
+  // ✅ Centralized state from Zustand store
+  const {
+    status,
+    currentPitch,
+    currentCents,
+    targetFreqHz,
+    error,
+    startDetection: startStoreDetection,
+    stopDetection: stopStoreDetection,
+    updatePitchEvent,
+    resetState,
+  } = usePitchDetectionStore();
 
-  // ✅ Audio context
-  const { audioContext, analyser, initialize: initAudio, cleanup } = useAudioContext()
+  // Audio context management
+  const { audioContext, analyser, initialize: initAudio, cleanup } = useAudioContext();
 
-  // ✅ Procesador
+  // Pitch processing, driven by store state
   usePitchProcessor({
     analyser,
     sampleRate: audioContext?.sampleRate || 48000,
-    isActive: state.isDetecting,
+    isActive: status === 'LISTENING',
     onPitchDetected: (event) => {
-      // ✅ Actualizar métricas de forma inmutable
-      state.updateMetrics(event.pitchHz, event.confidence)
-
-      // Lógica de transiciones basada en el evento
-      if (event.confidence > 0.6) {
-        if (state.currentState === PitchDetectionState.PITCH_DETECTING) {
-          state.transition(PitchDetectionEvent.PITCH_STABLE)
-        }
-      } else {
-        if (state.currentState === PitchDetectionState.PITCH_STABLE) {
-          state.transition(PitchDetectionEvent.PITCH_LOST)
-        }
-      }
+      const cents = frequencyToCents(event.pitchHz, targetFreqHz);
+      updatePitchEvent({ ...event, cents });
     },
     onError: (error) => {
-      state.setError(error)
+      // Handle or propagate error
     },
-  })
+  });
 
-  // ✅ API pública con validación de estados
+  // Public API
   const initialize = useCallback(async () => {
-    if (state.currentState !== PitchDetectionState.UNINITIALIZED) {
-      console.warn("Already initialized")
-      return
-    }
-
-    state.transition(PitchDetectionEvent.INITIALIZE)
-
     try {
-      await initAudio()
-      state.transition(PitchDetectionEvent.INITIALIZATION_SUCCESS)
+      await initAudio();
     } catch (error) {
-      state.setError(error instanceof Error ? error : new Error(String(error)))
-      state.transition(PitchDetectionEvent.INITIALIZATION_FAILED)
+      // Handle or propagate error
     }
-  }, [state, initAudio])
-
-  const startDetection = useCallback(() => {
-    if (!state.canStartDetection) {
-      console.warn(`Cannot start detection in state ${state.currentState}`)
-      return
-    }
-
-    state.transition(PitchDetectionEvent.START_DETECTION)
-  }, [state])
-
-  const stopDetection = useCallback(() => {
-    if (!state.isDetecting) {
-      return
-    }
-
-    state.transition(PitchDetectionEvent.STOP_DETECTION)
-  }, [state])
+  }, [initAudio]);
 
   return {
-    // Estado
-    currentState: state.currentState,
-    currentPitch: state.currentPitch,
-    currentCents: state.currentCents,
-    error: state.error,
+    // State
+    currentState: status,
+    currentPitch,
+    currentCents,
+    error,
 
-    // Capacidades
-    canStartCalibration: state.canStartCalibration,
-    canStartDetection: state.canStartDetection,
-    isDetecting: state.isDetecting,
+    // Capabilities
+    isDetecting: status === 'LISTENING',
 
-    // Acciones
+    // Actions
     initialize,
-    startDetection,
-    stopDetection,
-  }
+    startDetection: startStoreDetection,
+    stopDetection: stopStoreDetection,
+    reset: resetState,
+  };
 }
