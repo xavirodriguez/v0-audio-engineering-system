@@ -72,16 +72,26 @@ export function useAudioContext(): UseAudioContextReturn {
   }, [])
 
   const cleanup = useCallback(() => {
-    if (mediaStreamRef.current) {
-      mediaStreamRef.current.getTracks().forEach((track) => track.stop())
-      mediaStreamRef.current = null
+    // Hotfix: More aggressive cleanup to prevent memory leaks.
+    const audioContext = audioContextRef.current;
+    const mediaStream = mediaStreamRef.current;
+
+    if (mediaStream) {
+      mediaStream.getTracks().forEach((track) => track.stop());
+      mediaStreamRef.current = null;
     }
-    if (audioContextRef.current) {
-      audioContextRef.current.close()
-      audioContextRef.current = null
+
+    // The source node is not stored in a ref in the original code,
+    // so we cannot explicitly disconnect it here without a larger refactor.
+    // Closing the context is the most effective cleanup step.
+
+    if (audioContext && audioContext.state !== 'closed') {
+      audioContext.close();
+      audioContextRef.current = null;
     }
-    analyserRef.current = null
-  }, [])
+
+    analyserRef.current = null;
+  }, []);
 
   useEffect(() => {
     return () => cleanup()

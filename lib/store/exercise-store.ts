@@ -1,7 +1,12 @@
 import { create } from "zustand"
-import { persist } from "zustand/middleware"
+import { persist, PersistOptions } from "zustand/middleware"
 import type { StudentProfile, Exercise, AdaptiveRecommendation, PracticeSession } from "@/lib/types/exercise-system"
 import { getExerciseGenerator, getPerformanceAnalyzer } from "@/lib/ai/exercise-factory"
+
+// Hotfix: Validation function to prevent data loss
+const isValidProfile = (profile: any): profile is StudentProfile => {
+  return profile && typeof profile === 'object' && profile.id && Array.isArray(profile.practiceHistory);
+};
 
 interface ExerciseStore {
   profile: StudentProfile | null
@@ -58,6 +63,11 @@ export const useExerciseStore = create<ExerciseStore>()(
        * @param {StudentProfile} profile - The student profile.
        */
       setProfile: (profile) => {
+        // Hotfix: Validate profile before setting to prevent data loss.
+        if (!isValidProfile(profile)) {
+          console.warn("Attempted to set an invalid profile. Aborting.");
+          return;
+        }
         const generator = getExerciseGenerator()
         const recs = generator.generateRecommendations(profile)
         set({ profile, recommendations: recs })
@@ -127,29 +137,38 @@ export const useExerciseStore = create<ExerciseStore>()(
        * @returns {Exercise | null} - The generated exercise.
        */
       generateCustomExercise: (type, difficulty) => {
-        const generator = getExerciseGenerator()
-        let exercise: Exercise | null = null
+        const { profile } = get();
+        if (!profile) return null;
+
+        const analyzer = getPerformanceAnalyzer();
+        const generator = getExerciseGenerator();
+        let exercise: Exercise | null = null;
+
+        // Hotfix: Validate and sanitize notes before use
+        const isValidMidiNote = (note: any) => typeof note === 'number' && note >= 55 && note <= 103;
 
         switch (type) {
           case "open-strings":
-            exercise = generator.generateOpenStringsExercise(difficulty as any)
-            break
+            exercise = generator.generateOpenStringsExercise(difficulty as any);
+            break;
           case "scales":
-            exercise = generator.generateScaleExercise(difficulty as any, "major")
-            break
+            exercise = generator.generateScaleExercise(difficulty as any, "major");
+            break;
           case "intervals":
-            exercise = generator.generateIntervalsExercise(difficulty as any)
-            break
+            exercise = generator.generateIntervalsExercise(difficulty as any);
+            break;
           case "intonation-drill":
-            exercise = generator.generateIntonationDrill(69, difficulty as any)
-            break
+            const weakNotes = analyzer.getWeakNotes(profile).filter(isValidMidiNote);
+            const targetNote = weakNotes.length > 0 ? weakNotes[0] : 69; // Default to A4
+            exercise = generator.generateIntonationDrill(targetNote, difficulty as any);
+            break;
         }
 
         if (exercise) {
-          set({ currentExercise: exercise })
+          set({ currentExercise: exercise });
         }
 
-        return exercise
+        return exercise;
       },
 
       /**
@@ -178,6 +197,14 @@ export const useExerciseStore = create<ExerciseStore>()(
         practiceContext: state.practiceContext,
         practiceGoal: state.practiceGoal,
       }),
+      // Hotfix: Custom merge function to prevent hydration with invalid data.
+      merge: (persistedState, currentState) => {
+        const state = persistedState as any;
+        if (state && isValidProfile(state.profile)) {
+          return { ...currentState, ...state };
+        }
+        return currentState; // Ignore persisted state if profile is invalid
+      },
     },
   ),
 )
