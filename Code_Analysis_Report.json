@@ -1,0 +1,73 @@
+{
+  "reactiveStateManagement": [
+    {
+      "severity": "High",
+      "description": "The `InteractivePractice` component acts as a 'God Component', consuming multiple hooks (`usePitchDetection`, `useRecording`, `usePracticeState`, etc.) and re-rendering the entire UI tree on any state change from any of these hooks. For instance, high-frequency updates to `state.currentPitch` cause the entire component to re-render, leading to significant performance degradation.",
+      "impact": "This pattern causes severe performance issues, especially on lower-end devices, due to excessive re-renders. It also makes the component difficult to maintain, test, and reason about because UI logic and business logic are tightly coupled.",
+      "correctedCode": {
+        "explanation": "The solution is to adopt the Provider pattern. We create a `PracticeProvider` to encapsulate all the business logic and state management. Components then consume only the specific slices of state they need using granular, selector-based hooks, preventing unnecessary re-renders.",
+        "provider": "```typescript\n// providers/PracticeProvider.tsx\n'use client';\n\nimport { createContext, useContext, ReactNode } from 'react';\nimport { usePitchDetection } from '@/hooks/use-pitch-detection';\nimport { useRecording } from '@/hooks/use-recording';\nimport { usePracticeState } from '@/hooks/use-practice-state';\n// ... other hooks\n\n// 1. Combine all hook results into a single value\nconst usePractice = () => {\n  const pitchDetection = usePitchDetection();\n  const recording = useRecording();\n  const practiceState = usePracticeState();\n  // ... combine all state and actions\n  return { ...pitchDetection, ...recording, ...practiceState };\n};\n\nconst PracticeContext = createContext<ReturnType<typeof usePractice> | null>(null);\n\nexport const PracticeProvider = ({ children }: { children: ReactNode }) => {\n  const value = usePractice();\n  return <PracticeContext.Provider value={value}>{children}</PracticeContext.Provider>;\n};\n\n// 2. Create selector hooks for specific state slices\nexport const usePracticeStatus = () => {\n  const context = useContext(PracticeContext);\n  if (!context) throw new Error('Must be used within a PracticeProvider');\n  // This hook now only subscribes to status changes\n  return { status: context.state.status, isPlaying: context.isPlaying };\n};\n\nexport const usePracticePitch = () => {\n  const context = useContext(PracticeContext);\n  if (!context) throw new Error('Must be used within a PracticeProvider');\n  // This hook subscribes to high-frequency pitch updates\n  return { currentPitch: context.state.currentPitch, currentCents: context.state.currentCents };\n};\n```",
+        "component": "```typescript\n// components/practice/PracticeControls.tsx\n\n// Now this component only re-renders when isPlaying or isInitialized changes.\n// It will NOT re-render when the pitch changes.\nimport { usePracticeStatus, usePracticeActions } from '@/providers/PracticeProvider';\n\nexport function PracticeControls() {\n  const { isPlaying, isInitialized } = usePracticeStatus();\n  const { handleStart } = usePracticeActions(); // Assume actions are in a separate stable hook\n\n  return (\n    <footer>\n      <button onClick={handleStart} disabled={!isInitialized}>\n        {isPlaying ? 'Stop' : 'Start'}\n      </button>\n    </footer>\n  );\n}\n```"
+      },
+      "annotations": "By splitting state access into granular hooks like `usePracticeStatus` and `usePracticePitch`, components can co-locate their state dependencies and avoid re-rendering from unrelated state updates. This is a core principle of performant React applications.",
+      "testSuggestions": "Use React Testing Library to test components with a mocked `PracticeProvider`. You can use `rerender` to verify that a component does *not* re-render when an unrelated slice of state is updated in the provider."
+    }
+  ],
+  "strictTypingAndDataValidation": [
+    {
+      "severity": "Medium",
+      "description": "Complex data structures like `currentExercise` and `recommendations` are consumed from hooks without explicit type definitions or runtime validation. The `handleSelectExercise` function finds an exercise by string ID, which can result in an `undefined` value if no match is found, leading to potential runtime errors.",
+      "impact": "Lack of strict typing and validation increases the risk of runtime errors, especially as the data model evolves. It makes the code harder to understand and refactor safely.",
+      "correctedCode": {
+        "explanation": "Define strict TypeScript types for all data models and use Zod schemas to validate them at the boundaries (e.g., API responses, hook return values). This ensures data integrity throughout the application.",
+        "typesAndSchemas": "```typescript\n// lib/types.ts\nimport { z } from 'zod';\n\nexport const ExerciseSchema = z.object({\n  id: z.string().uuid(),\n  name: z.string(),\n  notes: z.array(z.object({ pitch: z.number(), duration: z.number() })),\n});\n\nexport type Exercise = z.infer<typeof ExerciseSchema>;\n\nexport const RecommendationSchema = z.object({\n  exercise: ExerciseSchema,\n  score: z.number(),\n});\n\nexport type Recommendation = z.infer<typeof RecommendationSchema>;\n```",
+        "component": "```typescript\n// components/interactive-practice.tsx\nimport { Exercise, ExerciseSchema } from '@/lib/types';\n\n// Inside the component...\nconst handleSelectExercise = (exerciseId: string) => {\n  const recommendation = recommendations.find((r) => r.exercise.id === exerciseId);\n  if (recommendation) {\n    // Safely parse to ensure the data matches the expected shape before using it.\n    const validationResult = ExerciseSchema.safeParse(recommendation.exercise);\n    if (validationResult.success) {\n      selectExercise(validationResult.data);\n      practiceState.setShowExercises(false);\n    } else {\n      // Handle validation error, e.g., log to an error service\n      console.error('Invalid exercise data:', validationResult.error);\n    }\n  } \n};\n```"
+      },
+      "annotations": "Using Zod for schema definition and validation provides both compile-time safety with TypeScript (`z.infer`) and runtime safety (`.safeParse`), preventing a whole class of data-related bugs.",
+      "testSuggestions": "Write unit tests for your Zod schemas. Provide both valid and invalid mock data to assert that the schemas correctly parse or reject the data."
+    }
+  ],
+  "componentCompositionAndReusability": [
+    {
+      "severity": "High",
+      "description": "`InteractivePractice` is a monolithic component responsible for rendering the entire UI (header, settings, modals, controls) and managing all associated logic. This tight coupling makes it extremely difficult to reuse, test, or modify any individual piece of the UI without affecting the whole.",
+      "impact": "Low reusability, high maintenance cost, and a brittle architecture where small changes can have cascading, unintended effects. Testing becomes an all-or-nothing affair, slowing down development.",
+      "correctedCode": {
+        "explanation": "The `InteractivePractice` component should be broken down. A top-level `PracticeContainer` will wrap everything in the `PracticeProvider`. The UI itself will be composed of smaller, independent components that consume state from the provider's hooks.",
+        "container": "```typescript\n// app/practice/[exerciseId]/page.tsx\nimport { PracticeProvider } from '@/providers/PracticeProvider';\nimport { PracticeView } from '@/components/practice/PracticeView';\n\nexport default function PracticePage() {\n  return (\n    <PracticeProvider>\n      <PracticeView />\n    </PracticeProvider>\n  );\n}\n```",
+        "viewComponent": "```typescript\n// components/practice/PracticeView.tsx\n'use client';\n\n// This component composes the UI but contains no business logic.\nexport function PracticeView() {\n  return (\n    <div className=\"min-h-screen flex flex-col\">\n      <PracticeHeader />\n      <SettingsPanel />\n      <main className=\"flex-1 container ...\">\n        <PracticeArea />\n      </main>\n      <PracticeControls />\n      <DebugPanel />\n      <ModalManager />\n    </div>\n  );\n}\n```"
+      },
+      "annotations": "This refactoring follows the Separation of Concerns principle. The Provider handles state, the View handles layout, and each child component is responsible for its own piece of the UI and interaction logic.",
+      "testSuggestions": "Each of the new, smaller components (`PracticeHeader`, `SettingsPanel`, etc.) can now be tested independently using React Testing Library. You can test that they render correctly and that their callbacks are fired with the correct arguments when interacted with."
+    }
+  ],
+  "asynchronousAndConcurrentProgramming": [
+    {
+      "severity": "Medium",
+      "description": "The `handleStart` and `handleCalibrate` functions are `async` but lack proper loading/disabled state management. A user can click the buttons multiple times while the underlying async operations (e.g., `initialize()`) are still pending, leading to race conditions and unpredictable application state.",
+      "impact": "Poor user experience due to lack of feedback, and potential for critical bugs if multiple async operations are initiated concurrently. This can lead to resource leaks or a corrupted state.",
+      "correctedCode": {
+        "explanation": "Introduce a dedicated loading state to track the status of async operations. Use this state to disable interactive elements and provide visual feedback to the user, preventing concurrent conflicting operations.",
+        "hook": "```typescript\n// hooks/use-practice-actions.ts\nimport { useState, useCallback } from 'react';\n\nexport const usePracticeActions = () => {\n  const [isLoading, setIsLoading] = useState(false);\n  // ... other hooks for initialize, startDetection, etc.\n\n  const handleStart = useCallback(async () => {\n    if (isLoading) return;\n    setIsLoading(true);\n    try {\n      if (!isInitialized) {\n        await initialize();\n      }\n      // ... rest of the logic\n    } catch (error) {\n      console.error('Failed to handle start:', error);\n    } finally {\n      setIsLoading(false);\n    }\n  }, [isLoading, isInitialized, initialize, ...]);\n\n  return { handleStart, isLoading };\n};\n```",
+        "component": "```typescript\n// components/practice/PracticeControls.tsx\nimport { usePracticeActions, usePracticeStatus } from '@/providers/PracticeProvider';\n\nexport function PracticeControls() {\n  const { isPlaying } = usePracticeStatus();\n  const { handleStart, isLoading } = usePracticeActions();\n\n  return (\n    <button onClick={handleStart} disabled={isLoading}>\n      {isLoading ? 'Loading...' : (isPlaying ? 'Stop' : 'Start')}\n    </button>\n  );\n}\n```"
+      },
+      "annotations": "Managing async state explicitly is crucial for robust applications. The `isLoading` flag ensures that the `handleStart` function is idempotent and safe from race conditions.",
+      "testSuggestions": "In your tests, mock the async functions to control their resolution. Use `waitFor` from React Testing Library to assert that the UI correctly enters and exits the loading state and that the button is disabled during the async operation."
+    }
+  ],
+  "accessibilityAndUX": [
+    {
+      "severity": "High",
+      "description": "Several accessibility issues are present: 1. The Start/Stop button in `PracticeControls` changes its label, but its accessible name might not update correctly for screen readers. 2. The `PitchIndicator` displays rapidly changing data without using an `aria-live` region, making it inaccessible to visually impaired users. 3. Key interactive elements like modals and main content regions lack proper ARIA roles and attributes.",
+      "impact": "The application is difficult or impossible to use for people who rely on assistive technologies like screen readers or keyboard navigation. This can exclude a significant portion of users and may have legal implications (e.g., WCAG compliance).",
+      "correctedCode": {
+        "explanation": "Incorporate proper ARIA attributes to make the application accessible. Use `aria-live` for dynamic content, provide descriptive `aria-label`s for controls that change function, and use semantic roles for page regions.",
+        "pitchIndicator": "```typescript\n// components/PitchIndicator.tsx\n\n// Add aria-live region to announce changes to screen readers.\nexport function PitchIndicator({ currentCents }) {\n  return (\n    <div aria-live=\"polite\" aria-atomic=\"true\">\n      <p>Pitch Deviation: {Math.round(currentCents)} cents</p>\n    </div>\n  );\n}\n```",
+        "practiceControls": "```typescript\n// components/practice/PracticeControls.tsx\n\nexport function PracticeControls({ isPlaying, onStartStop }) {\n  const accessibleLabel = isPlaying ? 'Stop the practice session' : 'Start the practice session';\n\n  return (\n    <button onClick={onStartStop} aria-label={accessibleLabel}>\n      {isPlaying ? 'Stop' : 'Start'}\n    </button>\n  );\n}\n```",
+        "mainCard": "```typescript\n// In PracticeView.tsx\n\n// Assign a role and accessible name to the main content card.\n<Card \n  role=\"region\"\n  aria-labelledby=\"practice-region-title\"\n>\n  <h2 id=\"practice-region-title\" className=\"sr-only\">Interactive Practice Area</h2>\n  {/* ... card content ... */}\n</Card>\n```"
+      },
+      "annotations": "Accessibility is not an afterthought. These changes ensure that dynamic content is communicated to all users and that the application structure is semantically understandable by assistive technologies.",
+      "testSuggestions": "Use `@testing-library/jest-dom` which includes accessibility-focused matchers like `toHaveAccessibleName()`. Run automated accessibility audits in your tests using `jest-axe` to catch violations early."
+    }
+  ]
+}
