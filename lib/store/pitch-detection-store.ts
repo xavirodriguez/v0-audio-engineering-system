@@ -5,11 +5,14 @@ import { generatePracticeSequence } from "@/lib/audio/note-utils"
 
 interface PitchDetectionStore extends GlobalTunerState {
   // Actions
-  setState: (state: Partial<GlobalTunerState>) => void
-  updatePitchEvent: (event: PitchEvent) => void
-  resetState: () => void
-  advanceToNextNote: () => void
-  setNotes: (notes: Array<{ name: string; midi: number; frequency: number; duration: number }>) => void
+  updatePitchEvent: (event: PitchEvent) => void;
+  resetState: () => void;
+  advanceToNextNote: () => void;
+  setNotes: (notes: Array<{ name: string; midi: number; frequency: number; duration: number }>) => void;
+  startDetection: () => void;
+  stopDetection: () => void;
+  setTargetNote: (midi: number) => void;
+  transitionStatus: (newStatus: 'PITCH_STABLE' | 'LISTENING') => void;
 }
 
 const initialState: GlobalTunerState = {
@@ -32,6 +35,7 @@ const initialState: GlobalTunerState = {
   currentRms: 0,
   accuracy: 0,
   notes: generatePracticeSequence(),
+  transitionTimestamps: [],
 }
 
 /**
@@ -43,22 +47,28 @@ export const usePitchDetectionStore = create<PitchDetectionStore>()(
       ...initialState,
 
       /**
-       * Sets the state of the store.
-       * @param {Partial<GlobalTunerState>} newState - The new state.
-       */
-      setState: (newState) => set((state) => ({ ...state, ...newState })),
-
-      /**
        * Updates the pitch event.
        * @param {PitchEvent} event - The pitch event.
        */
-      updatePitchEvent: (event) =>
+      updatePitchEvent: (event) => {
+        const { status } = get();
+        if (event.confidence > 0.6) {
+          if (status === 'LISTENING') {
+            get().transitionStatus('PITCH_STABLE');
+          }
+        } else {
+          if (status === 'PITCH_STABLE') {
+            get().transitionStatus('LISTENING');
+          }
+        }
+
         set((state) => ({
           currentPitch: event.pitchHz,
           currentConfidence: event.confidence,
           currentRms: event.rms,
           pitchHistory: [...state.pitchHistory.slice(-99), event],
-        })),
+        }));
+      },
 
       /**
        * Advances to the next note.
@@ -100,6 +110,46 @@ export const usePitchDetectionStore = create<PitchDetectionStore>()(
        * Resets the state.
        */
       resetState: () => set(initialState),
+
+      /**
+       * Starts pitch detection.
+       */
+      startDetection: () => set({ status: "LISTENING" }),
+
+      /**
+       * Stops pitch detection.
+       */
+      stopDetection: () => set({ status: "IDLE" }),
+
+      /**
+       * Sets the target note.
+       * @param {number} midi - The MIDI number of the target note.
+       */
+      setTargetNote: (midi) => set((state) => {
+        const note = state.notes.find((n) => n.midi === midi);
+        if (note) {
+          return {
+            targetNoteMidi: note.midi,
+            targetFreqHz: note.frequency,
+          };
+        }
+        return {};
+      }),
+
+      transitionStatus: (newStatus) => set((state) => {
+        const now = performance.now();
+        const newTimestamps = [...state.transitionTimestamps, now].filter(ts => now - ts < 1000);
+
+        if (newTimestamps.length > 5) {
+          console.warn(
+            `[FSM Thrashing] ${newTimestamps.length} transitions in 1s. ` +
+            `Last status: ${state.status}, target: ${newStatus}. ` +
+            `Check confidence thresholds.`
+          );
+        }
+
+        return { status: newStatus, transitionTimestamps: newTimestamps };
+      }),
     }),
     {
       name: "pitch-detection-storage",
