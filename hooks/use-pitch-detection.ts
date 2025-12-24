@@ -1,9 +1,10 @@
 
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { usePitchDetectionStore } from "@/lib/store/pitch-detection-store";
 import { useAudioContext } from "./use-audio-context";
 import { usePitchProcessor } from "./use-pitch-processor";
 import { frequencyToCents } from "@/lib/audio/note-utils";
+import { PitchEvent } from "@/lib/types/pitch-detection";
 
 export function usePitchDetection() {
   // ✅ Centralized state from Zustand store
@@ -20,17 +21,25 @@ export function usePitchDetection() {
   } = usePitchDetectionStore();
 
   // Audio context management
-  const { audioContext, analyser, initialize: initAudio, cleanup } = useAudioContext();
+  const { audioContext, analyser, initialize: initAudio } = useAudioContext();
+
+  // Memoize the event handler to prevent re-creating it on every render
+  const onPitchDetected = useCallback((event: PitchEvent) => {
+    const cents = frequencyToCents(event.pitchHz, targetFreqHz);
+    updatePitchEvent({ ...event, cents });
+  }, [targetFreqHz, updatePitchEvent]);
+
+  // Memoize the processor config to prevent re-running the processor's effects unnecessarily
+  const processorConfig = useMemo(() => ({
+    analyser,
+    sampleRate: audioContext?.sampleRate ?? 48000,
+    isActive: status === 'LISTENING',
+  }), [analyser, audioContext?.sampleRate, status]);
 
   // Pitch processing, driven by store state
   usePitchProcessor({
-    analyser,
-    sampleRate: audioContext?.sampleRate || 48000,
-    isActive: status === 'LISTENING',
-    onPitchDetected: (event) => {
-      const cents = frequencyToCents(event.pitchHz, targetFreqHz);
-      updatePitchEvent({ ...event, cents });
-    },
+    ...processorConfig,
+    onPitchDetected,
     onError: (error) => {
       // Handle or propagate error
     },
