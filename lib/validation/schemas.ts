@@ -21,3 +21,15 @@ export const ViolinNoteSchema = NoteSchema.refine(
 
 // Schema for validating a violin exercise
 export const ViolinExerciseSchema = z.array(ViolinNoteSchema);
+
+// Schema for the practice session state
+export const PracticeSessionStateSchema = z.object({
+  viewMode: z.enum(["animated", "static"]),
+  practiceMode: z.enum(["free", "guided"]),
+  sensitivity: z.number().min(0).max(1),
+  tempo: z.number().min(30).max(300),
+  volume: z.number().min(0).max(1),
+  showSettings: z.boolean(),
+  showExercises: z.boolean(),
+  showRecording: z.boolean(),
+});
