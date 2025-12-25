@@ -4,6 +4,12 @@ import { usePitchDetectionStore } from "@/lib/store/pitch-detection-store";
 import { useAudioContext } from "./use-audio-context";
 import { usePitchProcessor } from "./use-pitch-processor";
 import { frequencyToCents } from "@/lib/audio/note-utils";
+import { errorManager } from "@/lib/errors/error-manager";
+import {
+  AppError,
+  AudioInitializationError,
+  BufferOverflowError,
+} from "@/lib/errors/app-errors";
 
 export function usePitchDetection() {
   // ✅ Centralized state from Zustand store
@@ -31,8 +37,11 @@ export function usePitchDetection() {
       const cents = frequencyToCents(event.pitchHz, targetFreqHz);
       updatePitchEvent({ ...event, cents });
     },
-    onError: (error) => {
-      // Handle or propagate error
+    onError: (err) => {
+      const error = new BufferOverflowError({
+        nativeError: err instanceof Error ? err : new Error(String(err)),
+      });
+      errorManager.report(error);
     },
   });
 
@@ -40,8 +49,13 @@ export function usePitchDetection() {
   const initialize = useCallback(async () => {
     try {
       await initAudio();
-    } catch (error) {
-      // Handle or propagate error
+    } catch (err) {
+      // Coerce to a known error type
+      const reason = err instanceof Error ? err.message : "unknown";
+      const error = new AudioInitializationError(reason, {
+        nativeError: err,
+      });
+      errorManager.report(error);
     }
   }, [initAudio]);
 

@@ -12,7 +12,7 @@ interface PitchDetectionStore extends GlobalTunerState {
   startDetection: () => void;
   stopDetection: () => void;
   setTargetNote: (midi: number) => void;
-  transitionStatus: (newStatus: 'PITCH_STABLE' | 'LISTENING') => void;
+  transitionStatus: (newStatus: 'PITCH_STABLE' | 'LISTENING' | 'RETRYING') => void;
 }
 
 const initialState: GlobalTunerState = {
@@ -136,20 +136,47 @@ export const usePitchDetectionStore = create<PitchDetectionStore>()(
         return {};
       }),
 
-      transitionStatus: (newStatus) => set((state) => {
-        const now = performance.now();
-        const newTimestamps = [...state.transitionTimestamps, now].filter(ts => now - ts < 1000);
+      transitionStatus: (newStatus) => {
+        set((state) => {
+          // Basic FSM validation
+          const transitions = {
+            IDLE: ["LISTENING", "RETRYING"],
+            LISTENING: ["PITCH_STABLE", "RETRYING", "IDLE"],
+            PITCH_STABLE: ["LISTENING", "RETRYING", "IDLE"],
+            RETRYING: ["LISTENING", "IDLE"],
+          };
 
-        if (newTimestamps.length > 5) {
-          console.warn(
-            `[FSM Thrashing] ${newTimestamps.length} transitions in 1s. ` +
-            `Last status: ${state.status}, target: ${newStatus}. ` +
-            `Check confidence thresholds.`
+          const currentStatus = state.status;
+          const allowedTransitions = transitions[currentStatus] || [];
+
+          if (!allowedTransitions.includes(newStatus)) {
+            console.warn(
+              `[FSM] Invalid transition from ${currentStatus} to ${newStatus}. Ignoring.`
+            );
+            return state;
+          }
+
+          // Thrashing detection
+          const now = performance.now();
+          const newTimestamps = [...state.transitionTimestamps, now].filter(
+            (ts) => now - ts < 1000
           );
-        }
 
-        return { status: newStatus, transitionTimestamps: newTimestamps };
-      }),
+          if (newTimestamps.length > 10) { // Stricter threshold
+            console.error(
+              `[FSM Thrashing] ${newTimestamps.length} transitions in 1s. ` +
+              `Transition ${currentStatus} -> ${newStatus} is likely unstable.`,
+              {
+                pitchHistory: state.pitchHistory.slice(-10),
+              }
+            );
+            // Optionally, force a safe state
+            return { ...state, status: "IDLE" };
+          }
+
+          return { ...state, status: newStatus, transitionTimestamps: newTimestamps };
+        });
+      },
     }),
     {
       name: "pitch-detection-storage",
