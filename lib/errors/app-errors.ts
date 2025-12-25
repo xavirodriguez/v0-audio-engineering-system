@@ -56,7 +56,18 @@ export abstract class AppError extends Error {
 export class AudioInitializationError extends AppError {
   readonly code = "AUDIO_INIT_ERROR"
   readonly severity = "high"
-  readonly isRetryable = true
+
+  get isRetryable(): boolean {
+    const reason = this.context.reason as string | undefined
+    switch (reason) {
+      case "permission_denied":
+      case "device_not_found":
+        return false // User action required
+      case "device_busy":
+      default:
+        return true // Can be retried
+    }
+  }
 
   get userMessage(): string {
     const reason = this.context.reason as string | undefined
@@ -98,6 +109,23 @@ export class RecordingError extends AppError {
 
   constructor(message: string, context: Record<string, unknown> = {}) {
     super(message, context)
+  }
+}
+
+/**
+ * Error por buffer de audio lleno.
+ */
+export class BufferOverflowError extends AppError {
+  readonly code = "BUFFER_OVERFLOW_ERROR"
+  readonly severity = "medium"
+  readonly isRetryable = true
+
+  get userMessage(): string {
+    return "Hubo un problema procesando el audio, reintentando..."
+  }
+
+  constructor(context: Record<string, unknown> = {}) {
+    super("Audio buffer overflow", context)
   }
 }
 
