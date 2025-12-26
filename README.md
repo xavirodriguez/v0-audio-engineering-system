@@ -1,4 +1,5 @@
 # Virtuoso - Aprende Violín Online
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/xavirodriguez/v0-audio-engineering-system)
 
 Virtuoso is a web-based platform for learning to play the violin. It provides interactive lessons, real-time pitch detection, and a library of sheet music.
 
