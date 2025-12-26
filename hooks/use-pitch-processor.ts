@@ -1,6 +1,7 @@
 
 import { useRef, useCallback, useEffect } from "react";
 import type { PitchEvent } from "@/lib/types/pitch-detection";
+import { usePitchDetectionStore } from "@/lib/store/pitch-detection-store";
 
 // A type for the buffered metrics
 type BufferedMetric = {
@@ -20,6 +21,7 @@ interface UsePitchProcessorConfig {
 
 export function usePitchProcessor(config: UsePitchProcessorConfig) {
   const { analyser, sampleRate, isActive, onPitchDetected, onError } = config;
+  const updatePitchEvent = usePitchDetectionStore((s) => s.updatePitchEvent);
 
   const workerRef = useRef<Worker | null>(null);
   const rafIdRef = useRef<number | null>(null);
@@ -37,7 +39,7 @@ export function usePitchProcessor(config: UsePitchProcessorConfig) {
   });
 
   useEffect(() => {
-    const worker = new Worker(new URL('../workers/pitch-detector.worker.ts', import.meta.url));
+    const worker = new Worker(new URL('../workers/pitch-detector-resilient.worker.ts', import.meta.url));
     workerRef.current = worker;
 
     worker.postMessage({ type: 'init', payload: { sampleRate } });
@@ -51,6 +53,8 @@ export function usePitchProcessor(config: UsePitchProcessorConfig) {
           rms: payload.rms,
           clarity: payload.clarity,
         });
+        // Also pass the strategy to the store
+        updatePitchEvent({ ...payload, cents: 0 /* will be calculated later */ });
       }
     };
 
@@ -63,7 +67,7 @@ export function usePitchProcessor(config: UsePitchProcessorConfig) {
     return () => {
       worker.terminate();
     };
-  }, [sampleRate, onError]);
+  }, [sampleRate, onError, updatePitchEvent]);
 
   const processFrame = useCallback(() => {
     const startFrameTime = performance.now();

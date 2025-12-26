@@ -15,6 +15,8 @@ interface PitchDetectionStore extends GlobalTunerState {
   transitionStatus: (newStatus: 'PITCH_STABLE' | 'LISTENING' | 'RETRYING') => void;
 }
 
+import { PitchDetectionStrategy } from "@/lib/audio/degradation-strategy";
+
 const initialState: GlobalTunerState = {
   status: "IDLE",
   currentNoteIndex: 0,
@@ -36,6 +38,7 @@ const initialState: GlobalTunerState = {
   accuracy: 0,
   notes: generatePracticeSequence(),
   transitionTimestamps: [],
+  strategy: PitchDetectionStrategy.WASM_ACCELERATED,
 }
 
 /**
@@ -67,6 +70,7 @@ export const usePitchDetectionStore = create<PitchDetectionStore>()(
           currentConfidence: event.confidence,
           currentRms: event.rms,
           pitchHistory: [...state.pitchHistory.slice(-99), event],
+          strategy: event.strategy ?? state.strategy,
         }));
       },
 

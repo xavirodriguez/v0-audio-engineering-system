@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic"
 
 const InteractivePractice = dynamic(
-  () => import("./interactive-practice").then((mod) => mod.InteractivePractice),
+  () => import("./interactive-practice"),
   {
     ssr: false,
     loading: () => (

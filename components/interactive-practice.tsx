@@ -156,7 +156,7 @@ export function InteractivePractice() {
         onViewRecording={() => practiceState.setShowRecording(true)}
       />
 
-      <DebugPanel state={state} />
+      <DebugPanel />
 
       <ModalManager
         showRecording={practiceState.showRecording}

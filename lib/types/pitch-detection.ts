@@ -17,6 +17,7 @@ export interface WorkletCommand {
 /**
  * An event that is sent from the worklet to the main thread.
  */
+import { PitchDetectionStrategy } from "@/lib/audio/degradation-strategy";
 export interface PitchEvent {
   pitchHz: number
   confidence: number
@@ -24,6 +25,7 @@ export interface PitchEvent {
   clarity: number
   timestamp: number
   frameIndex: number
+  strategy?: PitchDetectionStrategy;
 }
 
 /**
@@ -62,6 +64,8 @@ export interface MusicalNote {
 /**
  * The global state of the tuner.
  */
+import { PitchDetectionStrategy } from "@/lib/audio/degradation-strategy";
+
 export interface GlobalTunerState {
   status: TunerStatus
   currentNoteIndex: number
@@ -82,4 +86,5 @@ export interface GlobalTunerState {
   currentRms: number
   accuracy: number
   notes: MusicalNote[]
+  strategy: PitchDetectionStrategy;
 }

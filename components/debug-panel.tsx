@@ -2,17 +2,15 @@
 
 import { Card } from "@/components/ui/card"
 import type { GlobalTunerState } from "@/lib/types/pitch-detection"
-
-interface DebugPanelProps {
-  state: GlobalTunerState
-}
+import { DegradationIndicator } from "./audio/degradation-indicator"
+import { usePitchDetectionStore } from "@/lib/store/pitch-detection-store"
 
 /**
  * A debug panel that displays the state of the tuner.
- * @param {DebugPanelProps} props - The props for the component.
  * @returns {JSX.Element | null} - The rendered debug panel component.
  */
-export function DebugPanel({ state }: DebugPanelProps) {
+export function DebugPanel() {
+  const state = usePitchDetectionStore();
   if (process.env.NODE_ENV !== "development") return null
 
   return (
@@ -45,6 +43,9 @@ export function DebugPanel({ state }: DebugPanelProps) {
         </div>
         <div>
           <span className="text-muted-foreground">Stable Frames:</span> {state.consecutiveStableFrames}
+        </div>
+        <div className="pt-2 mt-2 border-t border-accent/20">
+            <DegradationIndicator />
         </div>
       </div>
     </Card>
