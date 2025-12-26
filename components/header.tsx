@@ -1,18 +1,14 @@
-"use client"
-
+import { getTranslations } from "next-intl/server"
 import { Button } from "@/components/ui/button"
-import { Menu } from "lucide-react"
-import { useState } from "react"
-import { useTranslations } from "next-intl"
 import { LanguageSwitcher } from "./language-switcher"
+import { MobileMenu } from "./mobile-menu"
 
 /**
  * A header component.
- * @returns {JSX.Element} - The rendered header component.
+ * @returns {Promise<JSX.Element>} - The rendered header component.
  */
-export function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const t = useTranslations("nav")
+export async function Header() {
+  const t = await getTranslations("nav")
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
@@ -47,39 +43,8 @@ export function Header() {
               {t("getStarted")}
             </Button>
           </div>
-
-          <button className="md:hidden p-2" onClick={() => setIsMenuOpen(!isMenuOpen)} aria-label="Toggle menu">
-            <Menu className="w-6 h-6" />
-          </button>
+          <MobileMenu />
         </div>
-
-        {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-border">
-            <nav className="flex flex-col gap-4">
-              <a href="#inicio" className="text-sm font-medium text-foreground hover:text-accent transition-colors">
-                {t("home")}
-              </a>
-              <a href="#cursos" className="text-sm font-medium text-foreground hover:text-accent transition-colors">
-                {t("courses")}
-              </a>
-              <a href="#practica" className="text-sm font-medium text-foreground hover:text-accent transition-colors">
-                {t("practice")}
-              </a>
-              <a href="#recursos" className="text-sm font-medium text-foreground hover:text-accent transition-colors">
-                {t("resources")}
-              </a>
-              <div className="flex flex-col gap-2 pt-2">
-                <LanguageSwitcher />
-                <Button variant="ghost" size="sm">
-                  {t("login")}
-                </Button>
-                <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
-                  {t("getStarted")}
-                </Button>
-              </div>
-            </nav>
-          </div>
-        )}
       </div>
     </header>
   )
