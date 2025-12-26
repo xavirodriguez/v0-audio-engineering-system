@@ -5,6 +5,8 @@ import { Analytics } from "@vercel/analytics/next"
 import { NextIntlClientProvider } from "next-intl"
 import { getMessages } from "next-intl/server"
 import { routing } from "@/i18n/routing"
+import { ExerciseProvider } from "@/contexts/ExerciseContext"
+import { UIStateProvider } from "@/contexts/UIStateContext"
 import { notFound } from "next/navigation"
 import "../globals.css"
 
@@ -58,7 +60,11 @@ export default async function RootLayout({
   return (
     <html lang={locale}>
       <body className={`${inter.variable} ${playfair.variable} font-sans antialiased`}>
-        <NextIntlClientProvider messages={messages}>{children}</NextIntlClientProvider>
+        <NextIntlClientProvider messages={messages}>
+          <UIStateProvider>
+            <ExerciseProvider>{children}</ExerciseProvider>
+          </UIStateProvider>
+        </NextIntlClientProvider>
         <Analytics />
       </body>
     </html>

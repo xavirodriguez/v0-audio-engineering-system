@@ -76,3 +76,13 @@
     "delete": "Eliminar"
   }
 }
+{
+  "RecordingAnalysis": {
+    "waveformTitle": "Forma de onda / Entonación",
+    "noIntonationData": "No hay datos de entonación disponibles.",
+    "overallAccuracy": "Precisión general",
+    "averageDeviation": "Desviación promedio",
+    "pitchStability": "Estabilidad de tono",
+    "toneQuality": "Calidad de tono"
+  }
+}

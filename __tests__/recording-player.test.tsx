@@ -8,7 +8,7 @@ const mockRecording: Recording = {
   audioUrl: "test.webm",
   timestamp: Date.now(),
   duration: 10000,
-  exerciseName: "Test Exercise",
+  exerciseName: "Grabación de Práctica",
   analysis: {
     overallAccuracy: 90,
     averageDeviation: 10,
@@ -20,10 +20,23 @@ const mockRecording: Recording = {
   },
 }
 
+// Mock the Audio object
+vi.spyOn(window, 'Audio').mockImplementation(() => ({
+  play: vi.fn(),
+  pause: vi.fn(),
+  addEventListener: vi.fn(),
+  removeEventListener: vi.fn(),
+}));
+
 describe("RecordingPlayer", () => {
+  it("renders the recording title", () => {
+    render(<RecordingPlayer recording={mockRecording} onDelete={vi.fn()} />)
+    expect(screen.getByText("Grabación de Práctica")).toBeInTheDocument()
+  })
+
   it("displays a message when no intonation data is available", () => {
     render(<RecordingPlayer recording={mockRecording} onDelete={vi.fn()} />)
-    expect(screen.getByText("No hay datos de entonación disponibles.")).toBeInTheDocument()
+    expect(screen.getByText("No intonation data available.")).toBeInTheDocument()
   })
 
   it("renders the intonation graph when data is available", () => {
@@ -31,11 +44,11 @@ describe("RecordingPlayer", () => {
       ...mockRecording,
       analysis: {
         ...mockRecording.analysis,
-        intonationGraph: [{ deviation: 10 }, { deviation: 20 }],
+        intonationGraph: [{ deviation: 10, time: 0 }, { deviation: 20, time: 1 }],
       },
     }
     render(<RecordingPlayer recording={recordingWithData} onDelete={vi.fn()} />)
-    expect(screen.queryByText("No hay datos de entonación disponibles.")).not.toBeInTheDocument()
+    expect(screen.queryByText("No intonation data available.")).not.toBeInTheDocument()
     const svgElement = document.querySelector("svg")
     expect(svgElement).toBeInTheDocument()
   })

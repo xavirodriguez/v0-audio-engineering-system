@@ -76,3 +76,13 @@
     "delete": "Delete"
   }
 }
+{
+  "RecordingAnalysis": {
+    "waveformTitle": "Waveform / Intonation",
+    "noIntonationData": "No intonation data available.",
+    "overallAccuracy": "Overall Accuracy",
+    "averageDeviation": "Average Deviation",
+    "pitchStability": "Pitch Stability",
+    "toneQuality": "Tone Quality"
+  }
+}

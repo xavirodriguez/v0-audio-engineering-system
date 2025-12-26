@@ -1,9 +1,7 @@
-import { InteractivePractice } from "@/components/interactive-practice"
+"use client"
 
-/**
- * The practice page.
- * @returns {JSX.Element} - The rendered practice page.
- */
+import { PracticeContainer } from "@/components/interactive-practice/PracticeContainer"
+
 export default function PracticaPage() {
-  return <InteractivePractice />
+  return <PracticeContainer />
 }

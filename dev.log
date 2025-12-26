@@ -2,24 +2,64 @@
 > my-v0-project@0.1.0 dev
 > next dev
 
- ⚠ `eslint` configuration in next.config.mjs is no longer supported. See more info here: https://nextjs.org/docs/app/api-reference/cli/next#next-lint-options
- ⚠ Invalid next.config.mjs options detected:
- ⚠     Unrecognized key(s) in object: 'eslint'
- ⚠ See more info here: https://nextjs.org/docs/messages/invalid-next-config
-   ▲ Next.js 16.0.0 (Turbopack)
-   - Local:        http://localhost:3000
-   - Network:      http://192.168.0.2:3000
+⚠ `eslint` configuration in next.config.mjs is no longer supported. See more info here: https://nextjs.org/docs/app/api-reference/cli/next#next-lint-options
+⚠ Invalid next.config.mjs options detected:
+⚠     Unrecognized key(s) in object: 'eslint'
+⚠ See more info here: https://nextjs.org/docs/messages/invalid-next-config
+▲ Next.js 16.1.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.2:3000
 
- ✓ Starting...
+✓ Starting...
 Attention: Next.js now collects completely anonymous telemetry regarding usage.
 This information is used to shape Next.js' roadmap and prioritize features.
 You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
 https://nextjs.org/telemetry
 
-[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
- ✓ Ready in 2s
- ○ Compiling /[locale]/practica ...
- GET /en/practica 200 in 11.2s (compile: 9.7s, proxy.ts: 434ms, render: 1042ms)
- ✓ Compiled in 99ms
- GET /en/practica 200 in 517ms (compile: 145ms, proxy.ts: 10ms, render: 361ms)
- GET /wasm/pitch-detector.wasm 404 in 59ms (compile: 9ms, render: 50ms)
+✓ Ready in 1809ms
+○ Compiling /[locale]/practica ...
+Error: Route "/[locale]/practica" used `params.locale`. `params` is a Promise and must be unwrapped with `await` or `React.use()` before accessing its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+    at RootLayout (app/[locale]/layout.tsx:7:13)
+   5 | export default function RootLayout({
+   6 |   children,
+>  7 |   params: { locale },
+     |             ^
+   8 | }: {
+   9 |   children: React.ReactNode
+  10 |   params: { locale: string }
+⨯ TypeError: Cannot read properties of undefined (reading 'viewMode')
+    at PracticeView (components/interactive-practice/PracticeView.tsx:43:33)
+  41 |         status={status}
+  42 |         isRecording={isRecording}
+> 43 |         viewMode={practiceState.viewMode}
+     |                                 ^
+  44 |         showSettings={practiceState.showSettings}
+  45 |         onViewModeToggle={practiceState.toggleViewMode}
+  46 |         onExercisesClick={() => practiceState.setShowExercises(true)} {
+  digest: '605483026'
+}
+ GET /en/practica 500 in 11.2s (compile: 10.0s, proxy.ts: 454ms, render: 660ms)
+Error: Route "/[locale]/practica" used `params.locale`. `params` is a Promise and must be unwrapped with `await` or `React.use()` before accessing its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+    at RootLayout (app/[locale]/layout.tsx:7:13)
+   5 | export default function RootLayout({
+   6 |   children,
+>  7 |   params: { locale },
+     |             ^
+   8 | }: {
+   9 |   children: React.ReactNode
+  10 |   params: { locale: string }
+⨯ TypeError: Cannot read properties of undefined (reading 'viewMode')
+    at PracticeView (components/interactive-practice/PracticeView.tsx:43:33)
+  41 |         status={status}
+  42 |         isRecording={isRecording}
+> 43 |         viewMode={practiceState.viewMode}
+     |                                 ^
+  44 |         showSettings={practiceState.showSettings}
+  45 |         onViewModeToggle={practiceState.toggleViewMode}
+  46 |         onExercisesClick={() => practiceState.setShowExercises(true)} {
+  digest: '605483026'
+}
+ GET /en/practica 500 in 220ms (compile: 36ms, proxy.ts: 17ms, render: 167ms)
+✓ Compiled in 661ms
+✓ Compiled in 76ms
+✓ Compiled in 168ms

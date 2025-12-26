@@ -188,3 +188,18 @@ export const usePitchDetectionStore = create<PitchDetectionStore>()(
     },
   ),
 )
+
+// Selectors for high-frequency updates
+export const useCurrentPitch = () => usePitchDetectionStore((state) => state.currentPitch);
+export const useCurrentCents = () => usePitchDetectionStore((state) => state.currentCents);
+export const useCurrentConfidence = () => usePitchDetectionStore((state) => state.currentConfidence);
+export const useCurrentRms = () => usePitchDetectionStore((state) => state.currentRms);
+
+// Selector for status, which can also change frequently
+export const useTunerStatus = () => usePitchDetectionStore((state) => state.status);
+
+// Selector for the current target note
+export const useTargetNote = () => usePitchDetectionStore((state) => {
+  const { notes, currentNoteIndex } = state;
+  return notes[currentNoteIndex];
+});

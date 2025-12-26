@@ -1,15 +1,15 @@
 import { render, fireEvent, screen } from "@testing-library/react"
 import { describe, it, expect, vi, beforeEach } from "vitest"
-import { InteractivePractice } from "@/components/interactive-practice"
-import { usePitchDetection } from "@/hooks/use-pitch-detection"
+import { PracticeContainer } from "@/components/interactive-practice/PracticeContainer"
+import { usePitchDetectionStore } from "@/lib/store/pitch-detection-store"
 import { useRecording } from "@/hooks/use-recording"
-import { useAdaptiveExercises } from "@/hooks/use-adaptive-exercises"
-import { usePracticeState } from "@/hooks/use-practice-state"
+import { useExerciseContext } from "@/contexts/ExerciseContext"
+import { useUIStateContext } from "@/contexts/UIStateContext"
 
-vi.mock("@/hooks/use-pitch-detection")
+vi.mock("@/lib/store/pitch-detection-store")
 vi.mock("@/hooks/use-recording")
-vi.mock("@/hooks/use-adaptive-exercises")
-vi.mock("@/hooks/use-practice-state")
+vi.mock("@/contexts/ExerciseContext")
+vi.mock("@/contexts/UIStateContext")
 
 const mockInitialize = vi.fn()
 const mockStartCalibration = vi.fn()
@@ -22,13 +22,10 @@ const mockMediaStream = { id: "mock-stream" }
 beforeEach(() => {
   vi.clearAllMocks()
 
-  ;(usePitchDetection as vi.Mock).mockReturnValue({
-    state: {
-      status: "IDLE",
-      notes: [],
-      currentNoteIndex: 0,
-      totalLatencyOffsetMs: 0,
-    },
+  ;(usePitchDetectionStore as vi.Mock).mockReturnValue({
+    notes: [],
+    currentNoteIndex: 0,
+    totalLatencyOffsetMs: 0,
     initialize: mockInitialize,
     startCalibration: mockStartCalibration,
     startDetection: mockStartDetection,
@@ -45,35 +42,24 @@ beforeEach(() => {
     deleteRecording: vi.fn(),
   })
 
-  ;(useAdaptiveExercises as vi.Mock).mockReturnValue({
+  ;(useExerciseContext as vi.Mock).mockReturnValue({
     currentExercise: null,
     recommendations: [],
     selectExercise: vi.fn(),
   })
 
-  ;(usePracticeState as vi.Mock).mockReturnValue({
-    viewMode: "animated",
-    practiceMode: "untimed",
-    showExercises: false,
-    showRecording: false,
-    showSettings: false,
-    sensitivity: 0.5,
-    tempo: 120,
-    volume: 0.5,
-    toggleViewMode: vi.fn(),
-    setPracticeMode: vi.fn(),
-    setShowExercises: vi.fn(),
-    setShowRecording: vi.fn(),
-    toggleSettings: vi.fn(),
-    setSensitivity: vi.fn(),
-    setTempo: vi.fn(),
-    setVolume: vi.fn(),
+  ;(useUIStateContext as vi.Mock).mockReturnValue({
+    openModal: vi.fn(),
+    closeModal: vi.fn(),
+    activeModal: null,
+    isSettingsPanelVisible: false,
+    toggleSettingsPanel: vi.fn(),
   })
 })
 
-describe("InteractivePractice", () => {
+describe("PracticeContainer", () => {
   it("initializes and starts recording on first start click", async () => {
-    render(<InteractivePractice />)
+    render(<PracticeContainer />)
 
     const startButton = screen.getByText("Empezar")
     fireEvent.click(startButton)
@@ -92,7 +78,7 @@ describe("InteractivePractice", () => {
   })
 
   it("initializes on first calibrate click", async () => {
-    render(<InteractivePractice />)
+    render(<PracticeContainer />)
 
     const calibrateButton = screen.getByText("Calibrar")
     fireEvent.click(calibrateButton)

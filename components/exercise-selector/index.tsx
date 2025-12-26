@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Sparkles, Clock, Target } from "lucide-react"
 import type { AdaptiveRecommendation } from "@/lib/types/exercise-system"
+import { useExerciseSelector } from "@/hooks/useExerciseSelector"
 
 interface ExerciseSelectorProps {
   recommendations: AdaptiveRecommendation[]
@@ -17,20 +18,7 @@ interface ExerciseSelectorProps {
  * @returns {JSX.Element} - The rendered exercise selector component.
  */
 export function ExerciseSelector({ recommendations, onSelectExercise }: ExerciseSelectorProps) {
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case "easy":
-        return "bg-green-500/10 text-green-600 border-green-500/20"
-      case "medium":
-        return "bg-yellow-500/10 text-yellow-600 border-yellow-500/20"
-      case "hard":
-        return "bg-orange-500/10 text-orange-600 border-orange-500/20"
-      case "expert":
-        return "bg-red-500/10 text-red-600 border-red-500/20"
-      default:
-        return "bg-muted text-muted-foreground"
-    }
-  }
+  const { getDifficultyColor } = useExerciseSelector()
 
   return (
     <div className="space-y-4">
