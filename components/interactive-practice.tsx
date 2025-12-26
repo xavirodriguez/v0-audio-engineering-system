@@ -17,6 +17,8 @@ import { SettingsPanel } from "./practice/settings-panel"
 import { PracticeControls } from "./practice/practice-controls"
 import { ModalManager } from "./practice/modal-manager"
 import { Fretboard } from "./practice/fretboard"
+import { FeedbackOverlay } from "./feedback/feedback-overlay"
+import { useFeedbackNotifications } from "@/hooks/ui/use-feedback-notifications"
 
 /**
  * A component that provides an interactive practice session for the user.
@@ -28,6 +30,7 @@ export function InteractivePractice() {
     useRecording()
   const { currentExercise, recommendations, selectExercise } = useAdaptiveExercises()
   const practiceState = usePracticeState()
+  const { notifications, onExit } = useFeedbackNotifications()
 
   const [isInitialized, setIsInitialized] = useState(false)
 
@@ -171,6 +174,8 @@ export function InteractivePractice() {
         }}
         onSelectExercise={handleSelectExercise}
       />
+
+      <FeedbackOverlay notifications={notifications} onExit={onExit} />
     </div>
   )
 }
