@@ -1,10 +1,9 @@
-"use client"
-import { InteractivePractice } from "./interactive-practice"
+import InteractivePracticeLoader from "./interactive-practice-loader"
 
 /**
  * A component that provides an interactive practice session for the user.
  * @returns {JSX.Element} - The rendered practice component.
  */
 export function Practice() {
-  return <InteractivePractice />
+  return <InteractivePracticeLoader />
 }
