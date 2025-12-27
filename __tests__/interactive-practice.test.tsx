@@ -1,5 +1,7 @@
 import { render, fireEvent, screen } from "@testing-library/react"
 import { describe, it, expect, vi, beforeEach } from "vitest"
+import { NextIntlClientProvider } from "next-intl"
+import messages from "../messages/es.json"
 import { InteractivePractice } from "@/components/interactive-practice"
 import { usePitchDetection } from "@/hooks/use-pitch-detection"
 import { useRecording } from "@/hooks/use-recording"
@@ -72,10 +74,18 @@ beforeEach(() => {
 })
 
 describe("InteractivePractice", () => {
-  it("initializes and starts recording on first start click", async () => {
-    render(<InteractivePractice />)
+  const renderComponent = () => {
+    return render(
+      <NextIntlClientProvider locale="es" messages={messages}>
+        <InteractivePractice />
+      </NextIntlClientProvider>
+    )
+  }
 
-    const startButton = screen.getByText("Empezar")
+  it("initializes and starts recording on first start click", async () => {
+    renderComponent()
+
+    const startButton = screen.getByRole("button", { name: /iniciar/i })
     fireEvent.click(startButton)
 
     await vi.waitFor(() => {
@@ -92,9 +102,9 @@ describe("InteractivePractice", () => {
   })
 
   it("initializes on first calibrate click", async () => {
-    render(<InteractivePractice />)
+    renderComponent()
 
-    const calibrateButton = screen.getByText("Calibrar")
+    const calibrateButton = screen.getByRole("button", { name: "Calibrar" })
     fireEvent.click(calibrateButton)
 
     await vi.waitFor(() => {

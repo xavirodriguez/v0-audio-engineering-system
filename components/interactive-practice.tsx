@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Card } from "@/components/ui/card"
 import { audioManager } from "@/lib/audio/audio-resource-manager"
 import { usePitchDetection } from "@/hooks/use-pitch-detection"
@@ -51,7 +51,7 @@ export function InteractivePractice() {
 
   const isPlaying = state.status === "PITCH_DETECTING" || state.status === "PITCH_STABLE"
 
-  const handleStart = async () => {
+  const handleStart = useCallback(async () => {
     if (!isInitialized) {
       await initialize()
       setIsInitialized(true)
@@ -71,30 +71,28 @@ export function InteractivePractice() {
         startRecording(mediaStream, currentExercise?.id, currentExercise?.name)
       }
     }
-  }
+  }, [isInitialized, initialize, isPlaying, stopDetection, isRecording, stopRecording, currentExercise, practiceState, mediaStream, startDetection, startRecording])
 
-  const handleCalibrate = async () => {
+  const handleCalibrate = useCallback(async () => {
     if (!isInitialized) {
       await initialize()
       setIsInitialized(true)
     }
     startCalibration()
-  }
+  }, [isInitialized, initialize, startCalibration])
 
-  const handleSelectExercise = (exerciseId: string) => {
+  const handleSelectExercise = useCallback((exerciseId: string) => {
     const exercise = recommendations.find((r) => r.exercise.id === exerciseId)?.exercise
     if (exercise) {
       selectExercise(exercise)
     }
     practiceState.setShowExercises(false)
-  }
+  }, [recommendations, selectExercise, practiceState])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background flex flex-col">
       <PracticeHeader
         exerciseName={currentExercise?.name}
-        status={state.status}
-        isRecording={isRecording}
         viewMode={practiceState.viewMode}
         showSettings={practiceState.showSettings}
         onViewModeToggle={practiceState.toggleViewMode}
@@ -103,17 +101,7 @@ export function InteractivePractice() {
         onSettingsToggle={practiceState.toggleSettings}
       />
 
-      <SettingsPanel
-        visible={practiceState.showSettings}
-        sensitivity={practiceState.sensitivity}
-        tempo={practiceState.tempo}
-        volume={practiceState.volume}
-        practiceMode={practiceState.practiceMode}
-        onSensitivityChange={practiceState.setSensitivity}
-        onTempoChange={practiceState.setTempo}
-        onVolumeChange={practiceState.setVolume}
-        onPracticeModeChange={practiceState.setPracticeMode}
-      />
+      <SettingsPanel />
 
       <main className="flex-1 container mx-auto px-4 py-8">
         <Card className="border-border bg-card/80 backdrop-blur-sm shadow-2xl overflow-hidden">
