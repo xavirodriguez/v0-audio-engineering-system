@@ -51,12 +51,18 @@ export const usePitchDetectionStore = create<PitchDetectionStore>()(
        * @param {PitchEvent} event - The pitch event.
        */
       updatePitchEvent: (event) => {
-        const { status } = get();
+        const { status, consecutiveStableFrames } = get();
+        const STABLE_FRAMES_THRESHOLD = 3;
+
+        let newStableFrames = consecutiveStableFrames;
+
         if (event.confidence > 0.6) {
-          if (status === 'LISTENING') {
+          newStableFrames++;
+          if (status === 'LISTENING' && newStableFrames >= STABLE_FRAMES_THRESHOLD) {
             get().transitionStatus('PITCH_STABLE');
           }
         } else {
+          newStableFrames = 0;
           if (status === 'PITCH_STABLE') {
             get().transitionStatus('LISTENING');
           }
@@ -67,6 +73,7 @@ export const usePitchDetectionStore = create<PitchDetectionStore>()(
           currentConfidence: event.confidence,
           currentRms: event.rms,
           pitchHistory: [...state.pitchHistory.slice(-99), event],
+          consecutiveStableFrames: newStableFrames,
         }));
       },
 

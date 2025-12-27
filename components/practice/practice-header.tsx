@@ -1,13 +1,14 @@
 "use client"
 
+import { memo } from "react"
 import { Button } from "@/components/ui/button"
 import { Settings, Volume2, RotateCcw, Music, Circle } from "lucide-react"
 import { motion } from "framer-motion"
+import { usePitchDetection } from "@/hooks/use-pitch-detection"
+import { useRecording } from "@/hooks/use-recording"
 
 export interface PracticeHeaderProps {
   exerciseName?: string
-  status: string
-  isRecording: boolean
   viewMode: "animated" | "sheet-music"
   showSettings: boolean
   onViewModeToggle: () => void
@@ -21,10 +22,8 @@ export interface PracticeHeaderProps {
  * @param {PracticeHeaderProps} props - The props for the component.
  * @returns {JSX.Element} - The rendered practice header component.
  */
-export function PracticeHeader({
+export const PracticeHeader = memo(function PracticeHeader({
   exerciseName,
-  status,
-  isRecording,
   viewMode,
   showSettings,
   onViewModeToggle,
@@ -32,6 +31,10 @@ export function PracticeHeader({
   onCalibrateClick,
   onSettingsToggle,
 }: PracticeHeaderProps) {
+  const { state } = usePitchDetection()
+  const { isRecording } = useRecording()
+  const { status } = state
+
   const getStatusText = () => {
     switch (status) {
       case "IDLE":
@@ -79,7 +82,7 @@ export function PracticeHeader({
               Ejercicios
             </Button>
 
-            <Button variant="outline" size="icon" onClick={onCalibrateClick} disabled={status === "CALIBRATING"}>
+            <Button variant="outline" size="icon" onClick={onCalibrateClick} disabled={status === "CALIBRATING"} aria-label="Calibrar">
               <RotateCcw className="w-4 h-4" />
             </Button>
 
@@ -100,4 +103,4 @@ export function PracticeHeader({
       </div>
     </header>
   )
-}
+})
