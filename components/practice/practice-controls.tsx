@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Play, Pause, SkipBack, SkipForward, Download } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 export interface PracticeControlsProps {
   isPlaying: boolean
@@ -25,6 +26,8 @@ export function PracticeControls({
   onStartStop,
   onViewRecording,
 }: PracticeControlsProps) {
+  const t = useTranslations("practice")
+
   return (
     <footer className="border-t border-border bg-card/80 backdrop-blur-sm">
       <div className="container mx-auto px-4 py-4">
@@ -38,12 +41,12 @@ export function PracticeControls({
               {isPlaying ? (
                 <>
                   <Pause className="w-5 h-5 mr-2" />
-                  Pausar
+                  {t("pause")}
                 </>
               ) : (
                 <>
                   <Play className="w-5 h-5 mr-2" />
-                  {isInitialized ? "Comenzar" : "Iniciar"}
+                  {isInitialized ? t("start") : t("initialize")}
                 </>
               )}
             </Button>
@@ -55,13 +58,13 @@ export function PracticeControls({
 
           <div className="flex items-center gap-4">
             {latency > 0 && (
-              <div className="text-xs text-muted-foreground font-mono">Latencia: {Math.round(latency)}ms</div>
+              <div className="text-xs text-muted-foreground font-mono">{t("latency")}: {Math.round(latency)}ms</div>
             )}
 
             {hasRecording && (
               <Button variant="outline" size="sm" onClick={onViewRecording}>
                 <Download className="w-4 h-4 mr-2" />
-                Ver Grabación
+                {t("viewRecording")}
               </Button>
             )}
           </div>

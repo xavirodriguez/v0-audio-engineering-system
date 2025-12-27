@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { Settings, Volume2, RotateCcw, Music, Circle } from "lucide-react"
 import { motion } from "framer-motion"
+import { useTranslations } from "next-intl"
 
 export interface PracticeHeaderProps {
   exerciseName?: string
@@ -32,18 +33,20 @@ export function PracticeHeader({
   onCalibrateClick,
   onSettingsToggle,
 }: PracticeHeaderProps) {
+  const t = useTranslations("practice")
+
   const getStatusText = () => {
     switch (status) {
       case "IDLE":
-        return "Listo para comenzar"
+        return t("status.ready")
       case "CALIBRATING":
-        return "Calibrando sistema..."
+        return t("status.calibrating")
       case "PITCH_DETECTING":
-        return "Escuchando tu interpretación"
+        return t("status.detecting")
       case "PITCH_STABLE":
-        return "¡Perfecto! Mantén la nota"
+        return t("status.stable")
       case "ERROR":
-        return "Error en el sistema"
+        return t("status.error")
       default:
         return ""
     }
@@ -54,7 +57,7 @@ export function PracticeHeader({
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           <div className="flex-1">
-            <h1 className="font-serif text-2xl font-bold text-foreground">{exerciseName || "Práctica Libre"}</h1>
+            <h1 className="font-serif text-2xl font-bold text-foreground">{exerciseName || t("title")}</h1>
             <p className="text-sm text-muted-foreground mt-1">{getStatusText()}</p>
           </div>
 
@@ -66,7 +69,7 @@ export function PracticeHeader({
                 className="flex items-center gap-2 text-red-600 px-3 py-1.5 rounded-full bg-red-50 dark:bg-red-950/30"
               >
                 <Circle className="w-3 h-3 fill-current animate-pulse" />
-                <span className="text-sm font-medium">Grabando</span>
+                <span className="text-sm font-medium">{t("recording")}</span>
               </motion.div>
             )}
 
@@ -76,11 +79,12 @@ export function PracticeHeader({
             </Button>
 
             <Button variant="outline" size="sm" onClick={onExercisesClick}>
-              Ejercicios
+              {t("exercises")}
             </Button>
 
-            <Button variant="outline" size="icon" onClick={onCalibrateClick} disabled={status === "CALIBRATING"}>
-              <RotateCcw className="w-4 h-4" />
+            <Button variant="outline" size="sm" onClick={onCalibrateClick} disabled={status === "CALIBRATING"}>
+              <RotateCcw className="w-4 h-4 mr-2" />
+              {t("calibrate")}
             </Button>
 
             <Button

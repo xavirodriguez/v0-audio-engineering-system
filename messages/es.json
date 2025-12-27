@@ -35,7 +35,8 @@
     "initialize": "Iniciar",
     "latency": "Latencia",
     "viewRecording": "Ver Grabación",
-    "close": "Cerrar"
+    "close": "Cerrar",
+    "calibrate": "Calibrar"
   },
   "pitch": {
     "targetNote": "Nota Objetivo",
@@ -74,9 +75,7 @@
     "recommendations": "Recomendaciones",
     "download": "Descargar",
     "delete": "Eliminar"
-  }
-}
-{
+  },
   "RecordingAnalysis": {
     "waveformTitle": "Forma de onda / Entonación",
     "noIntonationData": "No hay datos de entonación disponibles.",

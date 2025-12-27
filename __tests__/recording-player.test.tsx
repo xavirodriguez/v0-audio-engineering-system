@@ -2,6 +2,8 @@ import { render, screen } from "@testing-library/react"
 import { describe, it, expect, vi } from "vitest"
 import { RecordingPlayer } from "@/components/recording-player"
 import type { Recording } from "@/lib/types/recording"
+import { NextIntlClientProvider } from "next-intl"
+import messages from "../messages/es.json"
 
 const mockRecording: Recording = {
   id: "1",
@@ -26,17 +28,25 @@ vi.spyOn(window, 'Audio').mockImplementation(() => ({
   pause: vi.fn(),
   addEventListener: vi.fn(),
   removeEventListener: vi.fn(),
-}));
+} as unknown as HTMLAudioElement));
+
+const renderWithProviders = (component: React.ReactElement) => {
+  return render(
+    <NextIntlClientProvider locale="es" messages={messages}>
+      {component}
+    </NextIntlClientProvider>
+  )
+}
 
 describe("RecordingPlayer", () => {
   it("renders the recording title", () => {
-    render(<RecordingPlayer recording={mockRecording} onDelete={vi.fn()} />)
+    renderWithProviders(<RecordingPlayer recording={mockRecording} onDelete={vi.fn()} />)
     expect(screen.getByText("Grabación de Práctica")).toBeInTheDocument()
   })
 
   it("displays a message when no intonation data is available", () => {
-    render(<RecordingPlayer recording={mockRecording} onDelete={vi.fn()} />)
-    expect(screen.getByText("No intonation data available.")).toBeInTheDocument()
+    renderWithProviders(<RecordingPlayer recording={mockRecording} onDelete={vi.fn()} />)
+    expect(screen.getByText("No hay datos de entonación disponibles.")).toBeInTheDocument()
   })
 
   it("renders the intonation graph when data is available", () => {
@@ -47,8 +57,8 @@ describe("RecordingPlayer", () => {
         intonationGraph: [{ deviation: 10, time: 0 }, { deviation: 20, time: 1 }],
       },
     }
-    render(<RecordingPlayer recording={recordingWithData} onDelete={vi.fn()} />)
-    expect(screen.queryByText("No intonation data available.")).not.toBeInTheDocument()
+    renderWithProviders(<RecordingPlayer recording={recordingWithData} onDelete={vi.fn()} />)
+    expect(screen.queryByText("No hay datos de entonación disponibles.")).not.toBeInTheDocument()
     const svgElement = document.querySelector("svg")
     expect(svgElement).toBeInTheDocument()
   })

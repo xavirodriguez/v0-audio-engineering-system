@@ -5,6 +5,8 @@ import { usePitchDetectionStore } from "@/lib/store/pitch-detection-store"
 import { useRecording } from "@/hooks/use-recording"
 import { useExerciseContext } from "@/contexts/ExerciseContext"
 import { useUIStateContext } from "@/contexts/UIStateContext"
+import { NextIntlClientProvider } from "next-intl"
+import messages from "../messages/es.json"
 
 vi.mock("@/lib/store/pitch-detection-store")
 vi.mock("@/hooks/use-recording")
@@ -21,47 +23,53 @@ const mockMediaStream = { id: "mock-stream" }
 
 beforeEach(() => {
   vi.clearAllMocks()
-
-  ;(usePitchDetectionStore as vi.Mock).mockReturnValue({
-    notes: [],
-    currentNoteIndex: 0,
-    totalLatencyOffsetMs: 0,
-    initialize: mockInitialize,
-    startCalibration: mockStartCalibration,
-    startDetection: mockStartDetection,
-    stopDetection: mockStopDetection,
-    mediaStream: mockMediaStream,
-  })
-
-  ;(useRecording as vi.Mock).mockReturnValue({
-    isRecording: false,
-    currentRecording: null,
-    startRecording: mockStartRecording,
-    stopRecording: vi.fn(),
-    addPitchPoint: vi.fn(),
-    deleteRecording: vi.fn(),
-  })
-
-  ;(useExerciseContext as vi.Mock).mockReturnValue({
-    currentExercise: null,
-    recommendations: [],
-    selectExercise: vi.fn(),
-  })
-
-  ;(useUIStateContext as vi.Mock).mockReturnValue({
-    openModal: vi.fn(),
-    closeModal: vi.fn(),
-    activeModal: null,
-    isSettingsPanelVisible: false,
-    toggleSettingsPanel: vi.fn(),
-  })
 })
+
+const renderWithProviders = (component: React.ReactElement) => {
+  return render(
+    <NextIntlClientProvider locale="es" messages={messages}>
+      {component}
+    </NextIntlClientProvider>
+  )
+}
 
 describe("PracticeContainer", () => {
   it("initializes and starts recording on first start click", async () => {
-    render(<PracticeContainer />)
+    ;(usePitchDetectionStore as vi.Mock).mockReturnValue({
+      notes: [],
+      currentNoteIndex: 0,
+      totalLatencyOffsetMs: 0,
+      initialize: mockInitialize,
+      startCalibration: mockStartCalibration,
+      startDetection: mockStartDetection,
+      stopDetection: mockStopDetection,
+      mediaStream: mockMediaStream,
+      isInitialized: true, // Mock as initialized
+    })
+    ;(useRecording as vi.Mock).mockReturnValue({
+      isRecording: false,
+      currentRecording: null,
+      startRecording: mockStartRecording,
+      stopRecording: vi.fn(),
+      addPitchPoint: vi.fn(),
+      deleteRecording: vi.fn(),
+    })
+    ;(useExerciseContext as vi.Mock).mockReturnValue({
+      currentExercise: null,
+      recommendations: [],
+      selectExercise: vi.fn(),
+    })
+    ;(useUIStateContext as vi.Mock).mockReturnValue({
+      openModal: vi.fn(),
+      closeModal: vi.fn(),
+      activeModal: null,
+      isSettingsPanelVisible: false,
+      toggleSettingsPanel: vi.fn(),
+    })
 
-    const startButton = screen.getByText("Empezar")
+    renderWithProviders(<PracticeContainer />)
+
+    const startButton = screen.getByRole("button", { name: /comenzar/i })
     fireEvent.click(startButton)
 
     await vi.waitFor(() => {
@@ -78,9 +86,40 @@ describe("PracticeContainer", () => {
   })
 
   it("initializes on first calibrate click", async () => {
-    render(<PracticeContainer />)
+    ;(usePitchDetectionStore as vi.Mock).mockReturnValue({
+      notes: [],
+      currentNoteIndex: 0,
+      totalLatencyOffsetMs: 0,
+      initialize: mockInitialize,
+      startCalibration: mockStartCalibration,
+      startDetection: mockStartDetection,
+      stopDetection: mockStopDetection,
+      mediaStream: mockMediaStream,
+      isInitialized: false, // Mock as not initialized
+    })
+    ;(useRecording as vi.Mock).mockReturnValue({
+      isRecording: false,
+      currentRecording: null,
+      startRecording: mockStartRecording,
+      stopRecording: vi.fn(),
+      addPitchPoint: vi.fn(),
+      deleteRecording: vi.fn(),
+    })
+    ;(useExerciseContext as vi.Mock).mockReturnValue({
+      currentExercise: null,
+      recommendations: [],
+      selectExercise: vi.fn(),
+    })
+    ;(useUIStateContext as vi.Mock).mockReturnValue({
+      openModal: vi.fn(),
+      closeModal: vi.fn(),
+      activeModal: null,
+      isSettingsPanelVisible: false,
+      toggleSettingsPanel: vi.fn(),
+    })
+    renderWithProviders(<PracticeContainer />)
 
-    const calibrateButton = screen.getByText("Calibrar")
+    const calibrateButton = screen.getByRole("button", { name: /calibrar/i })
     fireEvent.click(calibrateButton)
 
     await vi.waitFor(() => {
@@ -88,5 +127,8 @@ describe("PracticeContainer", () => {
     })
 
     expect(mockStartCalibration).toHaveBeenCalledOnce()
+
+    const startButton = screen.getByRole("button", { name: /iniciar/i })
+    expect(startButton).toBeInTheDocument()
   })
 })

@@ -10,6 +10,7 @@ import { SettingsPanel } from "../practice/settings-panel"
 import { PracticeControls } from "../practice/practice-controls"
 import { ModalManager } from "../practice/modal-manager"
 import { Fretboard } from "../practice/fretboard"
+import { FeedbackOverlay } from "../feedback/feedback-overlay"
 
 export function PracticeView({
   notes,
@@ -42,8 +43,15 @@ export function PracticeView({
 }) {
   const { viewMode, practiceMode, sensitivity, tempo, volume } = practiceState
 
+  const mockNotifications = [
+    { id: '1', type: 'accuracy', message: 'Perfect!' },
+    { id: '2', type: 'improvement', message: 'Great progress!' },
+    { id: '3', type: 'streak', message: 'On fire!' },
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background flex flex-col">
+      <FeedbackOverlay notifications={mockNotifications} />
       <PracticeHeader
         exerciseName={currentNote?.name}
         status={status}
