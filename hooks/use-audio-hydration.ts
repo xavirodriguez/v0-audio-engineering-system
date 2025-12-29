@@ -11,9 +11,10 @@ import { usePitchDetectionStore } from "@/lib/store/pitch-detection-store"
  * @returns {boolean} - True if the store is rehydrated, false otherwise.
  */
 export function useAudioHydration(): boolean {
-  // Default to false on the server and initial client render
+  // Default to false on the server and initial client render.
+  // Use optional chaining `?.` because `persist` is undefined on the server.
   const [isHydrated, setIsHydrated] = useState(
-    () => usePitchDetectionStore.persist.hasHydrated()
+    () => usePitchDetectionStore.persist?.hasHydrated() ?? false
   );
 
   // useEffect only runs on the client, after the component has mounted
@@ -23,8 +24,8 @@ export function useAudioHydration(): boolean {
     });
 
     // In case hydration finished between the initial state check and the subscription,
-    // we set the state directly.
-    setIsHydrated(usePitchDetectionStore.persist.hasHydrated());
+    // we set the state directly. Use optional chaining for safety.
+    setIsHydrated(usePitchDetectionStore.persist?.hasHydrated() ?? false);
 
     return () => {
       unsub();
