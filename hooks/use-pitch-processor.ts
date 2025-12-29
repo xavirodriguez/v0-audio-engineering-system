@@ -1,6 +1,9 @@
 
 import { useRef, useCallback, useEffect } from "react";
 import type { PitchEvent } from "@/lib/types/pitch-detection";
+import { useFeedbackState } from "./logic/use-feedback-state";
+import { usePitchDetectionStore } from "@/lib/store/pitch-detection-store";
+
 
 // A type for the buffered metrics
 type BufferedMetric = {
@@ -20,6 +23,9 @@ interface UsePitchProcessorConfig {
 
 export function usePitchProcessor(config: UsePitchProcessorConfig) {
   const { analyser, sampleRate, isActive, onPitchDetected, onError } = config;
+  const { dispatch: dispatchFeedback } = useFeedbackState();
+  const targetNote = usePitchDetectionStore(state => state.notes[state.currentNoteIndex]);
+  const lastCentsZoneRef = useRef<number>(0);
 
   const workerRef = useRef<Worker | null>(null);
   const rafIdRef = useRef<number | null>(null);
@@ -100,6 +106,23 @@ export function usePitchProcessor(config: UsePitchProcessorConfig) {
           frameIndex: 0,
         };
         onPitchDetected(pitchEvent);
+
+        // Dispatch discrete feedback event if conditions are met
+        if (targetNote && avg.confidence > 0.9) {
+          const cents = frequencyToCents(avg.pitchHz, targetNote.frequency);
+
+          const zones = [-50, -20, -5, 5, 20, 50];
+          const currentZone = zones.find(z => cents < z) ?? 50;
+
+          if (currentZone !== lastCentsZoneRef.current) {
+            lastCentsZoneRef.current = currentZone;
+            dispatchFeedback({
+              type: 'TUNING_UPDATE',
+              cents: cents,
+              timestamp: pitchEvent.timestamp,
+            });
+          }
+        }
       }
 
       metricsBufferRef.current = [];

@@ -16,9 +16,11 @@ import { PracticeHeader } from "./practice/practice-header"
 import { SettingsPanel } from "./practice/settings-panel"
 import { PracticeControls } from "./practice/practice-controls"
 import { ModalManager } from "./practice/modal-manager"
-import { Fretboard } from "./practice/fretboard"
-import { FeedbackOverlay } from "./feedback/feedback-overlay"
-import { useFeedbackNotifications } from "@/hooks/ui/use-feedback-notifications"
+import { Fretboard } from "./practice/fretboard";
+import { FeedbackOverlay } from "./feedback/feedback-overlay";
+import { useFeedbackNotifications } from "@/hooks/ui/use-feedback-notifications";
+import { TuningFeedbackIndicator } from "./feedback/TuningFeedbackIndicator";
+import { ProgressFeedback } from "./feedback/ProgressFeedback";
 
 /**
  * A component that provides an interactive practice session for the user.
@@ -136,6 +138,12 @@ export function InteractivePractice() {
             <Fretboard currentPitch={state.currentPitch} />
           </div>
         </Card>
+
+        {/* Container for the new feedback components */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+            <TuningFeedbackIndicator />
+            <ProgressFeedback />
+        </div>
       </main>
 
       <PracticeControls
