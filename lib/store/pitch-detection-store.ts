@@ -2,6 +2,7 @@ import { create } from "zustand"
 import { persist } from "zustand/middleware"
 import type { GlobalTunerState, PitchEvent } from "@/lib/types/pitch-detection"
 import { generatePracticeSequence } from "@/lib/audio/note-utils"
+import { calculateNextPracticeState } from "@/lib/domain/practice-rules";
 
 interface PitchDetectionStore extends GlobalTunerState {
   // Actions
@@ -82,23 +83,11 @@ export const usePitchDetectionStore = create<PitchDetectionStore>()(
        */
       advanceToNextNote: () =>
         set((state) => {
-          const nextIndex = state.currentNoteIndex + 1
-          if (nextIndex >= state.notes.length) {
-            return {
-              status: "IDLE",
-              accuracy: 100,
-            }
-          }
-
-          const nextNote = state.notes[nextIndex]
-          return {
-            currentNoteIndex: nextIndex,
-            targetNoteMidi: nextNote.midi,
-            targetFreqHz: nextNote.frequency,
-            consecutiveStableFrames: 0,
-            holdStart: 0,
-            accuracy: Math.round((nextIndex / state.notes.length) * 100),
-          }
+          const { newState } = calculateNextPracticeState({
+            currentNoteIndex: state.currentNoteIndex,
+            notes: state.notes,
+          });
+          return newState;
         }),
 
       /**
