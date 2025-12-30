@@ -113,14 +113,14 @@ export function generatePracticeSequence(): Array<{
 }> {
   // A G Major scale, which is a common and valid exercise for violin
   const sequence = [
-    { midi: 55, duration: 1000 }, // G3
-    { midi: 57, duration: 1000 }, // A3
-    { midi: 59, duration: 1000 }, // B3
-    { midi: 60, duration: 1000 }, // C4
-    { midi: 62, duration: 1000 }, // D4
-    { midi: 64, duration: 1000 }, // E4
-    { midi: 66, duration: 1000 }, // F#4
     { midi: 67, duration: 1000 }, // G4
+    { midi: 69, duration: 1000 }, // A4
+    { midi: 71, duration: 1000 }, // B4
+    { midi: 72, duration: 1000 }, // C5
+    { midi: 74, duration: 1000 }, // D5
+    { midi: 76, duration: 1000 }, // E5
+    { midi: 78, duration: 1000 }, // F#5
+    { midi: 79, duration: 1000 }, // G5
   ];
 
 
