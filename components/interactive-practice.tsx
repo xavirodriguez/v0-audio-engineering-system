@@ -21,6 +21,7 @@ import { FeedbackOverlay } from "./feedback/feedback-overlay";
 import { useFeedbackNotifications } from "@/hooks/ui/use-feedback-notifications";
 import { TuningFeedbackIndicator } from "./feedback/TuningFeedbackIndicator";
 import { ProgressFeedback } from "./feedback/ProgressFeedback";
+import { ScalePractice } from "./practice/scale-practice";
 
 /**
  * A component that provides an interactive practice session for the user.
@@ -143,6 +144,10 @@ export function InteractivePractice() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
             <TuningFeedbackIndicator />
             <ProgressFeedback />
+        </div>
+
+        <div className="mt-8">
+          <ScalePractice />
         </div>
       </main>
 

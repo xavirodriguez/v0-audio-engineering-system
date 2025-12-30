@@ -8,10 +8,14 @@ import { useRecording } from "@/hooks/use-recording"
 import { useAdaptiveExercises } from "@/hooks/use-adaptive-exercises"
 import { usePracticeState } from "@/hooks/use-practice-state"
 
+import React from "react";
 vi.mock("@/hooks/use-pitch-detection")
 vi.mock("@/hooks/use-recording")
 vi.mock("@/hooks/use-adaptive-exercises")
 vi.mock("@/hooks/use-practice-state")
+vi.mock("@/components/practice/scale-practice", () => ({
+  ScalePractice: () => <div data-testid="scale-practice-mock" />,
+}));
 
 const mockInitialize = vi.fn()
 const mockStartCalibration = vi.fn()
