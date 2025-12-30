@@ -1,110 +1,99 @@
 /**
- * @fileoverview Analyzes real-time performance data to provide gamification feedback.
- * This class processes a stream of pitch data, tracks metrics like accuracy and streaks,
- * and emits events through the FeedbackEventBus to trigger UI notifications.
+ * @fileoverview Analyzes recordings of practice sessions to provide detailed feedback.
  */
 
-import { feedbackBus, FeedbackEventType } from "@/lib/events";
-import type { PitchEvent } from "@/lib/types/pitch-detection";
+import {
+  PitchSample,
+  MusicalNote,
+  PitchToMusicAdapter,
+  MusicToLearningAdapter,
+  PerformanceFeedback,
+} from '@/lib/domains';
 
-const ACCURACY_THRESHOLD = 0.85; // 85% accuracy required for a note to be "accurate"
-const STREAK_MILESTONES = [5, 10, 20, 50, 100]; // Milestones for streak notifications
-
-/**
- * Configuration options for the PerformanceAnalyzer.
- */
-interface PerformanceAnalyzerConfig {
-  targetNote: string;
-  targetFreqHz: number;
+// Assuming a 'Recording' type that has pitch points
+interface Recording {
+  pitchPoints: {
+    frequency: number;
+    confidence: number;
+    rms: number;
+  }[];
 }
 
 /**
- * Analyzes performance data and emits feedback events.
+ * Analyzes a recorded performance to generate feedback and recommendations.
  */
 export class PerformanceAnalyzer {
-  private streakCount = 0;
-  private config: PerformanceAnalyzerConfig;
-
-  constructor(config: PerformanceAnalyzerConfig) {
-    this.config = config;
-    feedbackBus.emit(FeedbackEventType.SESSION_STARTED, undefined, "Practice session started.");
-  }
+  private musicAdapter = new PitchToMusicAdapter();
+  private learningAdapter = new MusicToLearningAdapter();
 
   /**
-   * Processes a single pitch event from the audio pipeline.
-   * @param {PitchEvent} pitchEvent - The pitch data to analyze.
+   * Analyzes a complete recording against a set of target notes.
+   * @param {Recording} recording - The recorded performance data.
+   * @param {MusicalNote[]} targetNotes - The sequence of notes for the exercise.
+   * @returns {PerformanceFeedback} - The final, aggregated feedback for the session.
    */
-  public processPitch(pitchEvent: PitchEvent): void {
-    if (!pitchEvent.clarity || pitchEvent.clarity < ACCURACY_THRESHOLD) {
-      this.handleInaccuratePitch();
-      return;
-    }
+  analyzeRecording(
+    recording: Recording,
+    targetNotes: MusicalNote[]
+  ): PerformanceFeedback {
+    // Reset adapters for a fresh analysis of the recording
+    this.musicAdapter.reset();
+    this.learningAdapter.reset();
 
-    const centsOff = Math.abs(pitchEvent.cents || 0);
+    let finalFeedback = PerformanceFeedback.empty();
 
-    if (centsOff <= 15) {
-      this.handleAccuratePitch();
-    } else if (pitchEvent.cents > 15) {
-      this.handleInaccuratePitch(pitchEvent.cents);
-    } else {
-      this.handleInaccuratePitch(pitchEvent.cents);
-    }
-  }
+    // Process each recorded pitch point through the domain pipeline
+    for (let i = 0; i < recording.pitchPoints.length; i++) {
+      const point = recording.pitchPoints[i];
 
-  /**
-   * Handles a successful, accurate pitch.
-   */
-  private handleAccuratePitch(): void {
-    this.streakCount++;
-    feedbackBus.emit(
-      FeedbackEventType.PITCH_ACCURATE,
-      { note: this.config.targetNote },
-      `Accurate pitch for ${this.config.targetNote}`
-    );
-    feedbackBus.emit(
-      FeedbackEventType.STREAK_INCREMENTED,
-      { count: this.streakCount },
-      `Streak is now ${this.streakCount}`
-    );
-
-    if (STREAK_MILESTONES.includes(this.streakCount)) {
-      feedbackBus.emit(
-        FeedbackEventType.STREAK_MILESTONE,
-        { count: this.streakCount },
-        `Streak milestone reached: ${this.streakCount}!`
+      const sample = PitchSample.create(
+        point.frequency,
+        point.confidence,
+        point.rms
       );
+
+      const observation = this.musicAdapter.translate(sample);
+
+      if (observation && observation.isReliable()) {
+        // Determine the target note for this point in the recording
+        const targetNote = targetNotes[i % targetNotes.length]; // Simple loop for now
+
+        // Translate the observation into learning feedback
+        finalFeedback = this.learningAdapter.translate(
+          observation,
+          targetNote,
+          targetNotes.length
+        );
+      }
     }
+
+    return finalFeedback;
   }
 
   /**
-   * Handles an inaccurate pitch, breaking any ongoing streak.
-   * @param {number} [deviation] - The deviation in cents from the target.
+   * Generates pedagogical recommendations based on the performance feedback.
+   * @param {PerformanceFeedback} feedback - The feedback generated from the analysis.
+   * @returns {string[]} - A list of actionable recommendations for the user.
    */
-  private handleInaccuratePitch(deviation?: number): void {
-    if (this.streakCount > 0) {
-      feedbackBus.emit(
-        FeedbackEventType.STREAK_BROKEN,
-        { lastCount: this.streakCount },
-        `Streak of ${this.streakCount} broken.`
-      );
-      this.streakCount = 0;
+  generateRecommendations(feedback: PerformanceFeedback): string[] {
+    const recommendations: string[] = [];
+
+    if (feedback.metrics.accuracy < 70) {
+      recommendations.push('Focus on pitch accuracy. Try practicing with a tuner.');
     }
 
-    if (deviation) {
-      const eventType = deviation > 0 ? FeedbackEventType.PITCH_SHARP : FeedbackEventType.PITCH_FLAT;
-      const message = `Pitch is ${deviation > 0 ? 'sharp' : 'flat'} by ${Math.round(deviation)} cents.`
-      feedbackBus.emit(eventType, { deviation }, message);
+    if (feedback.metrics.averageDeviation > 20) {
+      recommendations.push('Work on reducing pitch deviation. Practice long tones.');
     }
-  }
 
-  /**
-   * Cleans up when the practice session ends.
-   */
-  public cleanup(): void {
-    feedbackBus.emit(
-      FeedbackEventType.SESSION_ENDED,
-      { duration: 0 }, // Duration can be calculated and passed in if needed
-      "Practice session ended."
-    );
+    if (feedback.metrics.maxStreak < 5 && feedback.metrics.notesTotal > 10) {
+      recommendations.push('Build consistency. Focus on maintaining steady pitch from one note to the next.');
+    }
+
+    if (recommendations.length === 0) {
+      recommendations.push('Great job! Your performance was solid.');
+    }
+
+    return recommendations;
   }
 }

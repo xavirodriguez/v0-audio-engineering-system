@@ -1,4 +1,5 @@
 // workers/pitch-detector.worker.ts
+import { PitchSample } from '@/lib/domains';
 
 // A simple PitchDetector class that will be instantiated in the worker
 class PitchDetector {
@@ -14,21 +15,6 @@ class PitchDetector {
             sum += buffer[i] * buffer[i];
         }
         return Math.sqrt(sum / buffer.length);
-    }
-
-    calculateClarity(buffer: Float32Array): number {
-        const rms = this.calculateRMS(buffer);
-        if (rms < 0.001) return 0;
-
-        let crossings = 0;
-        for (let i = 1; i < buffer.length; i++) {
-            if ((buffer[i - 1] >= 0 && buffer[i] < 0) || (buffer[i - 1] < 0 && buffer[i] >= 0)) {
-                crossings++;
-            }
-        }
-
-        const zcr = crossings / buffer.length;
-        return Math.max(0, 1 - zcr * 10);
     }
 
     // The YIN algorithm, directly moved from the original PitchDetector class
@@ -103,10 +89,20 @@ self.onmessage = (event) => {
         detector = new PitchDetector(payload.sampleRate);
     } else if (type === 'process') {
         if (detector) {
-            const pitchResult = detector.detectPitchYINJS(payload.buffer);
+            const { pitchHz, confidence } = detector.detectPitchYINJS(payload.buffer);
             const rms = detector.calculateRMS(payload.buffer);
-            const clarity = detector.calculateClarity(payload.buffer);
-            self.postMessage({ type: 'result', payload: { ...pitchResult, rms, clarity } });
+
+            const sample = PitchSample.create(pitchHz, confidence, rms);
+
+            self.postMessage({
+                type: 'PITCH_SAMPLE',
+                sample: {
+                  frequency: sample.frequency,
+                  confidence: sample.confidence,
+                  rms: sample.rms,
+                  timestamp: sample.timestamp
+                }
+              });
         }
     }
 };

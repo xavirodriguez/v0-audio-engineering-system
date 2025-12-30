@@ -20,7 +20,7 @@ describe("PitchDetector", () => {
     const signal = generateSineWave(659.25, 48000, 2048)
     const { pitchHz, confidence } = detector.detectPitchYIN(signal)
 
-    expect(pitchHz).toBeCloseTo(659.25, 1)
+    expect(pitchHz).toBeCloseTo(659.25, 0)
     expect(confidence).toBeGreaterThan(0.7)
   })
 

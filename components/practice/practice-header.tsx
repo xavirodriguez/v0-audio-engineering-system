@@ -31,12 +31,11 @@ export const PracticeHeader = memo(function PracticeHeader({
   onCalibrateClick,
   onSettingsToggle,
 }: PracticeHeaderProps) {
-  const { state } = usePitchDetection()
+  const { currentState } = usePitchDetection()
   const { isRecording } = useRecording()
-  const { status } = state
 
   const getStatusText = () => {
-    switch (status) {
+    switch (currentState) {
       case "IDLE":
         return "Listo para comenzar"
       case "CALIBRATING":
