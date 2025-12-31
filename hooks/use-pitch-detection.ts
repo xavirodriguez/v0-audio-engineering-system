@@ -1,58 +1,60 @@
 
-import { useCallback, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
+import {
+  PitchSample,
+  PitchToMusicAdapter,
+  MusicToLearningAdapter,
+  MusicalNote,
+  MusicalObservation,
+  PerformanceFeedback,
+} from '@/lib/domains';
 import { usePitchDetectionStore } from "@/lib/store/pitch-detection-store";
 import { useAudioContext } from "./use-audio-context";
 import { usePitchProcessor } from "./use-pitch-processor";
-import { frequencyToCents, midiToNoteName } from "@/lib/audio/note-utils";
 import { errorManager } from "@/lib/errors/error-manager";
 import {
-  AppError,
   AudioInitializationError,
   BufferOverflowError,
 } from "@/lib/errors/app-errors";
-import { PerformanceAnalyzer } from "@/lib/audio/performance-analyzer";
 
-export function usePitchDetection() {
-  // ✅ Centralized state from Zustand store
+interface PitchDetectionOptions {
+  addPitchPoint?: (pitch: { frequency: number; confidence: number; rms: number }) => void;
+  targetNote?: MusicalNote;
+}
+
+export function usePitchDetection({ addPitchPoint, targetNote }: PitchDetectionOptions = {}) {
   const {
     status,
-    currentPitch,
-    currentCents,
-    targetFreqHz,
-    targetNoteMidi,
     error,
+    currentPerformance,
+    updatePitchEvent,
     startDetection: startStoreDetection,
     stopDetection: stopStoreDetection,
-    updatePitchEvent,
     resetState,
   } = usePitchDetectionStore();
 
-  // Audio context management
-  const { audioContext, analyser, initialize: initAudio, cleanup } = useAudioContext();
-  const analyzerRef = useRef<PerformanceAnalyzer | null>(null);
+  const [feedback, setFeedback] = useState<PerformanceFeedback>(PerformanceFeedback.empty());
 
-  useEffect(() => {
-    if (status === 'LISTENING' && !analyzerRef.current) {
-      analyzerRef.current = new PerformanceAnalyzer({
-        targetNote: midiToNoteName(targetNoteMidi),
-        targetFreqHz: targetFreqHz,
-      });
-    } else if (status === 'IDLE' && analyzerRef.current) {
-      analyzerRef.current.cleanup();
-      analyzerRef.current = null;
-    }
-  }, [status, targetNoteMidi, targetFreqHz]);
+  const musicAdapter = useRef(new PitchToMusicAdapter({
+    minConfidence: 0.9,
+    minRms: 0.01,
+    stabilityThreshold: 5
+  })).current;
 
-  // Pitch processing, driven by store state
+  const learningAdapter = useRef(new MusicToLearningAdapter({
+    inTuneTolerance: 10,
+    streakMilestones: [3, 5, 10, 20, 50]
+  })).current;
+
+  const { audioContext, analyser, initialize: initAudio } = useAudioContext();
+
   usePitchProcessor({
     analyser,
     sampleRate: audioContext?.sampleRate || 48000,
     isActive: status === 'LISTENING',
     onPitchDetected: (event) => {
-      const cents = frequencyToCents(event.pitchHz, targetFreqHz);
-      const pitchEvent = { ...event, cents };
-      updatePitchEvent(pitchEvent);
-      analyzerRef.current?.processPitch(pitchEvent);
+      updatePitchEvent(event);
+      addPitchPoint?.({ frequency: event.pitchHz, confidence: event.confidence, rms: event.rms });
     },
     onError: (err) => {
       const error = new BufferOverflowError({
@@ -62,34 +64,23 @@ export function usePitchDetection() {
     },
   });
 
-  // Public API
-  const initialize = useCallback(async () => {
-    try {
-      await initAudio();
-    } catch (err) {
-      // Coerce to a known error type
-      const reason = err instanceof Error ? err.message : "unknown";
-      const error = new AudioInitializationError(reason, {
-        nativeError: err,
-      });
-      errorManager.report(error);
-    }
-  }, [initAudio]);
-
   return {
-    // State
     currentState: status,
-    currentPitch,
-    currentCents,
     error,
-
-    // Capabilities
+    currentPerformance,
+    feedback,
+    currentNote: currentPerformance?.playedNote || null,
+    isStable: currentPerformance?.quality.steadiness === 'stable' || false,
+    accuracy: feedback.metrics.accuracy,
+    streak: feedback.metrics.currentStreak,
     isDetecting: status === 'LISTENING',
-
-    // Actions
-    initialize,
+    initialize: initAudio,
     startDetection: startStoreDetection,
     stopDetection: stopStoreDetection,
-    reset: resetState,
+    reset: () => {
+      resetState();
+      musicAdapter.reset();
+      learningAdapter.reset();
+    },
   };
 }

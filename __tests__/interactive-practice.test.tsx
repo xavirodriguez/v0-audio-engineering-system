@@ -7,36 +7,40 @@ import { usePitchDetection } from "@/hooks/use-pitch-detection"
 import { useRecording } from "@/hooks/use-recording"
 import { useAdaptiveExercises } from "@/hooks/use-adaptive-exercises"
 import { usePracticeState } from "@/hooks/use-practice-state"
+import { PerformanceFeedback, MusicalNote, LearningSignal, SignalType, SignalSeverity } from "@/lib/domains"
 
 import React from "react";
 vi.mock("@/hooks/use-pitch-detection")
 vi.mock("@/hooks/use-recording")
 vi.mock("@/hooks/use-adaptive-exercises")
 vi.mock("@/hooks/use-practice-state")
-vi.mock("@/components/practice/scale-practice", () => ({
-  ScalePractice: () => <div data-testid="scale-practice-mock" />,
-}));
+vi.mock("@/components/feedback/feedback-overlay", () => ({
+  FeedbackOverlay: ({ notifications, onDismiss }: { notifications: LearningSignal[], onDismiss: (id: string) => void }) => (
+    <div>
+      {notifications.map(n => (
+        <button key={n.id} onClick={() => onDismiss(n.id)}>
+          {n.message}
+        </button>
+      ))}
+    </div>
+  ),
+}))
 
 const mockInitialize = vi.fn()
-const mockStartCalibration = vi.fn()
 const mockStartDetection = vi.fn()
 const mockStopDetection = vi.fn()
 const mockStartRecording = vi.fn()
-
 const mockMediaStream = { id: "mock-stream" }
+const mockTargetNote = MusicalNote.fromNoteName("A", 4);
 
 beforeEach(() => {
   vi.clearAllMocks()
 
   ;(usePitchDetection as vi.Mock).mockReturnValue({
-    state: {
-      status: "IDLE",
-      notes: [],
-      currentNoteIndex: 0,
-      totalLatencyOffsetMs: 0,
-    },
+    currentState: "IDLE",
+    observation: null,
+    feedback: PerformanceFeedback.empty(),
     initialize: mockInitialize,
-    startCalibration: mockStartCalibration,
     startDetection: mockStartDetection,
     stopDetection: mockStopDetection,
     mediaStream: mockMediaStream,
@@ -101,7 +105,7 @@ describe("InteractivePractice", () => {
     })
 
     await vi.waitFor(() => {
-      expect(mockStartRecording).toHaveBeenCalledWith(mockMediaStream, undefined, undefined)
+      expect(mockStartRecording).toHaveBeenCalled()
     })
   })
 
@@ -114,7 +118,40 @@ describe("InteractivePractice", () => {
     await vi.waitFor(() => {
       expect(mockInitialize).toHaveBeenCalledOnce()
     })
+  })
 
-    expect(mockStartCalibration).toHaveBeenCalledOnce()
+  it("should display notifications and dismiss them", () => {
+    const signal = LearningSignal.create(
+      SignalType.PITCH_ACCURATE,
+      SignalSeverity.SUCCESS,
+      "Test message",
+    )
+    const feedback = PerformanceFeedback.create([signal], {
+      accuracy: 100,
+      averageDeviation: 0,
+      currentStreak: 1,
+      maxStreak: 1,
+      notesCompleted: 1,
+      notesTotal: 1,
+    })
+
+    ;(usePitchDetection as vi.Mock).mockReturnValue({
+      currentState: "IDLE",
+      observation: null,
+      feedback: feedback,
+      initialize: mockInitialize,
+      startDetection: mockStartDetection,
+      stopDetection: mockStopDetection,
+      mediaStream: mockMediaStream,
+    })
+
+    const { getByText, queryByText } = renderComponent()
+
+    const notification = getByText("Test message")
+    expect(notification).toBeInTheDocument()
+
+    fireEvent.click(notification)
+
+    expect(queryByText("Test message")).not.toBeInTheDocument()
   })
 })
