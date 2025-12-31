@@ -1,16 +1,8 @@
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
-import { NotePerformance } from "@/lib/domains/music/note-performance.value-object";
-import { ExerciseProgress } from "@/lib/domains/practice/exercise-progress.value-object";
-import { generatePracticeSequence } from "@/lib/audio/note-utils";
-import type { PitchEvent } from "@/lib/types/pitch-detection";
-import { MusicalNote } from "@/lib/domains/music/musical-note";
-
-interface PracticeSessionState {
-  currentPerformance: NotePerformance | null;
-  exerciseProgress: ExerciseProgress;
-  // studentFeedback: PedagogicalFeedback; // This will be added in a future step
-}
+import { create } from "zustand"
+import { persist } from "zustand/middleware"
+import type { GlobalTunerState, PitchEvent } from "@/lib/types/pitch-detection"
+import { generatePracticeSequence } from "@/lib/audio/note-utils"
+import { calculateNextPracticeState } from "@/lib/domain/practice-rules";
 
 interface PitchDetectionStore extends PracticeSessionState {
   // Actions
@@ -76,22 +68,11 @@ export const usePitchDetectionStore = create<PitchDetectionStore>()(
        */
       advanceToNextNote: () =>
         set((state) => {
-          const nextIndex = state.currentNoteIndex + 1
-          if (nextIndex >= state.notes.length) {
-            return {
-              status: "IDLE",
-              accuracy: 100,
-            }
-          }
-
-          const nextNote = state.notes[nextIndex]
-          return {
-            currentNoteIndex: nextIndex,
-            targetNoteMidi: nextNote.midi,
-            consecutiveStableFrames: 0,
-            holdStart: 0,
-            accuracy: Math.round((nextIndex / state.notes.length) * 100),
-          }
+          const { newState } = calculateNextPracticeState({
+            currentNoteIndex: state.currentNoteIndex,
+            notes: state.notes,
+          });
+          return newState;
         }),
 
       /**
