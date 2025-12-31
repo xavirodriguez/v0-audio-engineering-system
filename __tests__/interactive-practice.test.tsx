@@ -9,6 +9,7 @@ import { useAdaptiveExercises } from "@/hooks/use-adaptive-exercises"
 import { usePracticeState } from "@/hooks/use-practice-state"
 import { PerformanceFeedback, MusicalNote, LearningSignal, SignalType, SignalSeverity } from "@/lib/domains"
 
+import React from "react";
 vi.mock("@/hooks/use-pitch-detection")
 vi.mock("@/hooks/use-recording")
 vi.mock("@/hooks/use-adaptive-exercises")
