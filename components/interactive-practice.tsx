@@ -29,7 +29,7 @@ export function InteractivePractice() {
 
   const {
     currentState,
-    observation,
+    currentPerformance,
     feedback,
     initialize,
     startDetection,
@@ -115,11 +115,11 @@ export function InteractivePractice() {
           )}
 
           <PitchIndicator
-            observation={observation}
+            performance={currentPerformance}
             targetNote={targetNote}
           />
           <div className="p-4 sm:p-6">
-            <Fretboard currentPitch={observation?.note.frequency || 0} />
+            <Fretboard currentPitch={currentPerformance?.playedNote.frequency || 0} />
           </div>
         </Card>
 
@@ -151,7 +151,7 @@ export function InteractivePractice() {
 
       <DebugPanel state={{
         currentState,
-        observation,
+        currentPerformance,
         feedback,
       }} />
     </div>

@@ -2,10 +2,11 @@
 
 import { motion } from "framer-motion"
 import { Card } from "@/components/ui/card"
-import { MusicalObservation, MusicalNote } from "@/lib/domains"
+import { MusicalNote } from "@/lib/domains"
+import { NotePerformance } from "@/lib/domains/music/note-performance.value-object"
 
 interface PitchIndicatorProps {
-  observation: MusicalObservation | null;
+  performance: NotePerformance | null;
   targetNote: MusicalNote | null;
 }
 
@@ -14,8 +15,8 @@ interface PitchIndicatorProps {
  * @param {PitchIndicatorProps} props - The props for the component.
  * @returns {JSX.Element} - The rendered pitch indicator component.
  */
-export function PitchIndicator({ observation, targetNote }: PitchIndicatorProps) {
-  if (!observation) {
+export function PitchIndicator({ performance, targetNote }: PitchIndicatorProps) {
+  if (!performance || !targetNote) {
     return (
       <div className="p-6 border-t border-border bg-card/50 text-center">
         Waiting for input...
@@ -23,8 +24,7 @@ export function PitchIndicator({ observation, targetNote }: PitchIndicatorProps)
     );
   }
 
-  const { note } = observation;
-  const tuningStatus = note.getTuningStatus(10); // Domain logic!
+  const notePerformance = performance;
 
   const colorMap = {
     'in-tune': 'bg-emerald-500',
@@ -33,7 +33,7 @@ export function PitchIndicator({ observation, targetNote }: PitchIndicatorProps)
   };
 
   const getPitchIndicatorPosition = () => {
-    const clampedCents = Math.max(-50, Math.min(50, note.centsDeviation));
+    const clampedCents = Math.max(-50, Math.min(50, notePerformance.playedNote.centsDeviation));
     return (clampedCents / 50) * 50;
   };
 
@@ -46,7 +46,7 @@ export function PitchIndicator({ observation, targetNote }: PitchIndicatorProps)
             <div className="absolute inset-y-0 left-1/2 w-1/4 -translate-x-1/2 bg-emerald-500/10" />
             <div className="absolute inset-y-0 left-1/2 w-1 bg-foreground/20 -translate-x-1/2" />
             <motion.div
-              className={`absolute inset-y-0 w-3 rounded-full transition-colors duration-100 ${colorMap[tuningStatus]}`}
+              className={`absolute inset-y-0 w-3 rounded-full transition-colors duration-100 ${colorMap[notePerformance.quality.tuning]}`}
               animate={{
                 left: `calc(50% + ${getPitchIndicatorPosition()}%)`,
               }}
@@ -75,30 +75,30 @@ export function PitchIndicator({ observation, targetNote }: PitchIndicatorProps)
           <Card className="border-border bg-background/50 p-4">
             <div className="text-center">
               <div className="text-3xl font-bold text-foreground mb-1">
-                {note.getFullName()}
+                {notePerformance.playedNote.getFullName()}
               </div>
-              <div className="text-xs text-muted-foreground">Detectado</div>
+              <div className="text-xs text-muted-foreground">Playing</div>
             </div>
           </Card>
           <Card className="border-border bg-background/50 p-4">
             <div className="text-center">
               <div
                 className={`text-3xl font-bold mb-1 ${
-                  tuningStatus === 'in-tune'
+                  notePerformance.quality.tuning === 'in-tune'
                     ? "text-emerald-600"
                     : "text-yellow-600"
                 }`}
               >
-                {note.centsDeviation > 0 ? "+" : ""}
-                {note.centsDeviation.toFixed(1)}¢
+                {notePerformance.playedNote.centsDeviation > 0 ? "+" : ""}
+                {notePerformance.playedNote.centsDeviation.toFixed(1)}¢
               </div>
-              <div className="text-xs text-muted-foreground">Desviación</div>
+              <div className="text-xs text-muted-foreground">Tuning</div>
             </div>
           </Card>
           <Card className="border-border bg-background/50 p-4">
             <div className="text-center">
-              <div className="text-3xl font-bold text-foreground mb-1">{observation.isReliable() ? 'Stable' : 'Detecting...'}</div>
-              <div className="text-xs text-muted-foreground">Estabilidad</div>
+              <div className="text-3xl font-bold text-foreground mb-1">{notePerformance.quality.steadiness === 'stable' ? 'Stable' : 'Detecting...'}</div>
+              <div className="text-xs text-muted-foreground">Steadiness</div>
             </div>
           </Card>
         </div>
