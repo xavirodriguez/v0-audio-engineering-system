@@ -9,8 +9,8 @@ import {
   calculateNoteAccuracy,
   type PitchDataPoint,
 } from "@/lib/audio/calculate-note-accuracy";
+import { decidePracticeAction, type PracticeContext } from "@/lib/domain/practice-rules";
 
-const NOTE_TRANSITION_BUFFER_MS = 300;
 const PITCH_CONFIDENCE_MIN = 0.6;
 
 /**
@@ -79,99 +79,96 @@ export function usePitchStateMachine() {
         currentCents: cents,
         currentConfidence: confidence,
         currentRms: rms,
-      })
+      });
 
-      // Estado: IDLE - no hacer nada
-      if (status === "IDLE") return
+      const context: PracticeContext = {
+        status,
+        currentNote: {
+          frequency: currentNote.frequency,
+          midi: currentNote.midi,
+          name: currentNote.name,
+        },
+        observation: {
+          frequency: pitchHz,
+          confidence: confidence,
+          rms: rms,
+          cents: cents,
+        },
+        thresholds: {
+          rmsThreshold,
+          toleranceCents,
+          minConfidence: PITCH_CONFIDENCE_MIN,
+        },
+        timing: {
+          consecutiveStableFrames,
+          holdDurationMs: (holdStart > 0) ? (adjustedTimestamp - holdStart) * 1000 : 0,
+          minHoldMs,
+        },
+      };
 
-      // Estado: CALIBRATING - delegar a useCalibration
-      if (status === "CALIBRATING") return
+      const decision = decidePracticeAction(context);
 
-      // Estado: PITCH_DETECTING o PITCH_STABLE
-      if (
-        status === "PITCH_DETECTING" ||
-        status === "PITCH_STABLE"
-      ) {
-        // No signal
-        if (rms < rmsThreshold) {
-          if (status === "PITCH_STABLE") {
-            // If we were stable, the signal was lost. Reset.
+      switch (decision.type) {
+        case 'IGNORE':
+          return;
+
+        case 'REJECT':
+          if (status === 'PITCH_STABLE') {
+            // If we were stable, this is a degradation. Reset.
             pitchHistoryRef.current = [];
             noteStartTimeRef.current = null;
-            dispatchFeedback({
-                type: "ERROR",
-                severity: "warning",
-                category: "pitch-unstable",
-                userMessage: "Signal lost",
-                suggestion: "Try playing a bit louder or move closer to the microphone."
-            })
+            if (decision.reason === 'VOLUME_TOO_LOW') {
+               dispatchFeedback({
+                  type: "ERROR",
+                  severity: "warning",
+                  category: "pitch-unstable",
+                  userMessage: "Signal lost",
+                  suggestion: "Try playing a bit louder or move closer to the microphone."
+               });
+            }
           }
           setState({
+            status: "PITCH_DETECTING",
             consecutiveStableFrames: 0,
             holdStart: 0,
-            status: "PITCH_DETECTING",
           });
-          return;
-        }
+          break;
 
-        // Check if in tune
-        const isInTune =
-          Math.abs(cents) < toleranceCents &&
-          confidence > PITCH_CONFIDENCE_MIN;
-
-        if (isInTune) {
+        case 'ACCEPT':
           // Start tracking note hold if this is the first stable frame
           if (noteStartTimeRef.current === null) {
             noteStartTimeRef.current = adjustedTimestamp;
           }
           pitchHistoryRef.current.push({ frequency: pitchHz, confidence, timestamp });
 
-          const newConsecutiveFrames = consecutiveStableFrames + 1;
-          const newHoldStart = holdStart || adjustedTimestamp;
-          const holdDuration = (adjustedTimestamp - newHoldStart) * 1000;
-
-          // Note held long enough -> advance to the next note
-          if (holdDuration >= minHoldMs + NOTE_TRANSITION_BUFFER_MS) {
-            const accuracy = calculateNoteAccuracy(
-              pitchHistoryRef.current,
-              currentNote.frequency,
-              holdDuration
-            );
-
-            dispatchFeedback({
-              type: "NOTE_COMPLETED",
-              note: currentNote.name,
-              accuracy: accuracy,
-              duration: holdDuration,
-              timestamp: Date.now(),
-            });
-
-            // Reset for the next note
-            pitchHistoryRef.current = [];
-            noteStartTimeRef.current = null;
-            advanceToNextNote();
-            return;
-          }
-
-          // Actualizar estado estable
           setState({
             status: "PITCH_STABLE",
-            consecutiveStableFrames: newConsecutiveFrames,
-            holdStart: newHoldStart,
-          })
-        } else {
-          // Lost tuning
-          if (status === "PITCH_STABLE") {
-            // If we were stable, this is a degradation. Reset.
-             pitchHistoryRef.current = [];
-             noteStartTimeRef.current = null;
-          }
-          setState({
-            status: "PITCH_DETECTING",
-            consecutiveStableFrames: 0,
-            holdStart: 0,
+            consecutiveStableFrames: consecutiveStableFrames + 1,
+            holdStart: holdStart || adjustedTimestamp,
           });
-        }
+          break;
+
+        case 'ADVANCE_NOTE':
+          const holdDuration = (adjustedTimestamp - (holdStart || adjustedTimestamp)) * 1000;
+          const accuracy = calculateNoteAccuracy(
+            pitchHistoryRef.current,
+            currentNote.frequency,
+            holdDuration
+          );
+
+          dispatchFeedback({
+            type: "NOTE_COMPLETED",
+            note: currentNote.name,
+            accuracy: accuracy,
+            duration: holdDuration,
+            timestamp: Date.now(),
+          });
+
+          // Reset for the next note
+          pitchHistoryRef.current = [];
+          noteStartTimeRef.current = null;
+          advanceToNextNote();
+          break;
       }
     },
     [
