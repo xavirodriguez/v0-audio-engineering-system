@@ -26,12 +26,13 @@ export function usePitchDetection({ addPitchPoint, targetNote }: PitchDetectionO
   const {
     status,
     error,
+    currentPerformance,
+    updatePitchEvent,
     startDetection: startStoreDetection,
     stopDetection: stopStoreDetection,
     resetState,
   } = usePitchDetectionStore();
 
-  const [currentObservation, setCurrentObservation] = useState<MusicalObservation | null>(null);
   const [feedback, setFeedback] = useState<PerformanceFeedback>(PerformanceFeedback.empty());
 
   const musicAdapter = useRef(new PitchToMusicAdapter({
@@ -52,28 +53,8 @@ export function usePitchDetection({ addPitchPoint, targetNote }: PitchDetectionO
     sampleRate: audioContext?.sampleRate || 48000,
     isActive: status === 'LISTENING',
     onPitchDetected: (event) => {
-      const sample = PitchSample.create(
-        event.pitchHz,
-        event.confidence,
-        event.rms,
-      );
-
-      addPitchPoint?.({ frequency: sample.frequency, confidence: sample.confidence, rms: sample.rms });
-
-      const observation = musicAdapter.translate(sample);
-
-      if (observation) {
-        setCurrentObservation(observation);
-
-        if (targetNote) {
-          const newFeedback = learningAdapter.translate(
-            observation,
-            targetNote,
-            10 // This should come from the exercise
-          );
-          setFeedback(newFeedback);
-        }
-      }
+      updatePitchEvent(event);
+      addPitchPoint?.({ frequency: event.pitchHz, confidence: event.confidence, rms: event.rms });
     },
     onError: (err) => {
       const error = new BufferOverflowError({
@@ -86,10 +67,10 @@ export function usePitchDetection({ addPitchPoint, targetNote }: PitchDetectionO
   return {
     currentState: status,
     error,
-    observation: currentObservation,
+    currentPerformance,
     feedback,
-    currentNote: currentObservation?.note || null,
-    isStable: currentObservation?.isStable || false,
+    currentNote: currentPerformance?.playedNote || null,
+    isStable: currentPerformance?.quality.steadiness === 'stable' || false,
     accuracy: feedback.metrics.accuracy,
     streak: feedback.metrics.currentStreak,
     isDetecting: status === 'LISTENING',

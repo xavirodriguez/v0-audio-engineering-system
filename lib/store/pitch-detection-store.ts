@@ -4,7 +4,7 @@ import type { GlobalTunerState, PitchEvent } from "@/lib/types/pitch-detection"
 import { generatePracticeSequence } from "@/lib/audio/note-utils"
 import { calculateNextPracticeState } from "@/lib/domain/practice-rules";
 
-interface PitchDetectionStore extends GlobalTunerState {
+interface PitchDetectionStore extends PracticeSessionState {
   // Actions
   updatePitchEvent: (event: PitchEvent) => void;
   resetState: () => void;
@@ -16,28 +16,11 @@ interface PitchDetectionStore extends GlobalTunerState {
   transitionStatus: (newStatus: 'PITCH_STABLE' | 'LISTENING' | 'RETRYING') => void;
 }
 
-const initialState: GlobalTunerState = {
-  status: "IDLE",
-  currentNoteIndex: 0,
-  targetNoteMidi: 69,
-  targetFreqHz: 440,
-  accompanimentStartTime: 0,
-  toleranceCents: 50,
-  minHoldMs: 1000,
-  rmsThreshold: 0.03,
-  pitchHistory: [],
-  consecutiveStableFrames: 0,
-  holdStart: 0,
-  totalLatencyOffsetMs: 0,
-  isWorkletSupported: false,
-  currentPitch: 0,
-  currentCents: 0,
-  currentConfidence: 0,
-  currentRms: 0,
-  accuracy: 0,
-  notes: generatePracticeSequence(),
-  transitionTimestamps: [],
-}
+const initialState: PracticeSessionState = {
+  currentPerformance: null,
+  exerciseProgress: new ExerciseProgress(),
+  // studentFeedback: new PedagogicalFeedback(), // This will be added in a future step
+};
 
 /**
  * A store for managing pitch detection.
@@ -46,36 +29,38 @@ export const usePitchDetectionStore = create<PitchDetectionStore>()(
   persist(
     (set, get) => ({
       ...initialState,
+      status: "IDLE",
+      currentNoteIndex: 0,
+      targetNoteMidi: 69,
+      accompanimentStartTime: 0,
+      toleranceCents: 50,
+      minHoldMs: 1000,
+      rmsThreshold: 0.03,
+      pitchHistory: [],
+      consecutiveStableFrames: 0,
+      holdStart: 0,
+      totalLatencyOffsetMs: 0,
+      isWorkletSupported: false,
+      accuracy: 0,
+      notes: generatePracticeSequence(),
+      transitionTimestamps: [],
 
       /**
        * Updates the pitch event.
        * @param {PitchEvent} event - The pitch event.
        */
       updatePitchEvent: (event) => {
-        const { status, consecutiveStableFrames } = get();
-        const STABLE_FRAMES_THRESHOLD = 3;
+        const { targetNoteMidi } = get();
+        const targetNote = MusicalNote.fromMidi(targetNoteMidi);
+        const playedNote = MusicalNote.fromFrequency(event.pitchHz);
 
-        let newStableFrames = consecutiveStableFrames;
+        const tuningStatus = playedNote.getTuningStatus(10);
+        const steadiness = event.confidence > 0.6 ? 'stable' : 'wavering';
+        const quality = new PerformanceQuality(tuningStatus, steadiness, 'adequate');
 
-        if (event.confidence > 0.6) {
-          newStableFrames++;
-          if (status === 'LISTENING' && newStableFrames >= STABLE_FRAMES_THRESHOLD) {
-            get().transitionStatus('PITCH_STABLE');
-          }
-        } else {
-          newStableFrames = 0;
-          if (status === 'PITCH_STABLE') {
-            get().transitionStatus('LISTENING');
-          }
-        }
+        const currentPerformance = new NotePerformance(playedNote, targetNote, quality);
 
-        set((state) => ({
-          currentPitch: event.pitchHz,
-          currentConfidence: event.confidence,
-          currentRms: event.rms,
-          pitchHistory: [...state.pitchHistory.slice(-99), event],
-          consecutiveStableFrames: newStableFrames,
-        }));
+        set({ currentPerformance });
       },
 
       /**
@@ -99,7 +84,6 @@ export const usePitchDetectionStore = create<PitchDetectionStore>()(
           notes,
           currentNoteIndex: 0,
           targetNoteMidi: notes[0]?.midi || 69,
-          targetFreqHz: notes[0]?.frequency || 440,
         }),
 
       /**
@@ -126,7 +110,6 @@ export const usePitchDetectionStore = create<PitchDetectionStore>()(
         if (note) {
           return {
             targetNoteMidi: note.midi,
-            targetFreqHz: note.frequency,
           };
         }
         return {};
