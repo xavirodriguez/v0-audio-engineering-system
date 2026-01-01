@@ -81,7 +81,7 @@ export const PracticeHeader = memo(function PracticeHeader({
               Ejercicios
             </Button>
 
-            <Button variant="outline" size="icon" onClick={onCalibrateClick} disabled={status === "CALIBRATING"} aria-label="Calibrar">
+            <Button variant="outline" size="icon" onClick={onCalibrateClick} disabled={currentState === "CALIBRATING"} aria-label="Calibrar">
               <RotateCcw className="w-4 h-4" />
             </Button>
 

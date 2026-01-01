@@ -1,3 +1,4 @@
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { ArrowRight } from "lucide-react"
 import { getTranslations } from "next-intl/server"
@@ -32,10 +33,13 @@ export async function Hero() {
 
         <div className="mt-16 md:mt-24 relative">
           <div className="aspect-video rounded-lg overflow-hidden bg-muted border border-border shadow-2xl">
-            <img
+            <Image
               src="/elegant-violin-on-music-stand-with-sheet-music.jpg"
               alt="Violín elegante con partitura"
+              width={1920}
+              height={1080}
               className="w-full h-full object-cover"
+              priority
             />
           </div>
         </div>
