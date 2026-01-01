@@ -4,8 +4,8 @@ import { getTranslations } from "next-intl/server"
  * A footer component.
  * @returns {JSX.Element} - The rendered footer component.
  */
-export async function Footer() {
-  const t = await getTranslations("footer")
+export async function Footer({ locale }: { locale: string }) {
+  const t = await getTranslations({ locale, namespace: "footer" })
 
   return (
     <footer className="bg-primary text-primary-foreground py-12 px-4 sm:px-6 lg:px-8">
