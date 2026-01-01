@@ -12,6 +12,10 @@ export enum AudioResourceState {
   CLOSED,
 }
 
+interface WindowWithWebkit extends Window {
+  webkitAudioContext?: typeof AudioContext
+}
+
 export class AudioResourceManager implements IDisposable {
   private static instance: AudioResourceManager | null = null
 
@@ -42,7 +46,7 @@ export class AudioResourceManager implements IDisposable {
 
     try {
       this.audioContext = new (window.AudioContext ||
-        (window as any).webkitAudioContext)()
+        (window as WindowWithWebkit).webkitAudioContext!)()
       this.monitorContextState()
 
       if (signal?.aborted) {

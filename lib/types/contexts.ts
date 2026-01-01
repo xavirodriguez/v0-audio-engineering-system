@@ -1,6 +1,7 @@
 import { AppError } from "@/lib/errors/app-errors";
 import { Recording } from "./recording";
 import { PitchDetectionStatus } from "./pitch-detection";
+import { Exercise, AdaptiveRecommendation } from "./exercise-system";
 
 // Define placeholder types for states that are not yet defined
 // This allows us to define the context values without having the full state implementation yet.
@@ -20,12 +21,22 @@ type RecordingState = {
 };
 
 type ExerciseState = {
-  // Define properties for ExerciseState later
-};
+  currentExercise: Exercise | null
+  recommendations: AdaptiveRecommendation[]
+  isLoading: boolean
+  practiceContext: 'warm-up' | 'deep-study' | 'review'
+  practiceGoal: string
+}
 
 type UIState = {
-  // Define properties for UIState later
-};
+  theme: 'light' | 'dark'
+  sidebarOpen: boolean
+  notifications: Array<{
+    id: string
+    type: 'info' | 'warning' | 'error' | 'success'
+    message: string
+  }>
+}
 
 export type AudioContextValue = {
   audioContext: AudioContext | null;

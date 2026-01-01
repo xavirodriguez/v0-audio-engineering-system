@@ -112,7 +112,7 @@ describe("feedbackReducer", () => {
       };
       const stateWithError: FeedbackState = {
         ...initialFeedbackState,
-        // @ts-expect-error
+        // @ts-expect-error - Testing reducer's ability to handle existing errors
         errors: [errorAction],
       };
       const newState = feedbackReducer(stateWithError, errorAction);

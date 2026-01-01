@@ -1,11 +1,7 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { createHapticMiddleware } from "../haptic-middleware";
 import { DEFAULT_MIDDLEWARE_CONFIG } from "../../middleware-config";
 import type { FeedbackAction, FeedbackState } from "../../types";
-
-// Keep track of the original implementations to restore them after tests.
-const originalVibrate = navigator.vibrate;
-const originalQuerySelector = document.querySelector;
 
 describe("createHapticMiddleware", () => {
   const config = DEFAULT_MIDDLEWARE_CONFIG.haptic;
@@ -15,7 +11,7 @@ describe("createHapticMiddleware", () => {
   // Mock global objects before each test
   beforeEach(() => {
     vi.clearAllMocks();
-    // @ts-ignore
+    // @ts-expect-error - We are mocking the navigator.vibrate for testing purposes.
     navigator.vibrate = vi.fn();
     document.querySelector = vi.fn().mockReturnValue({
         classList: {
@@ -46,7 +42,7 @@ describe("createHapticMiddleware", () => {
 
   it("should trigger visual flash fallback if vibration is not supported", () => {
     // Temporarily remove navigator.vibrate for this test
-    // @ts-ignore
+    // @ts-expect-error - We are mocking the navigator.vibrate for testing purposes.
     delete navigator.vibrate;
     const action: FeedbackAction = { type: "TUNING_UPDATE", cents: 0, timestamp: 4 };
     hapticMiddleware(state, action, vi.fn());

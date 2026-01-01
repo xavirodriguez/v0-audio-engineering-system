@@ -1,3 +1,4 @@
+import Image from "next/image"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Clock, Users, Star } from "lucide-react"
@@ -52,9 +53,11 @@ export async function Courses() {
             return (
               <Card key={key} className="border-border bg-card overflow-hidden hover:shadow-xl transition-shadow">
                 <div className="aspect-video overflow-hidden">
-                  <img
+                  <Image
                     src={course.image || "/placeholder.svg"}
                     alt={course.title}
+                    width={400}
+                    height={300}
                     className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                   />
                 </div>

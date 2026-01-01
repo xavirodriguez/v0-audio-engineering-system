@@ -1,3 +1,4 @@
+import Image from "next/image"
 import { Card, CardContent } from "@/components/ui/card"
 import { Star } from "lucide-react"
 import { getTranslations } from "next-intl/server"
@@ -52,9 +53,11 @@ export async function Testimonials() {
                   </div>
                   <p className="text-sm text-muted-foreground mb-6 leading-relaxed">"{testimonial.content}"</p>
                   <div className="flex items-center gap-3">
-                    <img
+                    <Image
                       src={testimonial.image || "/placeholder.svg"}
                       alt={testimonial.name}
+                      width={48}
+                      height={48}
                       className="w-12 h-12 rounded-full object-cover"
                     />
                     <div>

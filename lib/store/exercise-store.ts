@@ -1,6 +1,6 @@
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
-import type { StudentProfile, Exercise, AdaptiveRecommendation, PracticeSession } from "@/lib/types/exercise-system"
+import type { StudentProfile, Exercise, AdaptiveRecommendation, ExerciseType, DifficultyLevel } from "@/lib/types/exercise-system"
 import { getExerciseGenerator, getPerformanceAnalyzer } from "@/lib/ai/exercise-factory"
 
 interface ExerciseStore {
@@ -98,22 +98,22 @@ export const useExerciseStore = create<ExerciseStore>()(
        * @param {string} difficulty - The difficulty of the exercise.
        * @returns {Exercise | null} - The generated exercise.
        */
-      generateCustomExercise: (type, difficulty) => {
+      generateCustomExercise: (type: ExerciseType, difficulty: DifficultyLevel) => {
         const generator = getExerciseGenerator()
         let exercise: Exercise | null = null
 
         switch (type) {
           case "open-strings":
-            exercise = generator.generateOpenStringsExercise(difficulty as any)
+            exercise = generator.generateOpenStringsExercise(difficulty)
             break
           case "scales":
-            exercise = generator.generateScaleExercise(difficulty as any, "major")
+            exercise = generator.generateScaleExercise(difficulty, "major")
             break
           case "intervals":
-            exercise = generator.generateIntervalsExercise(difficulty as any)
+            exercise = generator.generateIntervalsExercise(difficulty)
             break
           case "intonation-drill":
-            exercise = generator.generateIntonationDrill(69, difficulty as any)
+            exercise = generator.generateIntonationDrill(69, difficulty)
             break
         }
 

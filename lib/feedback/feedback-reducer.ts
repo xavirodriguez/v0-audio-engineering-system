@@ -88,7 +88,7 @@ export function feedbackReducer(
     default: {
       // This ensures that if a new action type is added to FeedbackAction,
       // TypeScript will warn us if we haven't handled it here.
-      const exhaustiveCheck: never = action;
+      const _exhaustiveCheck: never = action;
       return state;
     }
   }

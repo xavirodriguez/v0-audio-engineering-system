@@ -77,9 +77,10 @@ describe("AudioResourceManager", () => {
 
   it("should throw an error if initialization fails", async () => {
     const testError = new Error("getUserMedia failed")
-    ;(navigator.mediaDevices.getUserMedia as vi.Mock).mockRejectedValueOnce(
-      testError
-    )
+    type MockedGetUserMedia = ReturnType<typeof vi.fn<typeof navigator.mediaDevices.getUserMedia>>
+
+    ;(navigator.mediaDevices.getUserMedia as unknown as MockedGetUserMedia)
+      .mockRejectedValueOnce(testError)
 
     await expect(audioManagerInstance.initialize()).rejects.toThrow(
       "getUserMedia failed"

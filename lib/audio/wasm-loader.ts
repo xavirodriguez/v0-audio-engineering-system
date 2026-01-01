@@ -4,6 +4,13 @@ export interface WASMPitchResult {
   clarity: number
 }
 
+interface WASMExports extends WebAssembly.Exports {
+  __heap_base?: WebAssembly.Global
+  process_audio_yin?: (bufferPtr: number, length: number, threshold: number) => number
+  process_audio_autocorr?: (bufferPtr: number, length: number) => number
+  get_rms?: (bufferPtr: number, length: number) => number
+}
+
 /**
  * A pitch detector that uses WebAssembly.
  */
@@ -67,7 +74,7 @@ export class WASMPitchDetector {
 
     // Simplificación: usar offset fijo en memoria
     // En producción, implementar un allocator apropiado
-    const exports = this.module.exports as any
+    const exports = this.module.exports as WASMExports
     if (exports.__heap_base) {
       return exports.__heap_base.value
     }
@@ -91,8 +98,8 @@ export class WASMPitchDetector {
       memoryBuffer.set(buffer)
 
       // Llamar a la función WASM
-      const exports = this.module.exports as any
-      const resultPtr = exports.process_audio_yin(this.bufferPtr, buffer.length, threshold)
+      const exports = this.module.exports as WASMExports
+      const resultPtr = exports.process_audio_yin!(this.bufferPtr, buffer.length, threshold)
 
       // Leer resultado desde memoria WASM
       const resultView = new Float32Array(this.memory.buffer, resultPtr, 3)
@@ -122,8 +129,8 @@ export class WASMPitchDetector {
       const memoryBuffer = new Float32Array(this.memory.buffer, this.bufferPtr, buffer.length)
       memoryBuffer.set(buffer)
 
-      const exports = this.module.exports as any
-      const resultPtr = exports.process_audio_autocorr(this.bufferPtr, buffer.length)
+      const exports = this.module.exports as WASMExports
+      const resultPtr = exports.process_audio_autocorr!(this.bufferPtr, buffer.length)
 
       const resultView = new Float32Array(this.memory.buffer, resultPtr, 3)
 
@@ -152,8 +159,8 @@ export class WASMPitchDetector {
       const memoryBuffer = new Float32Array(this.memory.buffer, this.bufferPtr, buffer.length)
       memoryBuffer.set(buffer)
 
-      const exports = this.module.exports as any
-      return exports.get_rms(this.bufferPtr, buffer.length)
+      const exports = this.module.exports as WASMExports
+      return exports.get_rms!(this.bufferPtr, buffer.length)
     } catch (error) {
       console.error("[v0] WASM RMS calculation error:", error)
       return 0
