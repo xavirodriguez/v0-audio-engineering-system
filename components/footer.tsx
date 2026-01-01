@@ -1,8 +1,12 @@
+import { getTranslations } from "next-intl/server"
+
 /**
  * A footer component.
  * @returns {JSX.Element} - The rendered footer component.
  */
-export function Footer() {
+export async function Footer() {
+  const t = await getTranslations("footer")
+
   return (
     <footer className="bg-primary text-primary-foreground py-12 px-4 sm:px-6 lg:px-8">
       <div className="container mx-auto">
@@ -12,79 +16,77 @@ export function Footer() {
               <div className="w-8 h-8 bg-primary-foreground rounded-sm" />
               <span className="font-serif text-xl font-semibold">Virtuoso</span>
             </div>
-            <p className="text-sm text-primary-foreground/80 leading-relaxed">
-              La plataforma más elegante para aprender violín online.
-            </p>
+            <p className="text-sm text-primary-foreground/80 leading-relaxed">{t("slogan")}</p>
           </div>
 
           <div>
-            <h3 className="font-semibold mb-4">Plataforma</h3>
+            <h3 className="font-semibold mb-4">{t("platform.title")}</h3>
             <ul className="space-y-2 text-sm text-primary-foreground/80">
               <li>
                 <a href="#" className="hover:text-primary-foreground transition-colors">
-                  Cursos
+                  {t("platform.courses")}
                 </a>
               </li>
               <li>
                 <a href="#" className="hover:text-primary-foreground transition-colors">
-                  Práctica
+                  {t("platform.practice")}
                 </a>
               </li>
               <li>
                 <a href="#" className="hover:text-primary-foreground transition-colors">
-                  Recursos
+                  {t("platform.resources")}
                 </a>
               </li>
               <li>
                 <a href="#" className="hover:text-primary-foreground transition-colors">
-                  Precios
+                  {t("platform.pricing")}
                 </a>
               </li>
             </ul>
           </div>
 
           <div>
-            <h3 className="font-semibold mb-4">Compañía</h3>
+            <h3 className="font-semibold mb-4">{t("company.title")}</h3>
             <ul className="space-y-2 text-sm text-primary-foreground/80">
               <li>
                 <a href="#" className="hover:text-primary-foreground transition-colors">
-                  Sobre Nosotros
+                  {t("company.about")}
                 </a>
               </li>
               <li>
                 <a href="#" className="hover:text-primary-foreground transition-colors">
-                  Blog
+                  {t("company.blog")}
                 </a>
               </li>
               <li>
                 <a href="#" className="hover:text-primary-foreground transition-colors">
-                  Carreras
+                  {t("company.careers")}
                 </a>
               </li>
               <li>
                 <a href="#" className="hover:text-primary-foreground transition-colors">
-                  Contacto
+                  {t("company.contact")}
                 </a>
               </li>
             </ul>
           </div>
 
           <div>
-            <h3 className="font-semibold mb-4">Legal</h3>
+            <h3 className="font-semibold mb-4">{t("legal.title")}</h3>
             <ul className="space-y-2 text-sm text-primary-foreground/80">
               <li>
                 <a href="#" className="hover:text-primary-foreground transition-colors">
-                  Privacidad
+                  {t("legal.privacy")}
                 </a>
               </li>
               <li>
                 <a href="#" className="hover:text-primary-foreground transition-colors">
-                  Términos
+                  {t("legal.terms")}
                 </a>
               </li>
               <li>
                 <a href="#" className="hover:text-primary-foreground transition-colors">
-                  Cookies
+                  {t("legal.cookies")}
                 </a>
               </li>
             </ul>
@@ -92,7 +94,7 @@ export function Footer() {
         </div>
 
         <div className="border-t border-primary-foreground/20 pt-8 text-center text-sm text-primary-foreground/80">
-          <p>© 2025 Virtuoso. Todos los derechos reservados.</p>
+          <p>{t("copyright")}</p>
         </div>
       </div>
     </footer>
