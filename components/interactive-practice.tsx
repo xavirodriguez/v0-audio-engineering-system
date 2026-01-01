@@ -28,6 +28,7 @@ export function InteractivePractice({ locale }: { locale: string }) {
   const [targetNote, setTargetNote] = useState(MusicalNote.fromNoteName('A', 4));
 
   const {
+    // currentState is actively used to determine the `isPlaying` state below.
     currentState,
     currentPerformance,
     feedback,
