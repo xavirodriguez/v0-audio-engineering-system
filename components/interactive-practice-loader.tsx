@@ -14,6 +14,6 @@ const InteractivePractice = dynamic(
   }
 )
 
-export default function InteractivePracticeLoader() {
-  return <InteractivePractice />
+export default function InteractivePracticeLoader({ locale }: { locale: string }) {
+  return <InteractivePractice locale={locale} />
 }

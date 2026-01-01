@@ -7,8 +7,8 @@ import { MobileMenu } from "./mobile-menu"
  * A header component.
  * @returns {Promise<JSX.Element>} - The rendered header component.
  */
-export async function Header() {
-  const t = await getTranslations("nav")
+export async function Header({ locale }: { locale: string }) {
+  const t = await getTranslations({ locale, namespace: "nav" })
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">

@@ -3,6 +3,8 @@ import { persist } from "zustand/middleware"
 import type { GlobalTunerState, PitchEvent } from "@/lib/types/pitch-detection"
 import { generatePracticeSequence } from "@/lib/audio/note-utils"
 import { calculateNextPracticeState } from "@/lib/domain/practice-rules";
+import { MusicalNote } from "@/lib/domains/music/musical-note"
+import { PerformanceQuality, NotePerformance } from "@/lib/domains/music/note-performance.value-object"
 
 interface PitchDetectionStore extends PracticeSessionState {
   // Actions
@@ -18,7 +20,7 @@ interface PitchDetectionStore extends PracticeSessionState {
 
 const initialState: PracticeSessionState = {
   currentPerformance: null,
-  exerciseProgress: new ExerciseProgress(),
+  // exerciseProgress: new ExerciseProgress(),
   // studentFeedback: new PedagogicalFeedback(), // This will be added in a future step
 };
 
