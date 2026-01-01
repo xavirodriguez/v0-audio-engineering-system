@@ -74,5 +74,104 @@
     "recommendations": "Recommendations",
     "download": "Download",
     "delete": "Delete"
+  },
+  "hero": {
+    "title": "[en] Domina el arte del violín",
+    "subtitle": "[en] Aprende a tocar el violín con lecciones interactivas, práctica en tiempo real y retroalimentación instantánea. Tu viaje musical comienza aquí.",
+    "buttonPrimary": "[en] Comenzar Ahora",
+    "buttonSecondary": "[en] Ver Demo"
+  },
+  "features": {
+    "title": "[en] Una experiencia de aprendizaje completa",
+    "subtitle": "[en] Todo lo que necesitas para convertirte en un violinista excepcional, en una plataforma elegante y fácil de usar.",
+    "list": [
+      {
+        "icon": "Music",
+        "title": "[en] Lecciones Estructuradas",
+        "description": "[en] Currículo completo desde principiante hasta avanzado, diseñado por maestros profesionales."
+      },
+      {
+        "icon": "Mic",
+        "title": "[en] Práctica en Tiempo Real",
+        "description": "[en] Detección de pitch avanzada que analiza tu interpretación y proporciona retroalimentación instantánea."
+      },
+      {
+        "icon": "BookOpen",
+        "title": "[en] Biblioteca de Partituras",
+        "description": "[en] Acceso a cientos de partituras interactivas con acompañamiento y guías visuales."
+      },
+      {
+        "icon": "Award",
+        "title": "[en] Seguimiento de Progreso",
+        "description": "[en] Monitorea tu evolución con métricas detalladas y celebra tus logros musicales."
+      }
+    ]
+  },
+  "courses": {
+    "title": "[en] Cursos diseñados para tu nivel",
+    "subtitle": "[en] Desde tus primeros pasos hasta el dominio avanzado, tenemos el curso perfecto para ti.",
+    "button": "[en] Ver Curso",
+    "list": [
+      {
+        "title": "[en] Fundamentos del Violín",
+        "level": "[en] Principiante",
+        "description": "[en] Aprende la postura correcta, técnica de arco y tus primeras melodías."
+      },
+      {
+        "title": "[en] Técnica Intermedia",
+        "level": "[en] Intermedio",
+        "description": "[en] Desarrolla vibrato, cambios de posición y expresión musical."
+      },
+      {
+        "title": "[en] Repertorio Clásico",
+        "level": "[en] Avanzado",
+        "description": "[en] Domina obras maestras de Bach, Mozart y Beethoven."
+      }
+    ]
+  },
+  "testimonials": {
+    "title": "[en] Lo que dicen nuestros estudiantes",
+    "subtitle": "[en] Miles de estudiantes han transformado su forma de aprender violín con Virtuoso.",
+    "list": [
+      {
+        "name": "[en] María González",
+        "role": "[en] Estudiante Principiante",
+        "content": "[en] Nunca pensé que aprender violín pudiera ser tan accesible. La retroalimentación en tiempo real me ha ayudado a corregir mi técnica desde el principio."
+      },
+      {
+        "name": "[en] Carlos Ruiz",
+        "role": "[en] Músico Intermedio",
+        "content": "[en] La calidad de las lecciones es excepcional. He mejorado mi vibrato y cambios de posición en solo 3 meses."
+      },
+      {
+        "name": "[en] Ana Martínez",
+        "role": "[en] Profesora de Música",
+        "content": "[en] Recomiendo esta plataforma a todos mis estudiantes. La tecnología de detección de pitch es impresionante y muy precisa."
+      }
+    ]
+  },
+  "footer": {
+    "slogan": "[en] La plataforma más elegante para aprender violín online.",
+    "platform": {
+      "title": "[en] Plataforma",
+      "courses": "[en] Cursos",
+      "practice": "[en] Práctica",
+      "resources": "[en] Recursos",
+      "pricing": "[en] Precios"
+    },
+    "company": {
+      "title": "[en] Compañía",
+      "about": "[en] Sobre Nosotros",
+      "blog": "[en] Blog",
+      "careers": "[en] Carreras",
+      "contact": "[en] Contacto"
+    },
+    "legal": {
+      "title": "[en] Legal",
+      "privacy": "[en] Privacidad",
+      "terms": "[en] Términos",
+      "cookies": "[en] Cookies"
+    },
+    "copyright": "[en] © 2025 Virtuoso. Todos los derechos reservados."
   }
 }
