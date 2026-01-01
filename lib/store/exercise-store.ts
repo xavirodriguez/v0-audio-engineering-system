@@ -17,7 +17,6 @@ interface ExerciseStore {
   setRecommendations: (recommendations: AdaptiveRecommendation[]) => void
   setPracticeContext: (context: "warm-up" | "deep-study" | "review") => void
   setPracticeGoal: (goal: string) => void
-  completeSession: (session: PracticeSession) => void
   selectExercise: (exercise: Exercise) => void
   generateCustomExercise: (type: string, difficulty: string) => Exercise | null
   initializeProfile: () => void
@@ -86,33 +85,6 @@ export const useExerciseStore = create<ExerciseStore>()(
        * @param {string} goal - The practice goal.
        */
       setPracticeGoal: (goal) => set({ practiceGoal: goal }),
-
-      /**
-       * Completes a practice session.
-       * @param {PracticeSession} session - The practice session.
-       */
-      completeSession: (session) => {
-        const { profile, practiceContext, practiceGoal } = get()
-        if (!profile) return
-
-        const enhancedSession: PracticeSession = {
-          ...session,
-          context: practiceContext,
-          goal: practiceGoal || "Práctica general",
-          selfRating: session.selfRating || 3,
-        }
-
-        const analyzer = getPerformanceAnalyzer()
-        const updatedProfile = analyzer.updateProfile(profile, enhancedSession)
-
-        const generator = getExerciseGenerator()
-        const newRecs = generator.generateRecommendations(updatedProfile)
-
-        set({
-          profile: updatedProfile,
-          recommendations: newRecs,
-        })
-      },
 
       /**
        * Selects an exercise.
