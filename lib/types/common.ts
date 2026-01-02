@@ -4,7 +4,7 @@ export interface WindowWithWebkitAudio extends Window {
 
 export interface MediaTrackSettings {
   latency?: number;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface WASMModuleExports extends WebAssembly.Exports {
@@ -18,25 +18,25 @@ export interface ExerciseRecord {
   id: string;
   type: string;
   difficulty: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface UserProfileRecord {
   id: string;
   name: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface SessionDataRecord {
   id: string;
   timestamp: number;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface CustomExerciseParams {
   type: string;
   difficulty: string;
-  [key:string]: any;
+  [key: string]: unknown;
 }
 
 export type AnalyticsEventProperties = Record<string, unknown>;

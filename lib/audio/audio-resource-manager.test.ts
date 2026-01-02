@@ -1,5 +1,5 @@
 // lib/audio/audio-resource-manager.test.ts
-import { describe, it, expect, vi, beforeEach } from "vitest"
+import { describe, it, expect, vi, beforeEach, type Mock } from "vitest"
 import {
   AudioResourceManager,
   AudioResourceState,
@@ -32,13 +32,13 @@ vi.stubGlobal("webkitAudioContext", vi.fn(() => mockAudioContext))
 
 describe("AudioResourceManager", () => {
   let audioManagerInstance: AudioResourceManager
-  let mockMediaStream: { getTracks: any }
+  let mockMediaStream: { getTracks: Mock }
 
   beforeEach(() => {
     // Reset mocks before each test
     vi.clearAllMocks()
     // Manually reset the singleton instance for true isolation
-    ;(AudioResourceManager as any).instance = null
+    ;(AudioResourceManager as unknown as { instance: AudioResourceManager | null }).instance = null
 
     mockMediaStream = {
       getTracks: vi.fn(() => [{ stop: vi.fn() }]),
@@ -51,7 +51,7 @@ describe("AudioResourceManager", () => {
     })
 
     // Create a new instance for each test to prevent state leakage
-    audioManagerInstance = new (AudioResourceManager as any)()
+    audioManagerInstance = new (AudioResourceManager as unknown as { new (): AudioResourceManager })()
   })
 
   it("should be a singleton", () => {
