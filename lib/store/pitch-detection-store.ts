@@ -1,6 +1,6 @@
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
-import type { GlobalTunerState, PitchEvent } from "@/lib/types/pitch-detection"
+import type { PitchEvent } from "@/lib/types/pitch-detection"
 import { generatePracticeSequence } from "@/lib/audio/note-utils"
 import { calculateNextPracticeState } from "@/lib/domain/practice-rules";
 import { MusicalNote } from "@/lib/domains/music/musical-note"

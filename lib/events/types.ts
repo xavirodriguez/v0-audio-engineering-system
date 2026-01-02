@@ -30,7 +30,7 @@ export enum FeedbackEventType {
  * A generic interface for the payload of a feedback event.
  * @template T - The specific data type for the event's value.
  */
-export interface FeedbackEventPayload<T = any> {
+export interface FeedbackEventPayload<T = unknown> {
   type: FeedbackEventType;
   value?: T;
   timestamp: number;

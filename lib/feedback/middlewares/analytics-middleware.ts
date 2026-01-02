@@ -3,7 +3,7 @@ import type { FeedbackMiddleware } from "../types";
 
 // Define an interface for the Analytics dependency.
 export interface AnalyticsService {
-  track: (eventName: string, properties: Record<string, any>) => void;
+  track: (eventName: string, properties: Record<string, unknown>) => void;
 }
 
 /**

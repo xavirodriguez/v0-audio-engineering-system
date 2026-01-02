@@ -100,13 +100,13 @@ class FeedbackEventBus {
 
     const eventListeners = this.listeners[eventType];
     if (eventListeners) {
-      eventListeners.forEach((listener) => {
+      eventListeners.forEach((listener: FeedbackEventListener<E>) => {
         try {
-          listener(payload);
+          listener(payload)
         } catch (error) {
-          console.error(`Error in event listener for ${eventType}:`, error);
+          console.error(`Error in event listener for ${eventType}:`, error)
         }
-      });
+      })
     }
   }
 
@@ -123,10 +123,10 @@ class FeedbackEventBus {
 
   /**
    * Retrieves the recent history of emitted events.
-   * @returns {FeedbackEventPayload[]} An array of the most recent event payloads.
+   * @returns {FeedbackEventPayload<unknown>[]} An array of the most recent event payloads.
    */
-  public getHistory(): FeedbackEventPayload[] {
-    return [...this.eventHistory];
+  public getHistory(): FeedbackEventPayload<unknown>[] {
+    return [...this.eventHistory]
   }
 
   /**

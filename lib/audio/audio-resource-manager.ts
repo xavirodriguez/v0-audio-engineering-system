@@ -41,8 +41,7 @@ export class AudioResourceManager implements IDisposable {
     this.state = AudioResourceState.INITIALIZING
 
     try {
-      this.audioContext = new (window.AudioContext ||
-        (window as any).webkitAudioContext)()
+      this.audioContext = new (window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext)()
       this.monitorContextState()
 
       if (signal?.aborted) {

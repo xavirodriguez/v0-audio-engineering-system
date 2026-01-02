@@ -21,7 +21,7 @@ export class LatencyCalibrator {
     // 1. Latencia de entrada
     const audioTrack = mediaStream.getAudioTracks()[0]
     const settings = audioTrack.getSettings()
-    const inputLatencyMs = ((settings as any).latency || 0) * 1000
+    const inputLatencyMs = (settings.latency || 0) * 1000
 
     // 2. Latencia de procesamiento
     const processingLatencyMs = (FRAME_SIZE / SAMPLE_RATE) * 1000

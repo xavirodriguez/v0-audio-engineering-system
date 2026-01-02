@@ -4,7 +4,6 @@ import {
   AudioResourceManager,
   AudioResourceState,
 } from "@/lib/audio/audio-resource-manager"
-import { audioManager } from "@/lib/audio/audio-resource-manager"
 
 // Mock the global objects before importing the module
 const mockMediaStreamSource = {
@@ -24,7 +23,7 @@ const mockAudioContext = {
   createAnalyser: vi.fn(() => mockAnalyserNode),
   close: vi.fn().mockResolvedValue(undefined),
   onstatechange: vi.fn(),
-  state: "running",
+  state: "running" as AudioContextState,
   sampleRate: 48000,
 }
 
@@ -77,9 +76,7 @@ describe("AudioResourceManager", () => {
 
   it("should throw an error if initialization fails", async () => {
     const testError = new Error("getUserMedia failed")
-    ;(navigator.mediaDevices.getUserMedia as vi.Mock).mockRejectedValueOnce(
-      testError
-    )
+    ;(navigator.mediaDevices.getUserMedia as ReturnType<typeof vi.fn>).mockRejectedValueOnce(testError)
 
     await expect(audioManagerInstance.initialize()).rejects.toThrow(
       "getUserMedia failed"

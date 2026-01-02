@@ -19,13 +19,9 @@ type RecordingState = {
   currentRecording: Recording | null;
 };
 
-type ExerciseState = {
-  // Define properties for ExerciseState later
-};
+type ExerciseState = Record<string, unknown>;
 
-type UIState = {
-  // Define properties for UIState later
-};
+type UIState = Record<string, unknown>;
 
 export type AudioContextValue = {
   audioContext: AudioContext | null;

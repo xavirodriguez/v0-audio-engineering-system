@@ -1,4 +1,4 @@
-import type { Recording, RecordingAnalysis, IntonationPoint, ProblemArea, SpectrogramData } from "@/lib/types/recording"
+import type { PitchDataPoint, Recording, RecordingAnalysis, IntonationPoint, ProblemArea, SpectrogramData } from "@/lib/types/recording"
 
 /**
  * Analyzes audio recordings.
@@ -57,7 +57,7 @@ export class AudioAnalyzer {
     return (withinTolerance / deviations.length) * 100
   }
 
-  private calculateStability(pitchData: any[]): number {
+  private calculateStability(pitchData: PitchDataPoint[]): number {
     if (pitchData.length < 2) return 0
 
     // Calcular varianza de la desviación
@@ -70,7 +70,7 @@ export class AudioAnalyzer {
     return Math.min(100, stabilityScore)
   }
 
-  private calculateToneQuality(pitchData: any[]): number {
+  private calculateToneQuality(pitchData: PitchDataPoint[]): number {
     if (pitchData.length === 0) return 0
 
     // Basado en RMS y confianza promedio
@@ -84,7 +84,7 @@ export class AudioAnalyzer {
     return (rmsScore + confidenceScore) / 2
   }
 
-  private generateIntonationGraph(pitchData: any[]): IntonationPoint[] {
+  private generateIntonationGraph(pitchData: PitchDataPoint[]): IntonationPoint[] {
     return pitchData.map((p) => ({
       time: p.timestamp / 1000, // convertir a segundos
       deviation: p.cents,
@@ -92,11 +92,11 @@ export class AudioAnalyzer {
     }))
   }
 
-  private identifyProblemAreas(pitchData: any[]): ProblemArea[] {
+  private identifyProblemAreas(pitchData: PitchDataPoint[]): ProblemArea[] {
     const problems: ProblemArea[] = []
     let currentProblem: { start: number; deviations: number[] } | null = null
 
-    pitchData.forEach((point, index) => {
+    pitchData.forEach((point, _index) => {
       const isOutOfTune = Math.abs(point.cents) > 30
       const isUnstable = point.confidence < 0.5
 

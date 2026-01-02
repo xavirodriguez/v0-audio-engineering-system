@@ -1,5 +1,25 @@
-// Placeholder types for db schema
-export type Exercise = any;
-export type UserProfile = any;
-export type SessionData = any;
-export type CustomExerciseParams = any;
+// Reemplazar con tipos específicos
+export interface Exercise {
+  id: string
+  type: string
+  difficulty: string
+  // ... otros campos
+}
+
+export interface UserProfile {
+  id: string
+  name: string
+  // ... otros campos
+}
+
+export interface SessionData {
+  id: string
+  timestamp: number
+  // ... otros campos
+}
+
+export interface CustomExerciseParams {
+  type: string
+  difficulty: string
+  // ... otros campos
+}
