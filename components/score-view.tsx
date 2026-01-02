@@ -19,7 +19,7 @@ interface ScoreViewProps {
  */
 export function ScoreView({ notes, currentNoteIndex, isPlaying, practiceMode, status, accuracy }: ScoreViewProps) {
   return (
-    <div className="relative h-[400px] bg-gradient-to-b from-muted/30 to-muted/10 overflow-hidden">
+    <div className="relative h-100 bg-linear-to-b from-muted/30 to-muted/10 overflow-hidden">
       {/* Center detection line */}
       <div className="absolute left-1/2 top-0 bottom-0 w-1 bg-accent shadow-lg shadow-accent/50 z-20 -translate-x-1/2" />
 
@@ -100,7 +100,7 @@ export function ScoreView({ notes, currentNoteIndex, isPlaying, practiceMode, st
         </div>
         <div className="h-2 bg-muted rounded-full overflow-hidden">
           <motion.div
-            className="h-full bg-gradient-to-r from-accent to-emerald-500"
+            className="h-full bg-linear-to-r from-accent to-emerald-500"
             initial={{ width: 0 }}
             animate={{ width: `${accuracy}%` }}
             transition={{ duration: 0.5 }}

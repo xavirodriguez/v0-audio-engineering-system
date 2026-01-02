@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { default as NextImage } from "next/image"
 import {
   Card,
   CardContent,
@@ -65,7 +65,7 @@ export async function Courses() {
                 className="border-border bg-card overflow-hidden hover:shadow-xl transition-shadow"
               >
                 <div className="aspect-video overflow-hidden">
-                  <Image
+                  <NextImage
                     src={course.image || "/placeholder.svg"}
                     alt={course.title}
                     width={800}

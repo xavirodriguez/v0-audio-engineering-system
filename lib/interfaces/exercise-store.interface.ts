@@ -35,4 +35,5 @@ export interface IExerciseStore {
   startExercise: () => void
   advanceToNextNote: () => void
   resetExercise: () => void
+  completeSession: (performance: { accuracy: number; feedback: string }) => void
 }

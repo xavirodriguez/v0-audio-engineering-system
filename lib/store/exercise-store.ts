@@ -171,6 +171,33 @@ export const useExerciseStore = create<IExerciseStore>()(
           exerciseStatus: "not-started",
         })
       },
+      completeSession: (performance) => {
+        set((state) => {
+          if (!state.profile || !state.currentExercise) return {}
+
+          const newHistoryEntry: PracticeEntry = {
+            exerciseId: state.currentExercise.id,
+            date: new Date().toISOString(),
+            accuracy: performance.accuracy,
+            feedback: performance.feedback,
+            duration: 0, // This should be calculated
+          }
+
+          const updatedProfile: StudentProfile = {
+            ...state.profile,
+            practiceHistory: [
+              ...state.profile.practiceHistory,
+              newHistoryEntry,
+            ],
+          }
+
+          return {
+            profile: updatedProfile,
+            isPracticing: false,
+            exerciseStatus: "completed",
+          }
+        })
+      },
     }),
     {
       name: "exercise-storage",

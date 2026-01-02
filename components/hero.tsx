@@ -1,7 +1,7 @@
-import Image from "next/image";
-import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import { default as NextImage } from "next/image"
+import { Button } from "@/components/ui/button"
+import { ArrowRight } from "lucide-react"
+import { getTranslations } from "next-intl/server"
 /**
  * A hero component.
  * @returns {JSX.Element} - The rendered hero component.
@@ -42,7 +42,7 @@ export async function Hero() {
 
         <div className="mt-16 md:mt-24 relative">
           <div className="aspect-video rounded-lg overflow-hidden bg-muted border border-border shadow-2xl">
-            <Image
+            <NextImage
               src="/elegant-violin-on-music-stand-with-sheet-music.jpg"
               alt="Violín elegante con partitura"
               width={1920}

@@ -47,32 +47,34 @@ export function ScalePractice() {
   } = useAudioStore();
 
   const [selectedScale, setSelectedScale] = useState(COMMON_SCALES[0]);
-  const [scaleLib, setScaleLib] = useState<typeof ScaleType | null>(null);
+  const [scaleLib, setScaleLib] = useState<any | null>(null)
 
   // Dynamically load the @tonaljs/scale library on the client side
   useEffect(() => {
-    import('@tonaljs/scale').then(module => {
-      setScaleLib(() => module.Scale);
-    }).catch(error => {
-      console.error("Failed to load @tonaljs/scale", error);
-    });
-  }, []);
+    import('@tonaljs/scale')
+      .then((module) => {
+        setScaleLib(module)
+      })
+      .catch((error) => {
+        console.error("Failed to load @tonaljs/scale", error)
+      })
+  }, [])
 
   // Memoize the scale notes, recalculating only when the library or selection changes
   const scaleNotes = useMemo(() => {
     if (!scaleLib) {
       // Return a default or empty array while the library is loading
-      return ['C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4', 'C5'];
+      return ["C4", "D4", "E4", "F4", "G4", "A4", "B4", "C5"]
     }
     try {
-      const scaleName = selectedScale.toLowerCase().replace(' ', '');
+      const scaleName = selectedScale.toLowerCase()
       // Ensure notes are in a playable octave for the violin samples
-      return scaleLib.get(`${scaleName}`).notes.map(note => `${note}4`);
+      return scaleLib.get(`${scaleName}`).notes.map((note: any) => `${note}4`)
     } catch (error) {
-      console.error("Error getting scale notes:", error);
-      return ['C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4', 'C5'];
+      console.error("Error getting scale notes:", error)
+      return ["C4", "D4", "E4", "F4", "G4", "A4", "B4", "C5"]
     }
-  }, [selectedScale, scaleLib]);
+  }, [selectedScale, scaleLib])
 
   // Initialize the sampler when the component mounts
   useEffect(() => {

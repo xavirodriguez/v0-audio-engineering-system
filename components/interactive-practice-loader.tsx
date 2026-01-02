@@ -7,7 +7,7 @@ const InteractivePractice = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="flex h-[500px] w-full items-center justify-center">
+      <div className="flex h-125 w-full items-center justify-center">
         <p>Loading Practice Session...</p>
       </div>
     ),

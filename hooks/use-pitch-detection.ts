@@ -35,7 +35,6 @@ export function usePitchDetection({
 }: PitchDetectionOptions = {}) {
   const {
     status,
-    error,
     currentPerformance,
     updatePitchEvent,
     startDetection: startStoreDetection,
@@ -110,8 +109,8 @@ export function usePitchDetection({
         status: "PITCH_STABLE",
         currentNote: {
           frequency: targetNote.frequency,
-          midi: targetNote.midi,
-          name: targetNote.name,
+          midi: targetNote.midiNumber,
+          name: targetNote.noteName,
         },
         observation: {
           frequency: event.pitchHz,
@@ -142,13 +141,12 @@ export function usePitchDetection({
       const error = new BufferOverflowError({
         nativeError: err instanceof Error ? err : new Error(String(err)),
       })
-      errorManager.report(error)
+      errorManager.handle(error)
     },
   })
 
   return {
     currentState: status,
-    error,
     currentPerformance,
     feedback,
     currentNote: currentPerformance?.playedNote || null,
