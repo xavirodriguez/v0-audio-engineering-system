@@ -1,5 +1,5 @@
 import type { MiddlewareConfig } from "../middleware-config";
-import type { FeedbackAction, FeedbackMiddleware } from "../types";
+import type { FeedbackMiddleware } from "../types";
 
 // Define an interface for the Toast dependency for better type safety.
 export interface ToastService {

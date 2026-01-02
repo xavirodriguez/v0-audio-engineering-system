@@ -74,7 +74,7 @@ export class WASMPitchDetector {
 
     // Simplificación: usar offset fijo en memoria
     // En producción, implementar un allocator apropiado
-    const exports = this.module.exports as WASMModuleExports
+    const exports = this.module.exports as WASMExports
     if (exports.__heap_base) {
       return exports.__heap_base.value
     }
@@ -129,7 +129,8 @@ export class WASMPitchDetector {
       const memoryBuffer = new Float32Array(this.memory.buffer, this.bufferPtr, buffer.length)
       memoryBuffer.set(buffer)
 
-      const exports = this.module.exports as WASMModuleExports
+      const exports = this.module.exports as WASMExports
+      if (!exports.process_audio_autocorr) throw new Error("WASM function not found")
       const resultPtr = exports.process_audio_autocorr(this.bufferPtr, buffer.length)
 
       const resultView = new Float32Array(this.memory.buffer, resultPtr, 3)
@@ -159,7 +160,8 @@ export class WASMPitchDetector {
       const memoryBuffer = new Float32Array(this.memory.buffer, this.bufferPtr, buffer.length)
       memoryBuffer.set(buffer)
 
-      const exports = this.module.exports as WASMModuleExports
+      const exports = this.module.exports as WASMExports
+      if (!exports.get_rms) throw new Error("WASM function not found")
       return exports.get_rms(this.bufferPtr, buffer.length)
     } catch (error) {
       console.error("[v0] WASM RMS calculation error:", error)

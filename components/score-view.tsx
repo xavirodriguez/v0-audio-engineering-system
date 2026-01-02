@@ -42,7 +42,6 @@ export function ScoreView({ notes, currentNoteIndex, isPlaying, practiceMode, st
           {notes.map((note, index) => {
             const isCurrent = index === currentNoteIndex
             const isPast = index < currentNoteIndex
-            const isFuture = index > currentNoteIndex
 
             return (
               <motion.div

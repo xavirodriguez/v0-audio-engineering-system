@@ -110,7 +110,7 @@ describe("feedbackReducer", () => {
       };
       const stateWithError: FeedbackState = {
         ...initialFeedbackState,
-        // @ts-expect-error
+        // @ts-expect-error - Populating state with an existing error for deduplication testing.
         errors: [errorAction],
       };
       const newState = feedbackReducer(stateWithError, errorAction);

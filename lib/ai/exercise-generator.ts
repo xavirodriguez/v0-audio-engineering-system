@@ -411,7 +411,6 @@ export class ExerciseGenerator {
 
     return exerciseCache.getCachedExercise(cacheKey, () => {
       const recommendations: AdaptiveRecommendation[] = []
-      const currentLevel = this.curriculumManager.getCurrentLevel(profile.level)
 
       // Analizar debilidades y generar ejercicios específicos
       if (profile.weaknesses.includes("poor-intonation")) {

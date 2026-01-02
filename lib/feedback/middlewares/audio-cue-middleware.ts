@@ -1,9 +1,6 @@
 import type { MiddlewareConfig } from "../middleware-config";
 import type { FeedbackMiddleware } from "../types";
 
-// Audio cache to avoid re-creating AudioContext and oscillators.
-// This is a simple in-memory cache.
-const audioCache = new Map<string, HTMLAudioElement>();
 let audioContext: AudioContext | null = null;
 
 /**
@@ -14,8 +11,7 @@ function getAudioContext(): AudioContext | null {
   if (typeof window === "undefined") return null;
   if (!audioContext) {
     try {
-      audioContext = new (window.AudioContext ||
-        (window as any).webkitAudioContext)();
+      audioContext = new (window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext)();
     } catch (e) {
       console.error("Web Audio API is not supported in this browser.", e);
       return null;

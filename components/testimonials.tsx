@@ -2,6 +2,7 @@ import Image from "next/image"
 import { Card, CardContent } from "@/components/ui/card"
 import { Star } from "lucide-react"
 import { getTranslations } from "next-intl/server"
+import Image from "next/image"
 
 const testimonialsData = [
   {

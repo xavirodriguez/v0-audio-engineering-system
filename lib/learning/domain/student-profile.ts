@@ -1,4 +1,4 @@
-import type { PracticeSession, ExerciseType } from "@/lib/types/exercise-system";
+import type { PracticeSession } from "@/lib/types/exercise-system";
 
 export type StudentLevel = "beginner" | "intermediate" | "advanced";
 

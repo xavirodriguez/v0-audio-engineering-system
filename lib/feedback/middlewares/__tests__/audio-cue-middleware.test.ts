@@ -23,7 +23,7 @@ const mockAudioContext = {
   currentTime: 0,
 };
 
-// @ts-ignore
+// @ts-expect-error - Mocking global AudioContext for testing
 global.AudioContext = vi.fn(() => mockAudioContext);
 
 

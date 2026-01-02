@@ -74,7 +74,7 @@ export class MusicToLearningAdapter {
 
     if (matchesTarget) {
       // Generate tuning feedback
-      const tuningSignals = this.generateTuningFeedback(observation, targetNote);
+      const tuningSignals = this.generateTuningFeedback(observation);
       signals.push(...tuningSignals);
 
       // Update streak
@@ -109,8 +109,7 @@ export class MusicToLearningAdapter {
    * Generates tuning feedback signals based on cents deviation.
    */
   private generateTuningFeedback(
-    observation: MusicalObservation,
-    targetNote: MusicalNote
+    observation: MusicalObservation
   ): LearningSignal[] {
     const signals: LearningSignal[] = [];
     const { note } = observation;
