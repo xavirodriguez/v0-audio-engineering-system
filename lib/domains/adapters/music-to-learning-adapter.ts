@@ -5,7 +5,7 @@
 
 import { MusicalObservation } from '../music/musical-observation';
 import { MusicalNote } from '../music/musical-note';
-import { LearningSignal, SignalType } from '../learning/learning-signal';
+import { LearningSignal } from '../learning/learning-signal';
 import { PerformanceFeedback, PerformanceMetrics } from '../learning/performance-feedback';
 
 /**

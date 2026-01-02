@@ -2,7 +2,7 @@ import { WASMPitchDetector } from "./wasm-loader"
 import FFT from "fft-js"
 
 // Helper function for harmonic filtering
-const isHarmonic = (freq: number, targetFreq: number): boolean => {
+const _isHarmonic = (freq: number, targetFreq: number): boolean => {
   const ratio = freq / targetFreq
   return Math.abs(ratio - Math.round(ratio)) < 0.02
 }
@@ -29,7 +29,7 @@ export class PitchDetector {
       } else {
         console.log("[v0] Falling back to JavaScript pitch detection")
       }
-    } catch (error) {
+    } catch {
       console.log("[v0] WASM not available, using JavaScript fallback")
       this.useWASM = false
     }
