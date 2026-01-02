@@ -31,14 +31,24 @@ export function InteractivePractice({ locale: _locale }: { locale: string }) {
     addPitchPoint,
     deleteRecording,
   } = useRecording();
-  const exerciseStore = useExerciseStore();
+  const {
+    currentExercise,
+    recommendations,
+    selectExercise,
+    currentNoteIndex,
+    advanceToNextNote,
+    startExercise,
+  } = useExerciseStore()
 
   const [targetNote, setTargetNote] = useState(
-    MusicalNote.fromNoteName("A", 4)
-  );
+    MusicalNote.fromNoteName("A", 4),
+  )
+
+  const handleNoteCompleted = useCallback(() => {
+    advanceToNextNote()
+  }, [advanceToNextNote])
 
   const {
-    // currentState is actively used to determine the `isPlaying` state below.
     currentState,
     currentPerformance,
     feedback,
@@ -48,30 +58,28 @@ export function InteractivePractice({ locale: _locale }: { locale: string }) {
   } = usePitchDetection({
     addPitchPoint: isRecording ? addPitchPoint : undefined,
     targetNote,
-  });
+    onNoteCompleted: handleNoteCompleted,
+  })
 
-  const { currentExercise, recommendations, selectExercise } =
-    useAdaptiveExercises({
-      store: exerciseStore,
-      autoInitialize: true, // Inicializa automáticamente
-      onInitError: (error) =>
-        console.error("Error inicializando ejercicios:", error),
-    });
+  useAdaptiveExercises({
+    store: useExerciseStore(),
+    autoInitialize: true, // Inicializa automáticamente
+    onInitError: (error) =>
+      console.error("Error inicializando ejercicios:", error),
+  })
 
-  const practiceState = usePracticeState();
+  const practiceState = usePracticeState()
 
-  const [isInitialized, setIsInitialized] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false)
 
   useEffect(() => {
     if (currentExercise) {
-      const firstNote = currentExercise.notes[0];
-      if (firstNote) {
-        setTargetNote(
-          MusicalNote.fromNoteName(firstNote.noteName, firstNote.octave)
-        );
+      const note = currentExercise.notes[currentNoteIndex]
+      if (note) {
+        setTargetNote(MusicalNote.fromNoteName(note.noteName, note.octave))
       }
     }
-  }, [currentExercise]);
+  }, [currentExercise, currentNoteIndex])
 
   const isPlaying = currentState === "LISTENING";
 
@@ -90,12 +98,15 @@ export function InteractivePractice({ locale: _locale }: { locale: string }) {
       if (isRecording) {
         stopRecording(
           currentExercise?.id,
-          currentExercise?.name || "Sesión de Práctica"
-        );
+          currentExercise?.name || "Sesión de Práctica",
+        )
       }
     } else {
-      startDetection();
-      startRecording(undefined, currentExercise?.id, currentExercise?.name);
+      startDetection()
+      if (currentExercise) {
+        startExercise()
+      }
+      startRecording(undefined, currentExercise?.id, currentExercise?.name)
     }
   }, [
     handleInitialize,
@@ -145,7 +156,7 @@ export function InteractivePractice({ locale: _locale }: { locale: string }) {
             <div className="p-6">
               <SheetMusicRenderer
                 exercise={currentExercise}
-                currentNoteIndex={0}
+                currentNoteIndex={currentNoteIndex}
               />
             </div>
           ) : (

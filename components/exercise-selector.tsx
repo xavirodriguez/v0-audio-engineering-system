@@ -39,60 +39,66 @@ export function ExerciseSelector({ recommendations, onSelectExercise }: Exercise
         <h3 className="font-serif text-2xl font-bold">Ejercicios Recomendados</h3>
       </div>
 
-      <div className="grid gap-4">
-        {recommendations.map((rec, index) => (
-          <Card key={rec.exercise.id} className="border-border hover:border-accent transition-colors">
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    {index === 0 && (
-                      <Badge variant="default" className="bg-accent text-accent-foreground">
-                        Recomendado
+      {recommendations.length === 0 ? (
+        <div className="text-center p-8">
+          <p className="text-muted-foreground">Cargando recomendaciones...</p>
+        </div>
+      ) : (
+        <div className="grid gap-4">
+          {recommendations.map((rec, index) => (
+            <Card key={rec.exercise.id} className="border-border hover:border-accent transition-colors">
+              <CardHeader>
+                <div className="flex items-start justify-between">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      {index === 0 && (
+                        <Badge variant="default" className="bg-accent text-accent-foreground">
+                          Recomendado
+                        </Badge>
+                      )}
+                      <Badge variant="outline" className={getDifficultyColor(rec.exercise.difficulty)}>
+                        {rec.exercise.difficulty}
                       </Badge>
-                    )}
-                    <Badge variant="outline" className={getDifficultyColor(rec.exercise.difficulty)}>
-                      {rec.exercise.difficulty}
-                    </Badge>
+                    </div>
+                    <CardTitle className="font-serif">{rec.exercise.name}</CardTitle>
+                    <CardDescription>{rec.exercise.description}</CardDescription>
                   </div>
-                  <CardTitle className="font-serif">{rec.exercise.name}</CardTitle>
-                  <CardDescription>{rec.exercise.description}</CardDescription>
+                  <div className="text-right">
+                    <div className="text-2xl font-bold text-accent">+{rec.estimatedImprovement}%</div>
+                    <div className="text-xs text-muted-foreground">Mejora estimada</div>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <div className="text-2xl font-bold text-accent">+{rec.estimatedImprovement}%</div>
-                  <div className="text-xs text-muted-foreground">Mejora estimada</div>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-sm text-muted-foreground italic">{rec.reason}</p>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-sm text-muted-foreground italic">{rec.reason}</p>
 
-              <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                <div className="flex items-center gap-1">
-                  <Clock className="w-4 h-4" />
-                  <span>{Math.round(rec.exercise.estimatedDuration / 1000 / 60)} min</span>
+                <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-1">
+                    <Clock className="w-4 h-4" />
+                    <span>{Math.round(rec.exercise.estimatedDuration / 1000 / 60)} min</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Target className="w-4 h-4" />
+                    <span>{rec.exercise.notes.length} notas</span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-1">
-                  <Target className="w-4 h-4" />
-                  <span>{rec.exercise.notes.length} notas</span>
+
+                <div className="flex flex-wrap gap-2">
+                  {rec.focusAreas.map((area) => (
+                    <Badge key={area} variant="secondary" className="text-xs">
+                      {area}
+                    </Badge>
+                  ))}
                 </div>
-              </div>
 
-              <div className="flex flex-wrap gap-2">
-                {rec.focusAreas.map((area) => (
-                  <Badge key={area} variant="secondary" className="text-xs">
-                    {area}
-                  </Badge>
-                ))}
-              </div>
-
-              <Button className="w-full" onClick={() => onSelectExercise(rec.exercise.id)}>
-                Comenzar Ejercicio
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+                <Button className="w-full" onClick={() => onSelectExercise(rec.exercise.id)}>
+                  Comenzar Ejercicio
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

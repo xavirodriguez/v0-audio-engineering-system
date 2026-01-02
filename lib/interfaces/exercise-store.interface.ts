@@ -1,31 +1,38 @@
+import type {
+  StudentProfile,
+  Exercise,
+  AdaptiveRecommendation,
+  ExerciseType,
+  DifficultyLevel,
+} from "@/lib/types/exercise-system"
 
-import { Exercise } from "@/lib/db/db-schema"
-import { UserProfile } from "@/lib/db/db-schema"
-import { SessionData } from "@/lib/db/db-schema"
-import { CustomExerciseParams } from "@/lib/db/db-schema"
 /**
- * Interfaz que define el contrato para un store de ejercicios.
- * Cualquier implementación debe cumplir este contrato.
+ * Interface for the exercise store.
  */
 export interface IExerciseStore {
-  profile: UserProfile | null
+  profile: StudentProfile | null
   currentExercise: Exercise | null
-  recommendations: Exercise[]
+  recommendations: AdaptiveRecommendation[]
   isLoading: boolean
-  practiceContext: string
+  practiceContext: "warm-up" | "deep-study" | "review"
   practiceGoal: string
+  currentNoteIndex: number
+  isPracticing: boolean
+  exerciseStatus: "not-started" | "in-progress" | "completed"
 
-  initializeProfile: () => Promise<void>
-  setPracticeContext: (context: string) => void
+  // Actions
+  setProfile: (profile: StudentProfile) => void
+  setCurrentExercise: (exercise: Exercise | null) => void
+  setRecommendations: (recommendations: AdaptiveRecommendation[]) => void
+  setPracticeContext: (context: "warm-up" | "deep-study" | "review") => void
   setPracticeGoal: (goal: string) => void
-  completeSession: (data: SessionData) => void
-  selectExercise: (id: string) => void
-  generateCustomExercise: (params: CustomExerciseParams) => Promise<Exercise>
-}
-
-/**
- * Tipo para las dependencias del hook
- */
-export interface UseAdaptiveExercisesDeps {
-  store: IExerciseStore
+  selectExercise: (exercise: Exercise) => void
+  generateCustomExercise: (
+    type: ExerciseType,
+    difficulty: DifficultyLevel,
+  ) => Exercise | null
+  initializeProfile: () => void
+  startExercise: () => void
+  advanceToNextNote: () => void
+  resetExercise: () => void
 }

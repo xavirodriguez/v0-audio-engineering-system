@@ -1,20 +1,19 @@
 import { useEffect, useState } from "react"
 import { ExerciseInitializer } from "@/lib/services/exercise-initializer"
-import type { IExerciseStore } from "@/lib/interfaces/exercise-store.interface"
+import { useExerciseStore } from "@/lib/store/exercise-store"
 import { InitializationError } from "@/lib/errors/app-errors"
 
 export interface UseAdaptiveExercisesOptions {
-  store: IExerciseStore
-  autoInitialize?: boolean // Control explícito
+  autoInitialize?: boolean
   onInitError?: (error: Error) => void
 }
 
-export function useAdaptiveExercises(options?: UseAdaptiveExercisesOptions) {
-  const { store, autoInitialize = false, onInitError } = options
+export function useAdaptiveExercises(options: UseAdaptiveExercisesOptions = {}) {
+  const { autoInitialize = false, onInitError } = options
+  const store = useExerciseStore()
   const [initError, setInitError] = useState<Error | null>(null)
   const [isInitializing, setIsInitializing] = useState(false)
 
-  // Inicialización controlada
   useEffect(() => {
     if (!autoInitialize) return
 
