@@ -1,6 +1,7 @@
 import { AppError } from "@/lib/errors/app-errors";
 import { Recording } from "./recording";
 import { PitchDetectionStatus } from "./pitch-detection";
+import type { EmptyObject } from "./common"
 
 // Define placeholder types for states that are not yet defined
 // This allows us to define the context values without having the full state implementation yet.

@@ -52,7 +52,7 @@ class FeedbackEventBus {
     if (!this.listeners[eventType]) {
       this.listeners[eventType] = [];
     }
-    this.listeners[eventType]?.push(listener as any);
+    this.listeners[eventType]?.push(listener as FeedbackEventListener<typeof eventType>);
 
     return {
       unsubscribe: () => this.unsubscribe(eventType, listener),
@@ -73,7 +73,7 @@ class FeedbackEventBus {
     if (eventListeners) {
       this.listeners[eventType] = eventListeners.filter(
         (l) => l !== listener
-      ) as any;
+      ) as FeedbackEventListener<E>[] | undefined;
     }
   }
 
@@ -100,9 +100,9 @@ class FeedbackEventBus {
 
     const eventListeners = this.listeners[eventType];
     if (eventListeners) {
-      eventListeners.forEach((listener) => {
+      eventListeners.forEach((listener: FeedbackEventListener<E>) => {
         try {
-          listener(payload);
+          listener(payload)
         } catch (error) {
           console.error(`Error in event listener for ${eventType}:`, error);
         }
@@ -125,8 +125,8 @@ class FeedbackEventBus {
    * Retrieves the recent history of emitted events.
    * @returns {FeedbackEventPayload[]} An array of the most recent event payloads.
    */
-  public getHistory(): FeedbackEventPayload[] {
-    return [...this.eventHistory];
+  public getHistory(): FeedbackEventPayload<unknown>[] {
+    return [...this.eventHistory]
   }
 
   /**
