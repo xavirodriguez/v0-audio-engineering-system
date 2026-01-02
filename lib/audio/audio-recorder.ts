@@ -17,21 +17,52 @@ export class AudioRecorder {
 
   /**
    * Initializes the audio recorder.
-   * @param {MediaStream} stream - The media stream to record.
    * @returns {Promise<boolean>} - Whether the recorder was initialized successfully.
    */
-  async initialize(stream: MediaStream): Promise<boolean> {
+  async initialize(): Promise<boolean> {
     try {
+      // 👇 OBTENER EL STREAM AQUÍ
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('Tu navegador no soporta acceso al micrófono')
+      }
+
+      // Solicitar acceso al micrófono
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: false,
+        }
+      })
+
+      // 👇 VALIDAR QUE EL STREAM SEA VÁLIDO
+      if (!stream || stream.getTracks().length === 0) {
+        throw new Error('No se pudo obtener el stream de audio')
+      }
+
       this.stream = stream
 
-      // Configurar MediaRecorder
-      const options = { mimeType: "audio/webm;codecs=opus" }
-      this.mediaRecorder = new MediaRecorder(stream, options)
+      // Verificar que el mimeType sea soportado
+      const mimeType = "audio/webm;codecs=opus"
+      const options = MediaRecorder.isTypeSupported(mimeType)
+        ? { mimeType }
+        : {} // Fallback a mimeType por defecto del navegador
+
+      // 👇 VALIDAR QUE EL STREAM ESTÉ ACTIVO ANTES DE CREAR EL MEDIARECORDER
+      if (!this.stream || !this.stream.active) {
+        throw new Error('El stream de audio no está activo')
+      }
+
+      this.mediaRecorder = new MediaRecorder(this.stream, options)
 
       this.mediaRecorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
           this.audioChunks.push(event.data)
         }
+      }
+
+      this.mediaRecorder.onerror = (event) => {
+        console.error('MediaRecorder error:', event)
       }
 
       console.log("[v0] Audio recorder initialized")
@@ -70,7 +101,7 @@ export class AudioRecorder {
       }
 
       this.mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(this.audioChunks, { type: "audio/webm" })
+        const audioBlob = new Blob(this.audioChunks, { type: this.mediaRecorder?.mimeType || 'audio/webm' })
         this.isRecording = false
         console.log("[v0] Recording stopped")
         resolve(audioBlob)
@@ -124,6 +155,12 @@ export class AudioRecorder {
     if (this.mediaRecorder && this.isRecording) {
       this.mediaRecorder.stop()
     }
+    
+    // 👇 CERRAR LOS TRACKS DEL STREAM
+    if (this.stream) {
+      this.stream.getTracks().forEach(track => track.stop())
+    }
+    
     this.mediaRecorder = null
     this.stream = null
   }
