@@ -38,7 +38,7 @@ function genId() {
 
 type ActionType = typeof actionTypes
 
-type ActionTypes = typeof actionTypes
+type _ActionTypes = typeof actionTypes
 const _actionTypes = { ...actionTypes } as const
 
 type Action =

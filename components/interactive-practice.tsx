@@ -21,7 +21,7 @@ import { DebugPanel } from "./debug-panel"
  * A component that provides an interactive practice session for the user.
  * @returns {JSX.Element} - The rendered interactive practice component.
  */
-export function InteractivePractice({ locale }: { locale: string }) {
+export function InteractivePractice({ locale: _locale }: { locale: string }) {
   const { isRecording, currentRecording, startRecording, stopRecording, addPitchPoint, deleteRecording } =
     useRecording()
 
