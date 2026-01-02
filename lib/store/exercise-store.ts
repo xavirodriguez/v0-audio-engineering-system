@@ -1,32 +1,7 @@
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
-import type {
-  StudentProfile,
-  Exercise,
-  AdaptiveRecommendation,
-  ExerciseType,
-  DifficultyLevel,
-} from "@/lib/types/exercise-system"
 import { getExerciseGenerator } from "@/lib/ai/exercise-factory"
-
-interface ExerciseStore {
-  profile: StudentProfile | null
-  currentExercise: Exercise | null
-  recommendations: AdaptiveRecommendation[]
-  isLoading: boolean
-  practiceContext: "warm-up" | "deep-study" | "review"
-  practiceGoal: string
-
-  // Actions
-  setProfile: (profile: StudentProfile) => void
-  setCurrentExercise: (exercise: Exercise | null) => void
-  setRecommendations: (recommendations: AdaptiveRecommendation[]) => void
-  setPracticeContext: (context: "warm-up" | "deep-study" | "review") => void
-  setPracticeGoal: (goal: string) => void
-  selectExercise: (exercise: Exercise) => void
-  generateCustomExercise: (type: ExerciseType, difficulty: DifficultyLevel) => Exercise | null
-  initializeProfile: () => void
-}
+import type { IExerciseStore } from "@/lib/interfaces/exercise-store.interface"
 
 const defaultProfile: StudentProfile = {
   id: "default-user",
@@ -48,7 +23,7 @@ const defaultProfile: StudentProfile = {
 /**
  * A store for managing exercises.
  */
-export const useExerciseStore = create<ExerciseStore>()(
+export const useExerciseStore = create<IExerciseStore>()(
   persist(
     (set, get) => ({
       profile: null,
@@ -57,6 +32,9 @@ export const useExerciseStore = create<ExerciseStore>()(
       isLoading: true,
       practiceContext: "deep-study",
       practiceGoal: "",
+      currentNoteIndex: 0,
+      isPracticing: false,
+      exerciseStatus: "not-started",
 
       /**
        * Sets the student profile.
@@ -96,7 +74,13 @@ export const useExerciseStore = create<ExerciseStore>()(
        * Selects an exercise.
        * @param {Exercise} exercise - The exercise to select.
        */
-      selectExercise: (exercise) => set({ currentExercise: exercise }),
+      selectExercise: (exercise) =>
+        set({
+          currentExercise: exercise,
+          currentNoteIndex: 0,
+          isPracticing: false,
+          exerciseStatus: "not-started",
+        }),
 
       /**
        * Generates a custom exercise.
@@ -147,6 +131,45 @@ export const useExerciseStore = create<ExerciseStore>()(
         } else {
           set({ isLoading: false })
         }
+      },
+
+      /**
+       * Starts the exercise.
+       */
+      startExercise: () => {
+        const { currentExercise } = get()
+        if (currentExercise && currentExercise.notes.length > 0) {
+          set({
+            isPracticing: true,
+            exerciseStatus: "in-progress",
+            currentNoteIndex: 0,
+          })
+        }
+      },
+
+      /**
+       * Advances to the next note.
+       */
+      advanceToNextNote: () => {
+        const { currentNoteIndex, currentExercise } = get()
+        if (currentExercise) {
+          if (currentNoteIndex < currentExercise.notes.length - 1) {
+            set({ currentNoteIndex: currentNoteIndex + 1 })
+          } else {
+            set({ isPracticing: false, exerciseStatus: "completed" })
+          }
+        }
+      },
+
+      /**
+       * Resets the exercise.
+       */
+      resetExercise: () => {
+        set({
+          currentNoteIndex: 0,
+          isPracticing: false,
+          exerciseStatus: "not-started",
+        })
       },
     }),
     {
