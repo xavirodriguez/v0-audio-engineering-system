@@ -9,7 +9,7 @@ export interface UseAdaptiveExercisesOptions {
   onInitError?: (error: Error) => void
 }
 
-export function useAdaptiveExercises(options: UseAdaptiveExercisesOptions) {
+export function useAdaptiveExercises(options?: UseAdaptiveExercisesOptions) {
   const { store, autoInitialize = false, onInitError } = options
   const [initError, setInitError] = useState<Error | null>(null)
   const [isInitializing, setIsInitializing] = useState(false)

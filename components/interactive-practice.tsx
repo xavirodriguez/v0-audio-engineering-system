@@ -1,31 +1,41 @@
-"use client"
+"use client";
 
-import { useState, useEffect, useCallback } from "react"
-import { Card } from "@/components/ui/card"
-import { usePitchDetection } from "@/hooks/use-pitch-detection"
-import { useRecording } from "@/hooks/use-recording"
-import { useAdaptiveExercises } from "@/hooks/use-adaptive-exercises"
-import { usePracticeState } from "@/hooks/use-practice-state"
-import { PitchIndicator } from "./pitch-indicator"
-import { SheetMusicRenderer } from "./sheet-music-renderer"
-import { PracticeHeader } from "./practice/practice-header"
-import { SettingsPanel } from "./practice/settings-panel"
-import { PracticeControls } from "./practice/practice-controls"
-import { ModalManager } from "./practice/modal-manager"
+import { useState, useEffect, useCallback } from "react";
+import { Card } from "@/components/ui/card";
+import { usePitchDetection } from "@/hooks/use-pitch-detection";
+import { useRecording } from "@/hooks/use-recording";
+import { useAdaptiveExercises } from "@/hooks/use-adaptive-exercises";
+import { usePracticeState } from "@/hooks/use-practice-state";
+import { PitchIndicator } from "./pitch-indicator";
+import { SheetMusicRenderer } from "./sheet-music-renderer";
+import { PracticeHeader } from "./practice/practice-header";
+import { SettingsPanel } from "./practice/settings-panel";
+import { PracticeControls } from "./practice/practice-controls";
+import { ModalManager } from "./practice/modal-manager";
 import { Fretboard } from "./practice/fretboard";
 import { FeedbackManager } from "./feedback/feedback-manager";
-import { MusicalNote } from "@/lib/domains"
-import { DebugPanel } from "./debug-panel"
+import { MusicalNote } from "@/lib/domains";
+import { DebugPanel } from "./debug-panel";
+import { useExerciseStore } from "@/lib/store/exercise-store"; // o donde esté tu store
 
 /**
  * A component that provides an interactive practice session for the user.
  * @returns {JSX.Element} - The rendered interactive practice component.
  */
 export function InteractivePractice({ locale: _locale }: { locale: string }) {
-  const { isRecording, currentRecording, startRecording, stopRecording, addPitchPoint, deleteRecording } =
-    useRecording()
+  const {
+    isRecording,
+    currentRecording,
+    startRecording,
+    stopRecording,
+    addPitchPoint,
+    deleteRecording,
+  } = useRecording();
+  const exerciseStore = useExerciseStore();
 
-  const [targetNote, setTargetNote] = useState(MusicalNote.fromNoteName('A', 4));
+  const [targetNote, setTargetNote] = useState(
+    MusicalNote.fromNoteName("A", 4)
+  );
 
   const {
     // currentState is actively used to determine the `isPlaying` state below.
@@ -34,27 +44,36 @@ export function InteractivePractice({ locale: _locale }: { locale: string }) {
     feedback,
     initialize,
     startDetection,
-    stopDetection
+    stopDetection,
   } = usePitchDetection({
     addPitchPoint: isRecording ? addPitchPoint : undefined,
     targetNote,
-  })
+  });
 
-  const { currentExercise, recommendations, selectExercise } = useAdaptiveExercises()
-  const practiceState = usePracticeState()
+  const { currentExercise, recommendations, selectExercise } =
+    useAdaptiveExercises({
+      store: exerciseStore,
+      autoInitialize: true, // Inicializa automáticamente
+      onInitError: (error) =>
+        console.error("Error inicializando ejercicios:", error),
+    });
 
-  const [isInitialized, setIsInitialized] = useState(false)
+  const practiceState = usePracticeState();
+
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
     if (currentExercise) {
       const firstNote = currentExercise.notes[0];
       if (firstNote) {
-        setTargetNote(MusicalNote.fromNoteName(firstNote.noteName, firstNote.octave));
+        setTargetNote(
+          MusicalNote.fromNoteName(firstNote.noteName, firstNote.octave)
+        );
       }
     }
   }, [currentExercise]);
 
-  const isPlaying = currentState === "LISTENING"
+  const isPlaying = currentState === "LISTENING";
 
   const handleInitialize = useCallback(async () => {
     if (!isInitialized) {
@@ -67,27 +86,44 @@ export function InteractivePractice({ locale: _locale }: { locale: string }) {
     await handleInitialize();
 
     if (isPlaying) {
-      stopDetection()
+      stopDetection();
       if (isRecording) {
-        stopRecording(currentExercise?.id, currentExercise?.name || "Sesión de Práctica")
+        stopRecording(
+          currentExercise?.id,
+          currentExercise?.name || "Sesión de Práctica"
+        );
       }
     } else {
-      startDetection()
-      startRecording(undefined, currentExercise?.id, currentExercise?.name)
+      startDetection();
+      startRecording(undefined, currentExercise?.id, currentExercise?.name);
     }
-  }, [handleInitialize, isPlaying, stopDetection, isRecording, stopRecording, currentExercise, startDetection, startRecording])
+  }, [
+    handleInitialize,
+    isPlaying,
+    stopDetection,
+    isRecording,
+    stopRecording,
+    currentExercise,
+    startDetection,
+    startRecording,
+  ]);
 
   const handleCalibrate = useCallback(async () => {
     await handleInitialize();
   }, [handleInitialize]);
 
-  const handleSelectExercise = useCallback((exerciseId: string) => {
-    const exercise = recommendations.find((r) => r.exercise.id === exerciseId)?.exercise
-    if (exercise) {
-      selectExercise(exercise)
-    }
-    practiceState.setShowExercises(false)
-  }, [recommendations, selectExercise, practiceState])
+  const handleSelectExercise = useCallback(
+    (exerciseId: string) => {
+      const exercise = recommendations.find(
+        (r) => r.exercise.id === exerciseId
+      )?.exercise;
+      if (exercise) {
+        selectExercise(exercise);
+      }
+      practiceState.setShowExercises(false);
+    },
+    [recommendations, selectExercise, practiceState]
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background flex flex-col">
@@ -107,7 +143,10 @@ export function InteractivePractice({ locale: _locale }: { locale: string }) {
         <Card className="border-border bg-card/80 backdrop-blur-sm shadow-2xl overflow-hidden">
           {currentExercise ? (
             <div className="p-6">
-              <SheetMusicRenderer exercise={currentExercise} currentNoteIndex={0} />
+              <SheetMusicRenderer
+                exercise={currentExercise}
+                currentNoteIndex={0}
+              />
             </div>
           ) : (
             <div className="h-[400px] flex items-center justify-center text-muted-foreground">
@@ -120,7 +159,9 @@ export function InteractivePractice({ locale: _locale }: { locale: string }) {
             targetNote={targetNote}
           />
           <div className="p-4 sm:p-6">
-            <Fretboard currentPitch={currentPerformance?.playedNote.frequency || 0} />
+            <Fretboard
+              currentPitch={currentPerformance?.playedNote.frequency || 0}
+            />
           </div>
         </Card>
 
@@ -144,17 +185,19 @@ export function InteractivePractice({ locale: _locale }: { locale: string }) {
         onCloseRecording={() => practiceState.setShowRecording(false)}
         onCloseExercises={() => practiceState.setShowExercises(false)}
         onDeleteRecording={(id) => {
-          deleteRecording(id)
-          practiceState.setShowRecording(false)
+          deleteRecording(id);
+          practiceState.setShowRecording(false);
         }}
         onSelectExercise={handleSelectExercise}
       />
 
-      <DebugPanel state={{
-        currentState,
-        currentPerformance,
-        feedback,
-      }} />
+      <DebugPanel
+        state={{
+          currentState,
+          currentPerformance,
+          feedback,
+        }}
+      />
     </div>
-  )
+  );
 }

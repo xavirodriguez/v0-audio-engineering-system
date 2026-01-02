@@ -1,13 +1,12 @@
 // lib/i18n/get-translations.ts
-import { unstable_cache } from 'next/cache'
-import { getTranslations } from 'next-intl/server'
+// i18n/getMessages.ts
+import {unstable_cache} from 'next/cache'
+import {routing} from '@/i18n/routing'
 
-type GetTranslations = Parameters<typeof getTranslations>[0]
-
-export const getCachedTranslations = unstable_cache(
-  async (props: GetTranslations) => {
-    return getTranslations(props)
+export const getCachedMessages = unstable_cache(
+  async (locale: string) => {
+    return (await import(`../../messages/${locale}.json`)).default
   },
-  ['translations'],
-  { revalidate: 3600, tags: ['i18n'] }
+  ['messages'],
+  {revalidate: 3600, tags: ['i18n']}
 )
