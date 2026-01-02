@@ -7,9 +7,7 @@ describe("feedbackReducer", () => {
   it("should return the initial state for an unknown action type", () => {
     const currentState = { ...initialFeedbackState, notes: [{ note: 'A4', accuracy: 100, duration: 500, timestamp: 1 }] };
     // @ts-expect-error - Testing an invalid action to ensure it falls through to the default case
-    expect(feedbackReducer(currentState, { type: "UNKNOWN_ACTION" })).toEqual(
-      currentState
-    );
+    expect(feedbackReducer(currentState, { type: "UNKNOWN_ACTION" })).toEqual(currentState)
   });
 
   describe("TUNING_UPDATE action", () => {

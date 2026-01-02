@@ -4,6 +4,13 @@ export interface WASMPitchResult {
   clarity: number
 }
 
+interface WASMExports extends WebAssembly.Exports {
+  __heap_base?: WebAssembly.Global
+  process_audio_yin?: (bufferPtr: number, length: number, threshold: number) => number
+  process_audio_autocorr?: (bufferPtr: number, length: number) => number
+  get_rms?: (bufferPtr: number, length: number) => number
+}
+
 /**
  * A pitch detector that uses WebAssembly.
  */
@@ -91,8 +98,7 @@ export class WASMPitchDetector {
       memoryBuffer.set(buffer)
 
       // Llamar a la función WASM
-      const exports = this.module.exports as WASMExports
-      if (!exports.process_audio_yin) throw new Error("WASM function not found")
+      const exports = this.module.exports as WASMModuleExports
       const resultPtr = exports.process_audio_yin(this.bufferPtr, buffer.length, threshold)
 
       // Leer resultado desde memoria WASM

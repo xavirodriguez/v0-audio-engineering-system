@@ -3,7 +3,7 @@ import type { Metadata } from "next"
 import { Playfair_Display, Inter } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { NextIntlClientProvider } from "next-intl"
-import { getMessages } from "next-intl/server"
+import { getCachedTranslations } from "@/lib/i18n/get-translations"
 import { routing } from "@/i18n/routing"
 import { notFound } from "next/navigation"
 import "../globals.css"
@@ -49,16 +49,16 @@ export default async function RootLayout({
 }>) {
   const { locale } = await params
 
-  if (!routing.locales.includes(locale as any)) {
+  if (!routing.locales.includes(locale)) {
     notFound()
   }
 
-  const messages = await getMessages({ locale })
+  const messages = await getCachedTranslations({ locale })
 
   return (
     <html lang={locale}>
       <body className={`${inter.variable} ${playfair.variable} font-sans antialiased`}>
-        <NextIntlClientProvider messages={messages}>{children}</NextIntlClientProvider>
+        <NextIntlClientProvider locale={locale} messages={messages}>{children}</NextIntlClientProvider>
         <Analytics />
       </body>
     </html>

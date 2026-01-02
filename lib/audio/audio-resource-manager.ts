@@ -1,4 +1,5 @@
 import { AppError, errorHandler } from "@/lib/errors/error-handler"
+import type { WindowWithWebkitAudio } from "@/lib/types/common"
 
 interface IDisposable {
   dispose(): Promise<void>
@@ -41,7 +42,8 @@ export class AudioResourceManager implements IDisposable {
     this.state = AudioResourceState.INITIALIZING
 
     try {
-      this.audioContext = new (window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext)()
+      this.audioContext = new (window.AudioContext ||
+  (window as WindowWithWebkitAudio).webkitAudioContext!)()
       this.monitorContextState()
 
       if (signal?.aborted) {

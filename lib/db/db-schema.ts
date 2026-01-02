@@ -1,25 +1,11 @@
-// Reemplazar con tipos específicos
-export interface Exercise {
-  id: string
-  type: string
-  difficulty: string
-  // ... otros campos
-}
+import type {
+  ExerciseRecord,
+  UserProfileRecord,
+  SessionDataRecord,
+  CustomExerciseParams
+} from "@/lib/types/common"
 
-export interface UserProfile {
-  id: string
-  name: string
-  // ... otros campos
-}
-
-export interface SessionData {
-  id: string
-  timestamp: number
-  // ... otros campos
-}
-
-export interface CustomExerciseParams {
-  type: string
-  difficulty: string
-  // ... otros campos
-}
+export type Exercise = ExerciseRecord
+export type UserProfile = UserProfileRecord
+export type SessionData = SessionDataRecord
+export type { CustomExerciseParams }

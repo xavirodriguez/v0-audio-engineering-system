@@ -52,7 +52,7 @@ class FeedbackEventBus {
     if (!this.listeners[eventType]) {
       this.listeners[eventType] = [];
     }
-    this.listeners[eventType]?.push(listener as any);
+    this.listeners[eventType]?.push(listener as FeedbackEventListener<typeof eventType>);
 
     return {
       unsubscribe: () => this.unsubscribe(eventType, listener),
@@ -73,7 +73,7 @@ class FeedbackEventBus {
     if (eventListeners) {
       this.listeners[eventType] = eventListeners.filter(
         (l) => l !== listener
-      ) as any;
+      ) as FeedbackEventListener<E>[] | undefined;
     }
   }
 

@@ -1,4 +1,4 @@
-import { getTranslations } from "next-intl/server"
+import { getCachedTranslations } from "@/lib/i18n/get-translations"
 import { Button } from "@/components/ui/button"
 import { LanguageSwitcher } from "./language-switcher"
 import { MobileMenu } from "./mobile-menu"
@@ -8,7 +8,7 @@ import { MobileMenu } from "./mobile-menu"
  * @returns {Promise<JSX.Element>} - The rendered header component.
  */
 export async function Header({ locale }: { locale: string }) {
-  const t = await getTranslations({ locale, namespace: "nav" })
+  const t = await getCachedTranslations({ locale, namespace: "nav" })
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">

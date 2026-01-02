@@ -1,6 +1,12 @@
 import { WASMPitchDetector } from "./wasm-loader"
 import FFT from "fft-js"
 
+// Helper function for harmonic filtering
+const _isHarmonic = (freq: number, targetFreq: number): boolean => {
+  const ratio = freq / targetFreq
+  return Math.abs(ratio - Math.round(ratio)) < 0.02
+}
+
 /**
  * Detects the pitch of an audio buffer.
  */

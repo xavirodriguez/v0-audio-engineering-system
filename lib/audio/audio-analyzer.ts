@@ -1,4 +1,4 @@
-import type { PitchDataPoint, Recording, RecordingAnalysis, IntonationPoint, ProblemArea, SpectrogramData } from "@/lib/types/recording"
+import type { Recording, RecordingAnalysis, IntonationPoint, ProblemArea, SpectrogramData, PitchDataPoint } from "@/lib/types/recording"
 
 /**
  * Analyzes audio recordings.
