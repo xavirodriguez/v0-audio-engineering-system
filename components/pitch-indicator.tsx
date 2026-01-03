@@ -1,10 +1,11 @@
 "use client"
-
+import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { MusicalNote } from "@/lib/domains"
 import { NotePerformance } from "@/lib/domains/music/note-performance.value-object"
+import { CheckCircle } from "lucide-react"
 
 interface PitchIndicatorProps {
   performance: NotePerformance | null;
@@ -43,33 +44,40 @@ export function PitchIndicator({ performance, targetNote, mode, onTargetNoteChan
         {mode === 'tuner' && <TunerButtons />}
         <div className="text-center text-muted-foreground">Waiting for input...</div>
       </div>
-    );
+    )
   }
 
-  const notePerformance = performance;
+  const notePerformance = performance
 
   const colorMap = {
     'in-tune': 'bg-emerald-500',
-    'sharp': 'bg-yellow-500',
-    'flat': 'bg-blue-500'
-  };
+    sharp: 'bg-yellow-500',
+    flat: 'bg-blue-500',
+  }
 
   const getPitchIndicatorPosition = () => {
-    const clampedCents = Math.max(-50, Math.min(50, notePerformance.playedNote.centsDeviation));
-    return (clampedCents / 50) * 50;
-  };
+    const clampedCents = Math.max(
+      -50,
+      Math.min(50, notePerformance.playedNote.centsDeviation)
+    )
+    return (clampedCents / 50) * 50
+  }
 
   return (
     <div className="p-6 border-t border-border bg-card/50">
       {mode === 'tuner' && <TunerButtons />}
       <div className="space-y-4">
         <div className="text-center">
-          <div className="text-sm font-medium text-muted-foreground mb-2">Indicador de Afinación</div>
+          <div className="text-sm font-medium text-muted-foreground mb-2">
+            Indicador de Afinación
+          </div>
           <div className="relative h-16 bg-muted rounded-xl overflow-hidden shadow-inner">
             <div className="absolute inset-y-0 left-1/2 w-1/4 -translate-x-1/2 bg-emerald-500/10" />
             <div className="absolute inset-y-0 left-1/2 w-1 bg-foreground/20 -translate-x-1/2" />
             <motion.div
-              className={`absolute inset-y-0 w-3 rounded-full transition-colors duration-100 ${colorMap[notePerformance.quality.tuning]}`}
+              className={`absolute inset-y-0 w-3 rounded-full transition-colors duration-100 ${
+                colorMap[notePerformance.quality.tuning]
+              }`}
               animate={{
                 left: `calc(50% + ${getPitchIndicatorPosition()}%)`,
               }}
@@ -91,7 +99,9 @@ export function PitchIndicator({ performance, targetNote, mode, onTargetNoteChan
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Card className="border-border bg-background/50 p-4">
             <div className="text-center">
-              <div className="text-3xl font-bold text-foreground mb-1">{targetNote?.getFullName() || "--"}</div>
+              <div className="text-3xl font-bold text-foreground mb-1">
+                {targetNote?.getFullName() || "--"}
+              </div>
               <div className="text-xs text-muted-foreground">Nota Objetivo</div>
             </div>
           </Card>
@@ -107,7 +117,7 @@ export function PitchIndicator({ performance, targetNote, mode, onTargetNoteChan
             <div className="text-center">
               <div
                 className={`text-3xl font-bold mb-1 ${
-                  notePerformance.quality.tuning === 'in-tune'
+                  notePerformance.quality.tuning === "in-tune"
                     ? "text-emerald-600"
                     : "text-yellow-600"
                 }`}
@@ -120,7 +130,11 @@ export function PitchIndicator({ performance, targetNote, mode, onTargetNoteChan
           </Card>
           <Card className="border-border bg-background/50 p-4">
             <div className="text-center">
-              <div className="text-3xl font-bold text-foreground mb-1">{notePerformance.quality.steadiness === 'stable' ? 'Stable' : 'Detecting...'}</div>
+              <div className="text-3xl font-bold text-foreground mb-1">
+                {notePerformance.quality.steadiness === "stable"
+                  ? "Stable"
+                  : "Detecting..."}
+              </div>
               <div className="text-xs text-muted-foreground">Steadiness</div>
             </div>
           </Card>

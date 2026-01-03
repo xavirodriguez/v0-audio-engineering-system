@@ -18,6 +18,9 @@ import { FeedbackManager } from "./feedback/feedback-manager";
 import { MusicalNote } from "@/lib/domains";
 import { DebugPanel } from "./debug-panel";
 import { useExerciseStore } from "@/lib/store/exercise-store"; // o donde esté tu store
+// AÑADIR imports
+import { TunerMode } from "./practice/tuner-mode"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 /**
  * A component that provides an interactive practice session for the user.
@@ -142,7 +145,7 @@ export function InteractivePractice({ locale: _locale }: { locale: string }) {
   return (
     <div className="min-h-screen bg-linear-to-br from-background via-muted/20 to-background flex flex-col">
       <PracticeHeader
-        exerciseName={currentExercise?.name}
+        exerciseName={practiceMode === "tuner" ? "Afinador" : currentExercise?.name}
         viewMode={practiceState.viewMode}
         showSettings={practiceState.showSettings}
         onViewModeToggle={practiceState.toggleViewMode}
@@ -162,9 +165,10 @@ export function InteractivePractice({ locale: _locale }: { locale: string }) {
         <Card className="border-border bg-card/80 backdrop-blur-sm shadow-2xl overflow-hidden">
           {mode === "practice" && currentExercise ? (
             <div className="p-6">
-              <SheetMusicRenderer
-                exercise={currentExercise}
-                currentNoteIndex={currentNoteIndex}
+              <TunerMode
+                onStringSelected={(note) => setTargetNote(note)}
+                currentCents={currentPerformance?.playedNote?.centsDeviation || 0}
+                isStable={currentPerformance?.quality.steadiness === "stable"}
               />
             </div>
           ) : (

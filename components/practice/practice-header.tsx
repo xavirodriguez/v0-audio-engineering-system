@@ -11,6 +11,7 @@ export interface PracticeHeaderProps {
   exerciseName?: string
   viewMode: "animated" | "sheet-music"
   showSettings: boolean
+  practiceMode?: "exercise" | "tuner" // ← NUEVO
   onViewModeToggle: () => void
   onExercisesClick: () => void
   onCalibrateClick: () => void
@@ -26,6 +27,7 @@ export const PracticeHeader = memo(function PracticeHeader({
   exerciseName,
   viewMode,
   showSettings,
+  practiceMode = "exercise", // ← NUEVO
   onViewModeToggle,
   onExercisesClick,
   onCalibrateClick,
@@ -35,6 +37,10 @@ export const PracticeHeader = memo(function PracticeHeader({
   const { isRecording } = useRecording()
 
   const getStatusText = () => {
+    if (practiceMode === "tuner") {
+      return "Modo afinador activo"
+    }
+
     switch (currentState) {
       case "IDLE":
         return "Listo para comenzar"
@@ -72,10 +78,13 @@ export const PracticeHeader = memo(function PracticeHeader({
               </motion.div>
             )}
 
-            <Button variant="outline" size="sm" onClick={onViewModeToggle}>
-              <Music className="w-4 h-4 mr-2" />
-              {viewMode === "animated" ? "Partitura" : "Animado"}
-            </Button>
+            {/* MODIFICAR: Ocultar botón de vista en modo afinador */}
+            {practiceMode === "exercise" && (
+              <Button variant="outline" size="sm" onClick={onViewModeToggle}>
+                <Music className="w-4 h-4 mr-2" />
+                {viewMode === "animated" ? "Partitura" : "Animado"}
+              </Button>
+            )}
 
             <Button variant="outline" size="sm" onClick={onExercisesClick}>
               Ejercicios
