@@ -1,8 +1,33 @@
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
 import { getExerciseGenerator } from "@/lib/ai/exercise-factory"
-import type { IExerciseStore } from "@/lib/interfaces/exercise-store.interface"
-import { CLASSIC_VIOLIN_EXERCISES, convertToRecommendations } from "@/lib/data/classic-exercises"
+import type { IExerciseStore, Exercise, AdaptiveRecommendation } from "@/lib/interfaces/exercise-store.interface"
+import { MusicalNote } from "@/lib/domains"
+
+const classicExercises: Exercise[] = [
+  {
+    id: 'scale-g-major',
+    name: 'Escala de Sol Mayor',
+    description: 'Una escala fundamental para la afinación y la técnica.',
+    type: 'scales',
+    difficulty: 'beginner',
+    notes: ['G4','A4','B4','C5','D5','E5','F#5','G5'].map(note => {
+      const musicalNote = MusicalNote.fromNoteName(note.slice(0, -1), parseInt(note.slice(-1)));
+      return { noteName: musicalNote.noteName, octave: musicalNote.octave, duration: 'q' };
+    })
+  },
+  {
+    id: 'scale-d-major',
+    name: 'Escala de Re Mayor',
+    description: 'Ideal para practicar cambios de cuerda y agilidad.',
+    type: 'scales',
+    difficulty: 'beginner',
+    notes: ['D4','E4','F#4','G4','A4','B4','C#5','D5'].map(note => {
+      const musicalNote = MusicalNote.fromNoteName(note.slice(0, -1), parseInt(note.slice(-1)));
+      return { noteName: musicalNote.noteName, octave: musicalNote.octave, duration: 'q' };
+    })
+  }
+];
 
 const defaultProfile: StudentProfile = {
   id: "default-user",
@@ -44,7 +69,13 @@ export const useExerciseStore = create<IExerciseStore>()(
       setProfile: (profile) => {
         const generator = getExerciseGenerator()
         const recs = generator.generateRecommendations(profile)
-        set({ profile, recommendations: recs })
+
+        const classicRecs: AdaptiveRecommendation[] = classicExercises.map(ex => ({
+          exercise: ex,
+          reason: "Ejercicio clásico recomendado para todos los niveles."
+        }));
+
+        set({ profile, recommendations: [...classicRecs, ...recs] })
       },
 
       /**

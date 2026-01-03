@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { Card } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 import { MusicalNote } from "@/lib/domains"
 import { NotePerformance } from "@/lib/domains/music/note-performance.value-object"
 import { CheckCircle } from "lucide-react"
@@ -9,6 +10,8 @@ import { CheckCircle } from "lucide-react"
 interface PitchIndicatorProps {
   performance: NotePerformance | null;
   targetNote: MusicalNote | null;
+  mode: 'tuner' | 'practice';
+  onTargetNoteChange: (note: MusicalNote) => void;
 }
 
 /**
@@ -16,26 +19,30 @@ interface PitchIndicatorProps {
  * @param {PitchIndicatorProps} props - The props for the component.
  * @returns {JSX.Element} - The rendered pitch indicator component.
  */
-export function PitchIndicator({ performance, targetNote }: PitchIndicatorProps) {
-  const [showSuccess, setShowSuccess] = useState(false)
+export function PitchIndicator({ performance, targetNote, mode, onTargetNoteChange }: PitchIndicatorProps) {
+  const handleNoteSelect = (noteName: string, octave: number) => {
+    onTargetNoteChange(MusicalNote.fromNoteName(noteName, octave));
+  };
 
-  useEffect(() => {
-    if (
-      performance &&
-      targetNote &&
-      performance.quality.tuning === 'in-tune' &&
-      performance.quality.steadiness === 'stable'
-    ) {
-      setShowSuccess(true)
-      const timer = setTimeout(() => setShowSuccess(false), 1000)
-      return () => clearTimeout(timer)
-    }
-  }, [performance, targetNote])
+  const TunerButtons = () => (
+    <div className="flex justify-center gap-2 mb-4">
+      {['G3', 'D4', 'A4', 'E5'].map(string => (
+        <Button
+          key={string}
+          onClick={() => handleNoteSelect(string[0], parseInt(string[1]))}
+          variant={targetNote?.getFullName() === string ? 'default' : 'outline'}
+        >
+          {string[0]}
+        </Button>
+      ))}
+    </div>
+  );
 
   if (!performance || !targetNote) {
     return (
-      <div className="p-6 border-t border-border bg-card/50 text-center">
-        Waiting for input...
+      <div className="p-6 border-t border-border bg-card/50">
+        {mode === 'tuner' && <TunerButtons />}
+        <div className="text-center text-muted-foreground">Waiting for input...</div>
       </div>
     )
   }
@@ -57,22 +64,8 @@ export function PitchIndicator({ performance, targetNote }: PitchIndicatorProps)
   }
 
   return (
-    <div className="p-6 border-t border-border bg-card/50 relative">
-      {/* AÑADIR: Overlay de éxito */}
-      {showSuccess && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.8 }}
-          className="absolute inset-0 bg-emerald-500/20 backdrop-blur-sm flex items-center justify-center z-50 rounded-lg"
-        >
-          <div className="flex flex-col items-center gap-4">
-            <CheckCircle className="w-20 h-20 text-emerald-500 animate-bounce" />
-            <p className="text-2xl font-bold text-emerald-500">¡Perfecto!</p>
-          </div>
-        </motion.div>
-      )}
-
+    <div className="p-6 border-t border-border bg-card/50">
+      {mode === 'tuner' && <TunerButtons />}
       <div className="space-y-4">
         <div className="text-center">
           <div className="text-sm font-medium text-muted-foreground mb-2">
