@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useMemo } from "react"
+import { useEffect, useRef, useMemo, memo } from "react"
 import { Renderer, Stave, StaveNote, Voice, Formatter, Articulation, Annotation } from "vexflow"
 import type { Exercise } from "@/lib/types/exercise-system"
 
@@ -15,7 +15,15 @@ interface SheetMusicRendererProps {
  * @param {SheetMusicRendererProps} props - The props for the component.
  * @returns {JSX.Element} - The rendered sheet music renderer component.
  */
-export function SheetMusicRenderer({ exercise, currentNoteIndex, className = "" }: SheetMusicRendererProps) {
+// ⚡ Bolt: Memoized SheetMusicRenderer to prevent unnecessary re-renders.
+// This component is rendered within InteractivePractice, which has a high frequency of re-renders.
+// By memoizing this component, we avoid re-calculating VexFlow notes and re-rendering the SVG
+// when the exercise and currentNoteIndex props have not changed, leading to a significant performance improvement.
+export const SheetMusicRenderer = memo(function SheetMusicRenderer({
+  exercise,
+  currentNoteIndex,
+  className = "",
+}: SheetMusicRendererProps) {
   const containerRef = useRef<HTMLDivElement>(null)
 
   const vexNotes = useMemo(() => {
@@ -105,4 +113,4 @@ export function SheetMusicRenderer({ exercise, currentNoteIndex, className = "" 
       </div>
     </div>
   )
-}
+})
