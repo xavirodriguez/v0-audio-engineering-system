@@ -45,6 +45,11 @@ const eventConfig = {
     icon: <ArrowUp className="h-6 w-6 text-blue-500" />,
     style: "bg-blue-500/10 border-blue-500/20 text-blue-200",
   },
+  // AÑADIR NUEVO: Nota completada correctamente
+  [FeedbackEventType.NOTE_COMPLETED]: {
+    icon: <CheckCircle className="h-8 w-8 text-emerald-500" />,
+    style: "bg-emerald-500/20 border-emerald-500/30 text-emerald-100 font-bold text-xl shadow-2xl",
+  },
 };
 
 const defaultConfig = {

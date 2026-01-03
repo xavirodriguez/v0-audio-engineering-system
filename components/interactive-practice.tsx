@@ -17,6 +17,9 @@ import { FeedbackManager } from "./feedback/feedback-manager";
 import { MusicalNote } from "@/lib/domains";
 import { DebugPanel } from "./debug-panel";
 import { useExerciseStore } from "@/lib/store/exercise-store"; // o donde esté tu store
+// AÑADIR imports
+import { TunerMode } from "./practice/tuner-mode"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 /**
  * A component that provides an interactive practice session for the user.
@@ -39,6 +42,8 @@ export function InteractivePractice({ locale: _locale }: { locale: string }) {
     advanceToNextNote,
     startExercise,
   } = useExerciseStore()
+
+  const [practiceMode, setPracticeMode] = useState<"exercise" | "tuner">("exercise")
 
   const [targetNote, setTargetNote] = useState(
     MusicalNote.fromNoteName("A", 4),
@@ -139,7 +144,7 @@ export function InteractivePractice({ locale: _locale }: { locale: string }) {
   return (
     <div className="min-h-screen bg-linear-to-br from-background via-muted/20 to-background flex flex-col">
       <PracticeHeader
-        exerciseName={currentExercise?.name}
+        exerciseName={practiceMode === "tuner" ? "Afinador" : currentExercise?.name}
         viewMode={practiceState.viewMode}
         showSettings={practiceState.showSettings}
         onViewModeToggle={practiceState.toggleViewMode}
@@ -151,29 +156,51 @@ export function InteractivePractice({ locale: _locale }: { locale: string }) {
       <SettingsPanel />
 
       <main className="flex-1 container mx-auto px-4 py-8">
+        {/* AÑADIR: Selector de modo */}
+        <Tabs value={practiceMode} onValueChange={(v) => setPracticeMode(v as "exercise" | "tuner")} className="mb-6">
+          <TabsList className="grid w-full max-w-md mx-auto grid-cols-2">
+            <TabsTrigger value="exercise">Ejercicios</TabsTrigger>
+            <TabsTrigger value="tuner">Afinador</TabsTrigger>
+          </TabsList>
+        </Tabs>
+
         <Card className="border-border bg-card/80 backdrop-blur-sm shadow-2xl overflow-hidden">
-          {currentExercise ? (
+          {practiceMode === "tuner" ? (
+            // MODO AFINADOR
             <div className="p-6">
-              <SheetMusicRenderer
-                exercise={currentExercise}
-                currentNoteIndex={currentNoteIndex}
+              <TunerMode
+                onStringSelected={(note) => setTargetNote(note)}
+                currentCents={currentPerformance?.playedNote?.centsDeviation || 0}
+                isStable={currentPerformance?.quality.steadiness === "stable"}
               />
             </div>
           ) : (
-            <div className="h-100 flex items-center justify-center text-muted-foreground">
-              <p>Selecciona un ejercicio para ver la partitura</p>
-            </div>
-          )}
+            // MODO EJERCICIOS (código existente)
+            <>
+              {currentExercise ? (
+                <div className="p-6">
+                  <SheetMusicRenderer
+                    exercise={currentExercise}
+                    currentNoteIndex={currentNoteIndex}
+                  />
+                </div>
+              ) : (
+                <div className="h-100 flex items-center justify-center text-muted-foreground">
+                  <p>Selecciona un ejercicio para ver la partitura</p>
+                </div>
+              )}
 
-          <PitchIndicator
-            performance={currentPerformance}
-            targetNote={targetNote}
-          />
-          <div className="p-4 sm:p-6">
-            <Fretboard
-              currentPitch={currentPerformance?.playedNote.frequency || 0}
-            />
-          </div>
+              <PitchIndicator
+                performance={currentPerformance}
+                targetNote={targetNote}
+              />
+              <div className="p-4 sm:p-6">
+                <Fretboard
+                  currentPitch={currentPerformance?.playedNote.frequency || 0}
+                />
+              </div>
+            </>
+          )}
         </Card>
 
         <FeedbackManager feedback={feedback} />

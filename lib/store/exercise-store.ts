@@ -2,6 +2,7 @@ import { create } from "zustand"
 import { persist } from "zustand/middleware"
 import { getExerciseGenerator } from "@/lib/ai/exercise-factory"
 import type { IExerciseStore } from "@/lib/interfaces/exercise-store.interface"
+import { CLASSIC_VIOLIN_EXERCISES, convertToRecommendations } from "@/lib/data/classic-exercises"
 
 const defaultProfile: StudentProfile = {
   id: "default-user",
@@ -118,18 +119,32 @@ export const useExerciseStore = create<IExerciseStore>()(
        * Initializes the profile.
        */
       initializeProfile: () => {
-        const { profile } = get()
+        set({ isLoading: true });
+        const { profile, recommendations } = get();
+
+        // Cargar ejercicios clásicos
+        const classicRecommendations = convertToRecommendations(CLASSIC_VIOLIN_EXERCISES);
+
         if (!profile) {
-          const newProfile = { ...defaultProfile }
-          const generator = getExerciseGenerator()
-          const recs = generator.generateRecommendations(newProfile)
+          // Si no hay perfil, crear uno nuevo y añadir recomendaciones de IA
+          const newProfile = { ...defaultProfile };
+          const generator = getExerciseGenerator();
+          const aiRecs = generator.generateRecommendations(newProfile);
           set({
             profile: newProfile,
-            recommendations: recs,
+            recommendations: [...classicRecommendations, ...aiRecs],
             isLoading: false,
-          })
+          });
         } else {
-          set({ isLoading: false })
+          // Si ya hay un perfil, merge classic recommendations without duplicates.
+          const existingExerciseIds = new Set(recommendations.map(r => r.exercise.id));
+          const newClassicRecommendations = classicRecommendations.filter(
+            r => !existingExerciseIds.has(r.exercise.id)
+          );
+          set({
+            recommendations: [...newClassicRecommendations, ...recommendations],
+            isLoading: false
+          });
         }
       },
 
