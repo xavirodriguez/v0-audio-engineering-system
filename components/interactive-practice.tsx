@@ -119,6 +119,7 @@ export function InteractivePractice({ locale: _locale }: { locale: string }) {
     currentExercise,
     startDetection,
     startRecording,
+    startExercise,
   ]);
 
   const handleCalibrate = useCallback(async () => {

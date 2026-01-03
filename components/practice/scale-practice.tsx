@@ -11,8 +11,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useAudioStore } from '@/lib/store/audio-store';
-// Dynamically import Scale type for type safety
-import type { Scale as ScaleType } from '@tonaljs/scale';
 import { ScaleNotation } from './scale-notation';
 
 // Define a list of common scales for the dropdown
@@ -47,7 +45,9 @@ export function ScalePractice() {
   } = useAudioStore();
 
   const [selectedScale, setSelectedScale] = useState(COMMON_SCALES[0]);
-  const [scaleLib, setScaleLib] = useState<any | null>(null)
+  const [scaleLib, setScaleLib] = useState<{
+    get: (name: string) => { notes: string[] }
+  } | null>(null)
 
   // Dynamically load the @tonaljs/scale library on the client side
   useEffect(() => {
@@ -69,7 +69,7 @@ export function ScalePractice() {
     try {
       const scaleName = selectedScale.toLowerCase()
       // Ensure notes are in a playable octave for the violin samples
-      return scaleLib.get(`${scaleName}`).notes.map((note: any) => `${note}4`)
+      return scaleLib.get(`${scaleName}`).notes.map((note: string) => `${note}4`)
     } catch (error) {
       console.error("Error getting scale notes:", error)
       return ["C4", "D4", "E4", "F4", "G4", "A4", "B4", "C5"]
