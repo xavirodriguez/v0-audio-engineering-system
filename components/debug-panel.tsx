@@ -1,7 +1,8 @@
 "use client"
 
 import { Card } from "@/components/ui/card"
-import { NotePerformance, PerformanceFeedback } from "@/lib/domains"
+import type { PerformanceFeedback } from "@/lib/domains/learning/performance-feedback"
+import type { NotePerformance } from "@/lib/domains/music/note-performance.value-object"
 
 interface DebugPanelProps {
   state: {
@@ -28,26 +29,32 @@ export function DebugPanel({ state }: DebugPanelProps) {
         <div>
           <span className="text-muted-foreground">Status:</span> {currentState}
         </div>
-        <div className="h-[1px] bg-muted-foreground/20 my-1"></div>
+        <div className="h-px bg-muted-foreground/20 my-1"></div>
         {currentPerformance ? (
           <>
             <div>
-              <span className="text-muted-foreground">Played Freq:</span> {currentPerformance.playedNote.frequency.toFixed(2)} Hz
+              <span className="text-muted-foreground">Played Freq:</span>{" "}
+              {currentPerformance.playedNote.frequency.toFixed(2)} Hz
             </div>
             <div>
-              <span className="text-muted-foreground">Played Note:</span> {currentPerformance.playedNote.nameWithOctave}
+              <span className="text-muted-foreground">Played Note:</span>{" "}
+              {currentPerformance.playedNote.getFullName()}
             </div>
             <div>
-              <span className="text-muted-foreground">Target Note:</span> {currentPerformance.targetNote.nameWithOctave}
+              <span className="text-muted-foreground">Target Note:</span>{" "}
+              {currentPerformance.targetNote.getFullName()}
             </div>
             <div>
-              <span className="text-muted-foreground">Cents:</span> {currentPerformance.cents.toFixed(1)}¢
+              <span className="text-muted-foreground">Cents:</span>{" "}
+              {currentPerformance.centDeviation.toFixed(1)}¢
             </div>
-             <div>
-              <span className="text-muted-foreground">Tuning:</span> {currentPerformance.quality.tuning}
+            <div>
+              <span className="text-muted-foreground">Tuning:</span>{" "}
+              {currentPerformance.quality.tuning}
             </div>
-             <div>
-              <span className="text-muted-foreground">Steadiness:</span> {currentPerformance.quality.steadiness}
+            <div>
+              <span className="text-muted-foreground">Steadiness:</span>{" "}
+              {currentPerformance.quality.steadiness}
             </div>
           </>
         ) : (
@@ -55,9 +62,10 @@ export function DebugPanel({ state }: DebugPanelProps) {
             <span className="text-muted-foreground">No performance data</span>
           </div>
         )}
-        <div className="h-[1px] bg-muted-foreground/20 my-1"></div>
+        <div className="h-px bg-muted-foreground/20 my-1"></div>
         <div>
-            <span className="text-muted-foreground">Feedback:</span> {feedback.message}
+          <span className="text-muted-foreground">Feedback:</span>{" "}
+          {feedback.signals[0]?.type ?? "none"}
         </div>
       </div>
     </Card>

@@ -137,7 +137,7 @@ export function InteractivePractice({ locale: _locale }: { locale: string }) {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background flex flex-col">
+    <div className="min-h-screen bg-linear-to-br from-background via-muted/20 to-background flex flex-col">
       <PracticeHeader
         exerciseName={currentExercise?.name}
         viewMode={practiceState.viewMode}
@@ -160,7 +160,7 @@ export function InteractivePractice({ locale: _locale }: { locale: string }) {
               />
             </div>
           ) : (
-            <div className="h-[400px] flex items-center justify-center text-muted-foreground">
+            <div className="h-100 flex items-center justify-center text-muted-foreground">
               <p>Selecciona un ejercicio para ver la partitura</p>
             </div>
           )}

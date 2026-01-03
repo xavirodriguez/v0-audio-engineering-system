@@ -2,13 +2,17 @@ import { create } from "zustand"
 import { persist } from "zustand/middleware"
 import type { PitchEvent } from "@/lib/types/pitch-detection"
 import { generatePracticeSequence } from "@/lib/audio/note-utils"
-import { calculateNextPracticeState } from "@/lib/domain/practice-rules";
+import { calculateNextPracticeState } from "@/lib/domain/practice-rules"
 import { MusicalNote } from "@/lib/domains/music/musical-note"
-import { PerformanceQuality, NotePerformance } from "@/lib/domains/music/note-performance.value-object"
+import {
+  NotePerformance,
+  PerformanceQuality,
+} from "@/lib/domains/music/note-performance.value-object"
+import type { PracticeSessionState } from "@/lib/types/practice-session"
 
 interface PitchDetectionStore extends PracticeSessionState {
-  // Actions
-  updatePitchEvent: (event: PitchEvent) => void;
+  status: "IDLE" | "LISTENING" | "PITCH_STABLE" | "RETRYING"
+  updatePitchEvent: (event: PitchEvent) => void
   resetState: () => void;
   advanceToNextNote: () => void;
   setNotes: (notes: Array<{ name: string; midi: number; frequency: number; duration: number }>) => void;

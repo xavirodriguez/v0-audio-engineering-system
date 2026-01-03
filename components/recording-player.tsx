@@ -221,9 +221,9 @@ export function RecordingPlayer({ recording, onDelete }: RecordingPlayerProps) {
             {recording.analysis.recommendations.map((rec, index) => (
               <li key={index} className="flex items-start gap-2 text-sm text-muted-foreground">
                 {recording.analysis.overallAccuracy >= 85 ? (
-                  <TrendingUp className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+                  <TrendingUp className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
                 ) : (
-                  <TrendingDown className="w-4 h-4 text-yellow-600 mt-0.5 flex-shrink-0" />
+                  <TrendingDown className="w-4 h-4 text-yellow-600 mt-0.5 shrink-0" />
                 )}
                 <span>{rec}</span>
               </li>

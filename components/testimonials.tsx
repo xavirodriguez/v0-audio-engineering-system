@@ -1,7 +1,7 @@
-import Image from "next/image";
-import { Card, CardContent } from "@/components/ui/card";
-import { Star } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import { default as NextImage } from "next/image"
+import { Card, CardContent } from "@/components/ui/card"
+import { Star } from "lucide-react"
+import { getTranslations } from "next-intl/server"
 
 const testimonialsData = [
   {
@@ -65,7 +65,7 @@ export async function Testimonials() {
                     "{testimonial.content}"
                   </p>
                   <div className="flex items-center gap-3">
-                    <Image
+                    <NextImage
                       src={testimonial.image || "/placeholder.svg"}
                       alt={testimonial.name}
                       width={48}
