@@ -5,7 +5,6 @@ import { Analytics } from "@vercel/analytics/next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { routing } from "@/i18n/routing";
-import { notFound } from "next/navigation";
 import "../globals.css";
 
 const playfair = Playfair_Display({

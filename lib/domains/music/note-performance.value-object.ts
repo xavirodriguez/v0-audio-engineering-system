@@ -1,12 +1,17 @@
-import { MusicalNote } from "@/lib/domains";
+import { MusicalNote } from "./musical-note";
 
 // lib/domains/music/note-performance.value-object.ts
 export class NotePerformance {
+  public readonly centDeviation: number;
+
   constructor(
     public readonly playedNote: MusicalNote,
     public readonly targetNote: MusicalNote,
     public readonly quality: PerformanceQuality
-  ) {}
+  ) {
+    this.centDeviation =
+      1200 * Math.log2(playedNote.frequency / targetNote.frequency)
+  }
 
   isAccurate(): boolean {
     return this.playedNote.matchesTarget(this.targetNote) &&
