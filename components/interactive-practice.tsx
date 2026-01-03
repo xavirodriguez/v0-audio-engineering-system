@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { usePitchDetection } from "@/hooks/use-pitch-detection";
 import { useRecording } from "@/hooks/use-recording";
 import { useAdaptiveExercises } from "@/hooks/use-adaptive-exercises";
@@ -40,6 +41,7 @@ export function InteractivePractice({ locale: _locale }: { locale: string }) {
     startExercise,
   } = useExerciseStore()
 
+  const [mode, setMode] = useState<"tuner" | "practice">("tuner");
   const [targetNote, setTargetNote] = useState(
     MusicalNote.fromNoteName("A", 4),
   )
@@ -73,13 +75,13 @@ export function InteractivePractice({ locale: _locale }: { locale: string }) {
   const [isInitialized, setIsInitialized] = useState(false)
 
   useEffect(() => {
-    if (currentExercise) {
+    if (mode === "practice" && currentExercise) {
       const note = currentExercise.notes[currentNoteIndex]
       if (note) {
         setTargetNote(MusicalNote.fromNoteName(note.noteName, note.octave))
       }
     }
-  }, [currentExercise, currentNoteIndex])
+  }, [mode, currentExercise, currentNoteIndex])
 
   const isPlaying = currentState === "LISTENING";
 
@@ -151,8 +153,13 @@ export function InteractivePractice({ locale: _locale }: { locale: string }) {
       <SettingsPanel />
 
       <main className="flex-1 container mx-auto px-4 py-8">
+        <div className="flex justify-center mb-4">
+          <Button onClick={() => setMode(mode === "tuner" ? "practice" : "tuner")}>
+            {mode === "tuner" ? "Switch to Practice Mode" : "Switch to Tuner Mode"}
+          </Button>
+        </div>
         <Card className="border-border bg-card/80 backdrop-blur-sm shadow-2xl overflow-hidden">
-          {currentExercise ? (
+          {mode === "practice" && currentExercise ? (
             <div className="p-6">
               <SheetMusicRenderer
                 exercise={currentExercise}
@@ -161,13 +168,15 @@ export function InteractivePractice({ locale: _locale }: { locale: string }) {
             </div>
           ) : (
             <div className="h-100 flex items-center justify-center text-muted-foreground">
-              <p>Selecciona un ejercicio para ver la partitura</p>
+              <p>{mode === "tuner" ? "Tuner Mode" : "Selecciona un ejercicio para ver la partitura"}</p>
             </div>
           )}
 
           <PitchIndicator
             performance={currentPerformance}
             targetNote={targetNote}
+            mode={mode}
+            onTargetNoteChange={setTargetNote}
           />
           <div className="p-4 sm:p-6">
             <Fretboard

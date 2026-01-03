@@ -2,12 +2,15 @@
 
 import { motion } from "framer-motion"
 import { Card } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 import { MusicalNote } from "@/lib/domains"
 import { NotePerformance } from "@/lib/domains/music/note-performance.value-object"
 
 interface PitchIndicatorProps {
   performance: NotePerformance | null;
   targetNote: MusicalNote | null;
+  mode: 'tuner' | 'practice';
+  onTargetNoteChange: (note: MusicalNote) => void;
 }
 
 /**
@@ -15,11 +18,30 @@ interface PitchIndicatorProps {
  * @param {PitchIndicatorProps} props - The props for the component.
  * @returns {JSX.Element} - The rendered pitch indicator component.
  */
-export function PitchIndicator({ performance, targetNote }: PitchIndicatorProps) {
+export function PitchIndicator({ performance, targetNote, mode, onTargetNoteChange }: PitchIndicatorProps) {
+  const handleNoteSelect = (noteName: string, octave: number) => {
+    onTargetNoteChange(MusicalNote.fromNoteName(noteName, octave));
+  };
+
+  const TunerButtons = () => (
+    <div className="flex justify-center gap-2 mb-4">
+      {['G3', 'D4', 'A4', 'E5'].map(string => (
+        <Button
+          key={string}
+          onClick={() => handleNoteSelect(string[0], parseInt(string[1]))}
+          variant={targetNote?.getFullName() === string ? 'default' : 'outline'}
+        >
+          {string[0]}
+        </Button>
+      ))}
+    </div>
+  );
+
   if (!performance || !targetNote) {
     return (
-      <div className="p-6 border-t border-border bg-card/50 text-center">
-        Waiting for input...
+      <div className="p-6 border-t border-border bg-card/50">
+        {mode === 'tuner' && <TunerButtons />}
+        <div className="text-center text-muted-foreground">Waiting for input...</div>
       </div>
     );
   }
@@ -39,6 +61,7 @@ export function PitchIndicator({ performance, targetNote }: PitchIndicatorProps)
 
   return (
     <div className="p-6 border-t border-border bg-card/50">
+      {mode === 'tuner' && <TunerButtons />}
       <div className="space-y-4">
         <div className="text-center">
           <div className="text-sm font-medium text-muted-foreground mb-2">Indicador de Afinación</div>
