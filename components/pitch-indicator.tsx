@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect } from "react"
+import { useState, useEffect, memo } from "react"
 import { motion } from "framer-motion"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -19,7 +19,12 @@ interface PitchIndicatorProps {
  * @param {PitchIndicatorProps} props - The props for the component.
  * @returns {JSX.Element} - The rendered pitch indicator component.
  */
-export function PitchIndicator({ performance, targetNote, mode, onTargetNoteChange }: PitchIndicatorProps) {
+// ⚡ Bolt: Using React.memo to prevent re-renders on every animation frame from the parent.
+// The parent component `InteractivePractice` re-renders frequently due to the
+// `usePitchDetection` hook. This memoization ensures `PitchIndicator` only
+// re-renders when its specific props (`performance`, `targetNote`, `mode`) change,
+// significantly improving UI performance and reducing CPU load.
+export const PitchIndicator = memo(function PitchIndicator({ performance, targetNote, mode, onTargetNoteChange }: PitchIndicatorProps) {
   const handleNoteSelect = (noteName: string, octave: number) => {
     onTargetNoteChange(MusicalNote.fromNoteName(noteName, octave));
   };
@@ -142,4 +147,4 @@ export function PitchIndicator({ performance, targetNote, mode, onTargetNoteChan
       </div>
     </div>
   )
-}
+})
